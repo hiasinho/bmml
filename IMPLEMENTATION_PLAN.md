@@ -481,10 +481,10 @@ It's important to have this website very soon
 
 - [x] Hero section: BMML name, tagline, CTA buttons (GitHub, Get Started)
   - Done: "Work in Progress" badge, gradient text title, dual CTA buttons
-- [ ] AirBnB example: Create an example business model for AirBnB. Study AirBnB's business model before doing that.
+- [x] AirBnB example: Create an example business model for AirBnB. Study AirBnB's business model before doing that.
+  - Done: Created comprehensive examples/airbnb.bmml with two-sided marketplace (guests and hosts), full VPC detail with jobs/pains/gains, pain_relievers/gain_creators, and complete fit mappings. Website examples updated to showcase Airbnb.
 - [x] Code example: v2 syntax highlighted (minimal + full)
-  - Done: Tabbed examples showing FreshBox minimal and full VPC with fits
-  - Note: AirBnB example still needed, currently using FreshBox
+  - Done: Tabbed examples showing Airbnb minimal and full VPC with fits
 - [x] What is BMC/VPC: Visual block representation
   - Done: Canvas section with 9 blocks, VPC section with Customer Profile and Value Map sides
 - [x] Examples gallery: Links to example files
