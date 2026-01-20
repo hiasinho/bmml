@@ -46,77 +46,93 @@ Foundation for all v2 work. Must complete before types/validator/linter.
 
 ### Phase 1: Base Schema Setup
 
-- [ ] Create `schemas/bmclang-v2.schema.json` with meta and version
+- [x] Create `schemas/bmclang-v2.schema.json` with meta and version
   - Copy base structure from v1 schema
   - Set `$id`: `https://bmclang.dev/schemas/bmclang-v2.schema.json`
   - AC: Empty document (just version + meta) validates, missing meta fails
+  - Done: Created full v2 schema with all entity definitions, `for:`/`from:` patterns, tuple mappings for fits, and costs array. Updated validator to support version parameter. Added 28 comprehensive tests covering all phases.
 
 ### Phase 2: Customer Side Schema
 
-- [ ] Define `customer_segments` with optional nested profile
+- [x] Define `customer_segments` with optional nested profile
   - `jobs`, `pains`, `gains` arrays as optional properties
   - AC: Segment without profile validates, segment with profile validates
-- [ ] Add ID pattern definitions for profile elements
+  - Done: Included in Phase 1 schema creation
+- [x] Add ID pattern definitions for profile elements
   - `job-[a-z0-9-]+`, `pain-[a-z0-9-]+`, `gain-[a-z0-9-]+`
   - AC: `job-healthy` valid, `job_healthy` invalid
+  - Done: Included in Phase 1 schema creation, tests verify patterns
 
 ### Phase 3: Value Side Schema
 
-- [ ] Define `value_propositions` with full Value Map
+- [x] Define `value_propositions` with full Value Map
   - `products_services`, `pain_relievers`, `gain_creators` as optional nested arrays
   - AC: VP without value map validates, VP with full map validates
-- [ ] Add new ID patterns for v2 entities
+  - Done: Included in Phase 1 schema creation
+- [x] Add new ID patterns for v2 entities
   - `pr-[a-z0-9-]+` (pain reliever), `gc-[a-z0-9-]+` (gain creator)
   - AC: `pr-time-saver` valid, `reliever-time` invalid
+  - Done: Included in Phase 1 schema creation, tests verify patterns
 
 ### Phase 4: Fit Schema (v2 Pattern)
 
-- [ ] Define `fits` with `for:` typed sub-keys pattern
+- [x] Define `fits` with `for:` typed sub-keys pattern
   - `for: { value_propositions: [], customer_segments: [] }`
   - AC: v1 fit structure (with `value_proposition: vp-x`) rejected
-- [ ] Add tuple array mappings definition
+  - Done: Included in Phase 1 schema creation, tests verify rejection of v1 pattern
+- [x] Add tuple array mappings definition
   - `mappings: [[string, string], ...]`
   - AC: `mappings: [[pr-x, pain-y]]` valid, `mappings: [pr-x, pain-y]` invalid
+  - Done: Included in Phase 1 schema creation, tests verify tuple format
 
 ### Phase 5: Delivery Schema (Channels, Relationships)
 
-- [ ] Define `channels` with dual `for:` sub-keys
+- [x] Define `channels` with dual `for:` sub-keys
   - `for: { value_propositions: [], customer_segments: [] }`
   - AC: Channel referencing both VP and CS validates
-- [ ] Define `customer_relationships` with `for:` pattern
+  - Done: Included in Phase 1 schema creation
+- [x] Define `customer_relationships` with `for:` pattern
   - `for: { customer_segments: [] }`
   - AC: Consistent with other v2 entities
+  - Done: Included in Phase 1 schema creation
 
 ### Phase 6: Capture Schema (Revenue)
 
-- [ ] Define `revenue_streams` with `for:` and `from:` patterns
+- [x] Define `revenue_streams` with `for:` and `from:` patterns
   - `from: { customer_segments: [] }` (who pays)
   - `for: { value_propositions: [] }` (what for)
   - AC: Bidirectional relationship correctly expressed
+  - Done: Included in Phase 1 schema creation
 
 ### Phase 7: Infrastructure Schema
 
-- [ ] Define `key_resources` with `for:` pattern
+- [x] Define `key_resources` with `for:` pattern
   - `for: { value_propositions: [] }`
   - AC: Resources linked to VPs validate
-- [ ] Define `key_activities` with `for:` pattern
+  - Done: Included in Phase 1 schema creation
+- [x] Define `key_activities` with `for:` pattern
   - `for: { value_propositions: [] }`
   - AC: Activities linked to VPs validate
-- [ ] Define `key_partnerships` with `for:` pattern
+  - Done: Included in Phase 1 schema creation
+- [x] Define `key_partnerships` with `for:` pattern
   - `for: { key_resources: [], key_activities: [] }`
   - AC: Partnerships linked to resources/activities validate
-- [ ] Define `costs` array (replaces `cost_structure`)
+  - Done: Included in Phase 1 schema creation
+- [x] Define `costs` array (replaces `cost_structure`)
   - New `cost-[a-z0-9-]+` ID prefix
   - `for: { key_resources: [], key_activities: [] }`
   - AC: v1 `cost_structure` object rejected, v2 `costs` array accepted
+  - Done: Included in Phase 1 schema creation, tests verify rejection of v1 cost_structure
 
 ### Phase 8: Schema Cleanup
 
-- [ ] Remove all `type` field requirements from entities
+- [x] Remove all `type` field requirements from entities
   - No `type` on jobs, products_services, channels, etc.
   - AC: Files without type fields validate successfully
-- [ ] Final schema review and ID pattern consistency check
+  - Done: v2 schema has no type fields on any entities (unlike v1)
+- [x] Final schema review and ID pattern consistency check
   - AC: All 17 ID prefixes validated consistently
+  - Done: All ID patterns defined in v2 schema, tests verify patterns work
 
 ---
 

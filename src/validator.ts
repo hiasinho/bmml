@@ -33,11 +33,15 @@ interface AjvError {
   params: Record<string, unknown>;
 }
 
+export type SchemaVersion = 'v1' | 'v2';
+
 /**
  * Load the BMCLang JSON Schema from the schemas directory
+ * @param version - Schema version to load ('v1' or 'v2'), defaults to 'v1'
  */
-export function loadSchema(): object {
-  const schemaPath = join(__dirname, '..', 'schemas', 'bmclang.schema.json');
+export function loadSchema(version: SchemaVersion = 'v1'): object {
+  const schemaFile = version === 'v2' ? 'bmclang-v2.schema.json' : 'bmclang.schema.json';
+  const schemaPath = join(__dirname, '..', 'schemas', schemaFile);
   const schemaContent = readFileSync(schemaPath, 'utf-8');
   return JSON.parse(schemaContent);
 }
@@ -105,10 +109,12 @@ export function parseYaml(content: string): { data: unknown } | { error: Validat
 
 /**
  * Validate a BMCLang document (as parsed object) against the schema
+ * @param doc - The parsed document object
+ * @param version - Schema version to validate against ('v1' or 'v2'), defaults to 'v1'
  */
-export function validateDocument(doc: unknown): ValidationResult {
+export function validateDocument(doc: unknown, version: SchemaVersion = 'v1'): ValidationResult {
   const ajv = createValidator();
-  const schema = loadSchema();
+  const schema = loadSchema(version);
   const validateFn = ajv.compile(schema);
 
   const valid = validateFn(doc);
@@ -126,8 +132,10 @@ export function validateDocument(doc: unknown): ValidationResult {
 /**
  * Validate a BMCLang YAML string
  * Parses YAML and validates against the JSON Schema
+ * @param content - YAML string to validate
+ * @param version - Schema version to validate against ('v1' or 'v2'), defaults to 'v1'
  */
-export function validate(content: string): ValidationResult {
+export function validate(content: string, version: SchemaVersion = 'v1'): ValidationResult {
   // First parse the YAML
   const parseResult = parseYaml(content);
   if ('error' in parseResult) {
@@ -138,16 +146,18 @@ export function validate(content: string): ValidationResult {
   }
 
   // Then validate against schema
-  return validateDocument(parseResult.data);
+  return validateDocument(parseResult.data, version);
 }
 
 /**
  * Validate a BMCLang file from disk
+ * @param filePath - Path to the YAML file
+ * @param version - Schema version to validate against ('v1' or 'v2'), defaults to 'v1'
  */
-export function validateFile(filePath: string): ValidationResult {
+export function validateFile(filePath: string, version: SchemaVersion = 'v1'): ValidationResult {
   try {
     const content = readFileSync(filePath, 'utf-8');
-    return validate(content);
+    return validate(content, version);
   } catch (err) {
     if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
       return {
