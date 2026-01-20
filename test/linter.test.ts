@@ -914,6 +914,164 @@ describe('lint', () => {
       expect(errors).toHaveLength(0);
     });
   });
+
+  describe('gain-never-created warning rule', () => {
+    it('warns when gain is defined but never created', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            gains: [{ id: 'gain-lonely', description: 'Lonely' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'gain-never-created');
+      expect(warning).toBeDefined();
+      expect(warning?.severity).toBe('warning');
+      expect(warning?.message).toContain('gain-lonely');
+      expect(warning?.message).toContain('never created');
+      expect(warning?.path).toBe('/customer_segments/0/gains/0');
+    });
+
+    it('does not warn when gain is created in a fit', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            gains: [{ id: 'gain-created', description: 'A created gain' }],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            products_services: [{ id: 'ps-test', type: 'product', description: 'Test' }],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            value_proposition: 'vp-test',
+            customer_segment: 'cs-test',
+            gain_creators: [{ gain: 'gain-created', through: ['ps-test'] }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'gain-never-created');
+      expect(warning).toBeUndefined();
+    });
+
+    it('warns for each gain that is never created', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            gains: [
+              { id: 'gain-lonely1', description: 'Lonely 1' },
+              { id: 'gain-lonely2', description: 'Lonely 2' },
+            ],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'gain-never-created');
+      expect(warnings).toHaveLength(2);
+    });
+
+    it('only warns for gains that are never created (mixed scenario)', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            gains: [
+              { id: 'gain-created', description: 'Created' },
+              { id: 'gain-lonely', description: 'Lonely' },
+            ],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            products_services: [{ id: 'ps-test', type: 'product', description: 'Test' }],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            value_proposition: 'vp-test',
+            customer_segment: 'cs-test',
+            gain_creators: [{ gain: 'gain-created', through: ['ps-test'] }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'gain-never-created');
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain('gain-lonely');
+    });
+
+    it('checks gains across multiple customer segments', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test1',
+            name: 'Test Segment 1',
+            gains: [{ id: 'gain-lonely1', description: 'Lonely 1' }],
+          },
+          {
+            id: 'cs-test2',
+            name: 'Test Segment 2',
+            gains: [{ id: 'gain-lonely2', description: 'Lonely 2' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'gain-never-created');
+      expect(warnings).toHaveLength(2);
+      expect(warnings[0].path).toBe('/customer_segments/0/gains/0');
+      expect(warnings[1].path).toBe('/customer_segments/1/gains/0');
+    });
+
+    it('validation still passes with gain-never-created warning', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            gains: [{ id: 'gain-lonely', description: 'Lonely' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const errors = result.issues.filter((i) => i.severity === 'error');
+      expect(errors).toHaveLength(0);
+    });
+  });
 });
 
 // ============================================================================
@@ -2087,6 +2245,219 @@ describe('lint v2', () => {
             id: 'cs-test',
             name: 'Test Segment',
             pains: [{ id: 'pain-lonely', name: 'Lonely' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const errors = result.issues.filter((i) => i.severity === 'error');
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('gain-never-created warning rule (v2)', () => {
+    it('warns when gain is defined but never created in tuple mappings', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            gains: [{ id: 'gain-lonely', name: 'Lonely' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'gain-never-created');
+      expect(warning).toBeDefined();
+      expect(warning?.severity).toBe('warning');
+      expect(warning?.message).toContain('gain-lonely');
+      expect(warning?.message).toContain('never created');
+      expect(warning?.path).toBe('/customer_segments/0/gains/0');
+    });
+
+    it('does not warn when gain is created via tuple mapping', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            gains: [{ id: 'gain-created', name: 'A created gain' }],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            gain_creators: [{ id: 'gc-test', name: 'Test creator' }],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            for: {
+              value_propositions: ['vp-test'],
+              customer_segments: ['cs-test'],
+            },
+            mappings: [['gc-test', 'gain-created']],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'gain-never-created');
+      expect(warning).toBeUndefined();
+    });
+
+    it('warns for each gain that is never created', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            gains: [
+              { id: 'gain-lonely1', name: 'Lonely 1' },
+              { id: 'gain-lonely2', name: 'Lonely 2' },
+            ],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'gain-never-created');
+      expect(warnings).toHaveLength(2);
+    });
+
+    it('only warns for gains that are never created (mixed scenario)', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            gains: [
+              { id: 'gain-created', name: 'Created' },
+              { id: 'gain-lonely', name: 'Lonely' },
+            ],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            gain_creators: [{ id: 'gc-test', name: 'Test creator' }],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            for: {
+              value_propositions: ['vp-test'],
+              customer_segments: ['cs-test'],
+            },
+            mappings: [['gc-test', 'gain-created']],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'gain-never-created');
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain('gain-lonely');
+    });
+
+    it('checks gains across multiple customer segments', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test1',
+            name: 'Test Segment 1',
+            gains: [{ id: 'gain-lonely1', name: 'Lonely 1' }],
+          },
+          {
+            id: 'cs-test2',
+            name: 'Test Segment 2',
+            gains: [{ id: 'gain-lonely2', name: 'Lonely 2' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'gain-never-created');
+      expect(warnings).toHaveLength(2);
+      expect(warnings[0].path).toBe('/customer_segments/0/gains/0');
+      expect(warnings[1].path).toBe('/customer_segments/1/gains/0');
+    });
+
+    it('recognizes gains created via different fits', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test1',
+            name: 'Test Segment 1',
+            gains: [{ id: 'gain-happy1', name: 'Happy 1' }],
+          },
+          {
+            id: 'cs-test2',
+            name: 'Test Segment 2',
+            gains: [{ id: 'gain-happy2', name: 'Happy 2' }],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            gain_creators: [
+              { id: 'gc-test1', name: 'Test 1' },
+              { id: 'gc-test2', name: 'Test 2' },
+            ],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test1',
+            for: {
+              value_propositions: ['vp-test'],
+              customer_segments: ['cs-test1'],
+            },
+            mappings: [['gc-test1', 'gain-happy1']],
+          },
+          {
+            id: 'fit-test2',
+            for: {
+              value_propositions: ['vp-test'],
+              customer_segments: ['cs-test2'],
+            },
+            mappings: [['gc-test2', 'gain-happy2']],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'gain-never-created');
+      expect(warning).toBeUndefined();
+    });
+
+    it('validation still passes with gain-never-created warning', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            gains: [{ id: 'gain-lonely', name: 'Lonely' }],
           },
         ],
       };

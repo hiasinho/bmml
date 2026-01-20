@@ -495,6 +495,28 @@ function lintV1(doc: BMCDocument): LintResult {
     }
   }
 
+  // Warning: Gain defined but never created (no fit mapping references it)
+  const createdGains = new Set<GainId>();
+  for (const fit of doc.fits ?? []) {
+    for (const gc of fit.gain_creators ?? []) {
+      createdGains.add(gc.gain);
+    }
+  }
+
+  for (let csIdx = 0; csIdx < (doc.customer_segments ?? []).length; csIdx++) {
+    const cs = doc.customer_segments![csIdx];
+    for (let gainIdx = 0; gainIdx < (cs.gains ?? []).length; gainIdx++) {
+      const gain = cs.gains![gainIdx];
+      if (!createdGains.has(gain.id)) {
+        addWarning(
+          'gain-never-created',
+          `/customer_segments/${csIdx}/gains/${gainIdx}`,
+          `Gain '${gain.id}' is defined but never created in any fit mapping`
+        );
+      }
+    }
+  }
+
   return { issues, version: 'v1' };
 }
 
@@ -914,6 +936,34 @@ function lintV2(doc: BMCDocumentV2): LintResult {
           'pain-never-relieved',
           `/customer_segments/${csIdx}/pains/${painIdx}`,
           `Pain '${pain.id}' is defined but never relieved in any fit mapping`
+        );
+      }
+    }
+  }
+
+  // Warning: Gain defined but never created (no fit mapping references it)
+  // In v2, gains are created via tuple mappings: [gc-*, gain-*]
+  const createdGains = new Set<GainId>();
+  for (const fit of doc.fits ?? []) {
+    for (const mapping of fit.mappings ?? []) {
+      if (Array.isArray(mapping) && mapping.length === 2) {
+        const [, right] = mapping;
+        if (typeof right === 'string' && right.startsWith('gain-')) {
+          createdGains.add(right as GainId);
+        }
+      }
+    }
+  }
+
+  for (let csIdx = 0; csIdx < (doc.customer_segments ?? []).length; csIdx++) {
+    const cs = doc.customer_segments![csIdx];
+    for (let gainIdx = 0; gainIdx < (cs.gains ?? []).length; gainIdx++) {
+      const gain = cs.gains![gainIdx];
+      if (!createdGains.has(gain.id)) {
+        addWarning(
+          'gain-never-created',
+          `/customer_segments/${csIdx}/gains/${gainIdx}`,
+          `Gain '${gain.id}' is defined but never created in any fit mapping`
         );
       }
     }
