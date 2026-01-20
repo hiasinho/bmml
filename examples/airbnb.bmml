@@ -1,0 +1,417 @@
+version: "2.0"
+
+meta:
+  name: "Airbnb"
+  tagline: "Belong anywhere - unique stays and local experiences"
+  created: "2024-01-15"
+  updated: "2024-06-20"
+  portfolio: exploit
+  stage: grow
+
+# === CUSTOMER SEGMENTS ===
+# Two-sided marketplace: guests seeking accommodation, hosts offering properties
+
+customer_segments:
+  - id: cs-guests
+    name: Travelers & Guests
+    description: People seeking unique accommodation experiences at competitive prices
+    jobs:
+      - id: job-find-stay
+        description: Find affordable accommodation for trips
+      - id: job-unique-experience
+        description: Experience authentic local culture, not just tourist spots
+      - id: job-trust-booking
+        description: Book with confidence and safety
+      - id: job-flexible-options
+        description: Find options that match specific needs (family, work, pets)
+    pains:
+      - id: pain-hotel-cost
+        description: Hotels are expensive, especially for longer stays
+      - id: pain-generic-experience
+        description: Hotels feel impersonal and disconnected from local culture
+      - id: pain-trust-strangers
+        description: Uncertainty about staying in a stranger's property
+      - id: pain-limited-amenities
+        description: Hotel rooms lack home amenities like kitchens or laundry
+      - id: pain-booking-complexity
+        description: Comparing options across multiple sites is time-consuming
+    gains:
+      - id: gain-cost-savings
+        description: Save money compared to traditional hotels
+      - id: gain-local-immersion
+        description: Live like a local, not a tourist
+      - id: gain-space-comfort
+        description: Enjoy more space and home-like amenities
+      - id: gain-unique-properties
+        description: Stay in unique properties (treehouses, castles, farms)
+
+  - id: cs-hosts
+    name: Property Hosts
+    description: Property owners looking to earn income from unused space
+    jobs:
+      - id: job-earn-income
+        description: Generate income from unused property or space
+      - id: job-meet-people
+        description: Meet interesting travelers from around the world
+      - id: job-maintain-control
+        description: Stay in control of who stays and when
+      - id: job-protect-property
+        description: Ensure property is protected from damage
+    pains:
+      - id: pain-finding-guests
+        description: Difficult to find reliable guests independently
+      - id: pain-payment-risk
+        description: Risk of payment fraud or non-payment
+      - id: pain-property-damage
+        description: Fear of guests damaging property
+      - id: pain-complex-logistics
+        description: Managing bookings, check-ins, and communication is overwhelming
+      - id: pain-pricing-uncertainty
+        description: Not knowing how to price property competitively
+    gains:
+      - id: gain-extra-income
+        description: Earn significant supplemental income
+      - id: gain-flexibility
+        description: Control availability around personal schedule
+      - id: gain-global-reach
+        description: Access to travelers worldwide without marketing spend
+      - id: gain-peace-of-mind
+        description: Protected by insurance and verified guest profiles
+
+# === VALUE PROPOSITIONS ===
+# Different value propositions for each side of the marketplace
+
+value_propositions:
+  - id: vp-guest-experience
+    name: Unique Stays Anywhere
+    description: Book verified unique accommodations with local hosts worldwide
+    products_services:
+      - id: ps-search-platform
+        name: Search and discovery platform with 4M+ listings
+      - id: ps-instant-book
+        name: Instant booking with secure payment
+      - id: ps-reviews-system
+        name: Verified reviews from 500M+ guest arrivals
+      - id: ps-guest-support
+        name: 24/7 customer support in 42 languages
+      - id: ps-experiences
+        name: Airbnb Experiences (tours, activities)
+    pain_relievers:
+      - id: pr-price-comparison
+        name: Easy price comparison, often 15% below hotels
+      - id: pr-verified-listings
+        name: Verified listings with authentic photos and reviews
+      - id: pr-trust-framework
+        name: Host verification, secure payments, and guest protection
+      - id: pr-home-amenities
+        name: Filter by amenities (kitchen, wifi, washer, pool)
+      - id: pr-one-platform
+        name: Single platform for all accommodation types worldwide
+    gain_creators:
+      - id: gc-unique-properties
+        name: Access to unique stays (boats, castles, treehouses)
+      - id: gc-local-tips
+        name: Host guidebooks with local recommendations
+      - id: gc-space-value
+        name: More space per dollar than hotel rooms
+      - id: gc-authentic-travel
+        name: Stay in real neighborhoods, not tourist zones
+
+  - id: vp-host-platform
+    name: Earn Money Hosting
+    description: List your space and reach millions of travelers with full protection
+    products_services:
+      - id: ps-listing-tools
+        name: Easy listing creation with photo guidance
+      - id: ps-smart-pricing
+        name: Smart pricing recommendations
+      - id: ps-host-app
+        name: Host app for managing bookings and guests
+      - id: ps-superhost-program
+        name: Superhost recognition program
+      - id: ps-host-insurance
+        name: AirCover for Hosts ($1M liability protection)
+    pain_relievers:
+      - id: pr-instant-exposure
+        name: Immediate access to millions of travelers
+      - id: pr-secure-payments
+        name: Guaranteed payments, no fraud risk
+      - id: pr-damage-protection
+        name: $3M damage protection included
+      - id: pr-booking-management
+        name: Automated booking and calendar management
+      - id: pr-pricing-tools
+        name: Dynamic pricing suggestions based on demand
+    gain_creators:
+      - id: gc-income-potential
+        name: Hosts earn average $9,600 per year
+      - id: gc-schedule-control
+        name: Block dates, set rules, choose guests
+      - id: gc-global-guests
+        name: Reach travelers from 220+ countries
+      - id: gc-community-status
+        name: Superhost status and recognition
+
+# === FITS ===
+# Mapping value propositions to customer needs
+
+fits:
+  - id: fit-guest-experience
+    for:
+      value_propositions: [vp-guest-experience]
+      customer_segments: [cs-guests]
+    mappings:
+      - [pr-price-comparison, pain-hotel-cost]
+      - [pr-verified-listings, pain-generic-experience]
+      - [pr-trust-framework, pain-trust-strangers]
+      - [pr-home-amenities, pain-limited-amenities]
+      - [pr-one-platform, pain-booking-complexity]
+      - [gc-unique-properties, gain-unique-properties]
+      - [gc-local-tips, gain-local-immersion]
+      - [gc-space-value, gain-cost-savings]
+      - [gc-space-value, gain-space-comfort]
+      - [gc-authentic-travel, gain-local-immersion]
+
+  - id: fit-host-platform
+    for:
+      value_propositions: [vp-host-platform]
+      customer_segments: [cs-hosts]
+    mappings:
+      - [pr-instant-exposure, pain-finding-guests]
+      - [pr-secure-payments, pain-payment-risk]
+      - [pr-damage-protection, pain-property-damage]
+      - [pr-booking-management, pain-complex-logistics]
+      - [pr-pricing-tools, pain-pricing-uncertainty]
+      - [gc-income-potential, gain-extra-income]
+      - [gc-schedule-control, gain-flexibility]
+      - [gc-global-guests, gain-global-reach]
+      - [gc-community-status, gain-peace-of-mind]
+
+# === CHANNELS ===
+# How Airbnb delivers value to each segment
+
+channels:
+  - id: ch-guest-app
+    name: Guest Mobile App & Website
+    for:
+      value_propositions: [vp-guest-experience]
+      customer_segments: [cs-guests]
+
+  - id: ch-search-marketing
+    name: Search Engine & Digital Marketing
+    for:
+      value_propositions: [vp-guest-experience]
+      customer_segments: [cs-guests]
+
+  - id: ch-social-media
+    name: Social Media (Instagram, TikTok)
+    for:
+      value_propositions: [vp-guest-experience]
+      customer_segments: [cs-guests]
+
+  - id: ch-host-app
+    name: Host App & Dashboard
+    for:
+      value_propositions: [vp-host-platform]
+      customer_segments: [cs-hosts]
+
+  - id: ch-host-community
+    name: Host Community & Education
+    for:
+      value_propositions: [vp-host-platform]
+      customer_segments: [cs-hosts]
+
+  - id: ch-referral-program
+    name: Host Referral Program
+    for:
+      value_propositions: [vp-host-platform]
+      customer_segments: [cs-hosts]
+
+# === CUSTOMER RELATIONSHIPS ===
+
+customer_relationships:
+  - id: cr-guest-self-service
+    name: Self-Service Platform
+    for:
+      customer_segments: [cs-guests]
+
+  - id: cr-guest-support
+    name: 24/7 Customer Support
+    for:
+      customer_segments: [cs-guests]
+
+  - id: cr-guest-community
+    name: Reviews & Trust Community
+    for:
+      customer_segments: [cs-guests]
+
+  - id: cr-host-self-service
+    name: Self-Service Host Tools
+    for:
+      customer_segments: [cs-hosts]
+
+  - id: cr-host-support
+    name: Host Support & Education
+    for:
+      customer_segments: [cs-hosts]
+
+  - id: cr-superhost
+    name: Superhost Recognition Program
+    for:
+      customer_segments: [cs-hosts]
+
+# === REVENUE STREAMS ===
+
+revenue_streams:
+  - id: rs-guest-service-fee
+    name: Guest Service Fee (8-15%)
+    from:
+      customer_segments: [cs-guests]
+    for:
+      value_propositions: [vp-guest-experience]
+
+  - id: rs-host-service-fee
+    name: Host Service Fee (3-5%)
+    from:
+      customer_segments: [cs-hosts]
+    for:
+      value_propositions: [vp-host-platform]
+
+  - id: rs-experiences
+    name: Experiences Commission
+    from:
+      customer_segments: [cs-guests]
+    for:
+      value_propositions: [vp-guest-experience]
+
+  - id: rs-airbnb-luxe
+    name: Airbnb Luxe Premium Service
+    from:
+      customer_segments: [cs-guests]
+    for:
+      value_propositions: [vp-guest-experience]
+
+# === KEY RESOURCES ===
+
+key_resources:
+  - id: kr-platform
+    name: Technology Platform
+    for:
+      value_propositions: [vp-guest-experience, vp-host-platform]
+
+  - id: kr-host-network
+    name: 4M+ Host Network
+    for:
+      value_propositions: [vp-guest-experience]
+
+  - id: kr-reviews-data
+    name: 500M+ Reviews Database
+    for:
+      value_propositions: [vp-guest-experience, vp-host-platform]
+
+  - id: kr-brand
+    name: Global Brand Recognition
+    for:
+      value_propositions: [vp-guest-experience, vp-host-platform]
+
+  - id: kr-engineering-team
+    name: 6,000+ Employees & Engineering Team
+    for:
+      value_propositions: [vp-guest-experience, vp-host-platform]
+
+# === KEY ACTIVITIES ===
+
+key_activities:
+  - id: ka-platform-development
+    name: Platform Development & ML/AI
+    for:
+      value_propositions: [vp-guest-experience, vp-host-platform]
+
+  - id: ka-trust-safety
+    name: Trust & Safety Enforcement
+    for:
+      value_propositions: [vp-guest-experience, vp-host-platform]
+
+  - id: ka-host-acquisition
+    name: Host Acquisition & Onboarding
+    for:
+      value_propositions: [vp-guest-experience]
+
+  - id: ka-marketing
+    name: Brand Marketing & Guest Acquisition
+    for:
+      value_propositions: [vp-guest-experience]
+
+  - id: ka-payment-processing
+    name: Secure Payment Processing (65+ currencies)
+    for:
+      value_propositions: [vp-guest-experience, vp-host-platform]
+
+  - id: ka-customer-support
+    name: 24/7 Global Customer Support
+    for:
+      value_propositions: [vp-guest-experience, vp-host-platform]
+
+# === KEY PARTNERSHIPS ===
+
+key_partnerships:
+  - id: kp-payment-providers
+    name: Payment Providers (PayPal, Stripe, Alipay)
+    for:
+      key_activities: [ka-payment-processing]
+
+  - id: kp-insurance-providers
+    name: Insurance Partners (AirCover)
+    for:
+      key_resources: [kr-host-network]
+      key_activities: [ka-trust-safety]
+
+  - id: kp-cloud-providers
+    name: Cloud Infrastructure (AWS, Google Cloud)
+    for:
+      key_resources: [kr-platform]
+      key_activities: [ka-platform-development]
+
+  - id: kp-photography-services
+    name: Professional Photography Services
+    for:
+      key_activities: [ka-host-acquisition]
+
+  - id: kp-local-regulations
+    name: Local Government & Regulatory Bodies
+    for:
+      key_activities: [ka-trust-safety]
+
+# === COSTS ===
+
+costs:
+  - id: cost-platform
+    name: Platform Development & Infrastructure
+    for:
+      key_resources: [kr-platform]
+      key_activities: [ka-platform-development]
+
+  - id: cost-marketing
+    name: Sales & Marketing ($800M+ annually)
+    for:
+      key_activities: [ka-marketing]
+
+  - id: cost-support
+    name: Customer Support Operations
+    for:
+      key_activities: [ka-customer-support]
+
+  - id: cost-insurance
+    name: Host & Guest Insurance Programs
+    for:
+      key_activities: [ka-trust-safety]
+
+  - id: cost-payments
+    name: Payment Processing Fees
+    for:
+      key_activities: [ka-payment-processing]
+
+  - id: cost-personnel
+    name: Personnel & Engineering Talent
+    for:
+      key_resources: [kr-engineering-team]

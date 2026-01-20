@@ -975,89 +975,98 @@
 <pre><span class="keyword">version:</span> <span class="string">"2.0"</span>
 
 <span class="keyword">meta:</span>
-  <span class="keyword">name:</span> <span class="string">"FreshBox"</span>
-  <span class="keyword">tagline:</span> <span class="string">"Chef-designed meals delivered"</span>
-  <span class="keyword">stage:</span> validation
+  <span class="keyword">name:</span> <span class="string">"Airbnb"</span>
+  <span class="keyword">tagline:</span> <span class="string">"Belong anywhere"</span>
+  <span class="keyword">portfolio:</span> exploit
+  <span class="keyword">stage:</span> grow
 
 <span class="keyword">customer_segments:</span>
-  - <span class="keyword">id:</span> <span class="id-ref">cs-busy-professionals</span>
-    <span class="keyword">name:</span> Busy Professionals
+  - <span class="keyword">id:</span> <span class="id-ref">cs-guests</span>
+    <span class="keyword">name:</span> Travelers & Guests
+  - <span class="keyword">id:</span> <span class="id-ref">cs-hosts</span>
+    <span class="keyword">name:</span> Property Hosts
 
 <span class="keyword">value_propositions:</span>
-  - <span class="keyword">id:</span> <span class="id-ref">vp-convenience</span>
-    <span class="keyword">name:</span> Effortless Meal Planning
+  - <span class="keyword">id:</span> <span class="id-ref">vp-guest-experience</span>
+    <span class="keyword">name:</span> Unique Stays Anywhere
+  - <span class="keyword">id:</span> <span class="id-ref">vp-host-platform</span>
+    <span class="keyword">name:</span> Earn Money Hosting
 
 <span class="keyword">channels:</span>
-  - <span class="keyword">id:</span> <span class="id-ref">ch-website</span>
-    <span class="keyword">name:</span> Website & Mobile App
+  - <span class="keyword">id:</span> <span class="id-ref">ch-guest-app</span>
+    <span class="keyword">name:</span> Guest Mobile App
     <span class="keyword">for:</span>
-      <span class="keyword">value_propositions:</span> [<span class="id-ref">vp-convenience</span>]
-      <span class="keyword">customer_segments:</span> [<span class="id-ref">cs-busy-professionals</span>]
+      <span class="keyword">value_propositions:</span> [<span class="id-ref">vp-guest-experience</span>]
+      <span class="keyword">customer_segments:</span> [<span class="id-ref">cs-guests</span>]
 
 <span class="keyword">revenue_streams:</span>
-  - <span class="keyword">id:</span> <span class="id-ref">rs-subscription</span>
-    <span class="keyword">name:</span> Weekly Subscription
+  - <span class="keyword">id:</span> <span class="id-ref">rs-guest-fee</span>
+    <span class="keyword">name:</span> Guest Service Fee (8-15%)
     <span class="keyword">from:</span>
-      <span class="keyword">customer_segments:</span> [<span class="id-ref">cs-busy-professionals</span>]
+      <span class="keyword">customer_segments:</span> [<span class="id-ref">cs-guests</span>]
     <span class="keyword">for:</span>
-      <span class="keyword">value_propositions:</span> [<span class="id-ref">vp-convenience</span>]
+      <span class="keyword">value_propositions:</span> [<span class="id-ref">vp-guest-experience</span>]
 
-<span class="comment"># ... key_resources, key_activities, key_partnerships, costs</span></pre>
+<span class="comment"># Two-sided marketplace: guests and hosts...</span></pre>
             </div>
 
             <div class="example-code" id="example-full" style="display: none;">
 <pre><span class="keyword">version:</span> <span class="string">"2.0"</span>
 
 <span class="keyword">meta:</span>
-  <span class="keyword">name:</span> <span class="string">"FreshBox"</span>
-  <span class="keyword">stage:</span> validation
+  <span class="keyword">name:</span> <span class="string">"Airbnb"</span>
+  <span class="keyword">portfolio:</span> exploit
+  <span class="keyword">stage:</span> grow
 
 <span class="keyword">customer_segments:</span>
-  - <span class="keyword">id:</span> <span class="id-ref">cs-busy-professionals</span>
-    <span class="keyword">name:</span> Busy Professionals
-    <span class="keyword">jobs:</span>
-      - <span class="keyword">id:</span> <span class="id-ref">job-eat-well</span>
-        <span class="keyword">description:</span> Eat healthy, home-cooked meals
+  - <span class="keyword">id:</span> <span class="id-ref">cs-guests</span>
+    <span class="keyword">name:</span> Travelers & Guests
     <span class="keyword">pains:</span>
-      - <span class="keyword">id:</span> <span class="id-ref">pain-no-time</span>
-        <span class="keyword">description:</span> No time to plan, shop, or cook
-      - <span class="keyword">id:</span> <span class="id-ref">pain-food-waste</span>
-        <span class="keyword">description:</span> Ingredients spoil before use
+      - <span class="keyword">id:</span> <span class="id-ref">pain-hotel-cost</span>
+        <span class="keyword">description:</span> Hotels are expensive for longer stays
+      - <span class="keyword">id:</span> <span class="id-ref">pain-trust-strangers</span>
+        <span class="keyword">description:</span> Uncertainty about staying in stranger's property
     <span class="keyword">gains:</span>
-      - <span class="keyword">id:</span> <span class="id-ref">gain-time-back</span>
-        <span class="keyword">description:</span> Reclaim evening hours
+      - <span class="keyword">id:</span> <span class="id-ref">gain-cost-savings</span>
+        <span class="keyword">description:</span> Save money compared to hotels
+      - <span class="keyword">id:</span> <span class="id-ref">gain-local-immersion</span>
+        <span class="keyword">description:</span> Live like a local, not a tourist
 
 <span class="keyword">value_propositions:</span>
-  - <span class="keyword">id:</span> <span class="id-ref">vp-convenience</span>
-    <span class="keyword">name:</span> Effortless Meal Planning
+  - <span class="keyword">id:</span> <span class="id-ref">vp-guest-experience</span>
+    <span class="keyword">name:</span> Unique Stays Anywhere
     <span class="keyword">products_services:</span>
-      - <span class="keyword">id:</span> <span class="id-ref">ps-weekly-delivery</span>
-        <span class="keyword">name:</span> Weekly meal kit delivery
+      - <span class="keyword">id:</span> <span class="id-ref">ps-search-platform</span>
+        <span class="keyword">name:</span> Search platform with 4M+ listings
     <span class="keyword">pain_relievers:</span>
-      - <span class="keyword">id:</span> <span class="id-ref">pr-no-planning</span>
-        <span class="keyword">name:</span> Curated menus eliminate planning
-      - <span class="keyword">id:</span> <span class="id-ref">pr-zero-waste</span>
-        <span class="keyword">name:</span> Exact portions, nothing wasted
+      - <span class="keyword">id:</span> <span class="id-ref">pr-price-comparison</span>
+        <span class="keyword">name:</span> Easy comparison, often 15% below hotels
+      - <span class="keyword">id:</span> <span class="id-ref">pr-trust-framework</span>
+        <span class="keyword">name:</span> Host verification and guest protection
     <span class="keyword">gain_creators:</span>
-      - <span class="keyword">id:</span> <span class="id-ref">gc-time-savings</span>
-        <span class="keyword">name:</span> 5+ hours saved per week
+      - <span class="keyword">id:</span> <span class="id-ref">gc-space-value</span>
+        <span class="keyword">name:</span> More space per dollar than hotels
+      - <span class="keyword">id:</span> <span class="id-ref">gc-authentic-travel</span>
+        <span class="keyword">name:</span> Stay in real neighborhoods
 
 <span class="keyword">fits:</span>
-  - <span class="keyword">id:</span> <span class="id-ref">fit-convenience-busy</span>
+  - <span class="keyword">id:</span> <span class="id-ref">fit-guest-experience</span>
     <span class="keyword">for:</span>
-      <span class="keyword">value_propositions:</span> [<span class="id-ref">vp-convenience</span>]
-      <span class="keyword">customer_segments:</span> [<span class="id-ref">cs-busy-professionals</span>]
+      <span class="keyword">value_propositions:</span> [<span class="id-ref">vp-guest-experience</span>]
+      <span class="keyword">customer_segments:</span> [<span class="id-ref">cs-guests</span>]
     <span class="keyword">mappings:</span>
-      - [<span class="id-ref">pr-no-planning</span>, <span class="id-ref">pain-no-time</span>]
-      - [<span class="id-ref">pr-zero-waste</span>, <span class="id-ref">pain-food-waste</span>]
-      - [<span class="id-ref">gc-time-savings</span>, <span class="id-ref">gain-time-back</span>]
+      - [<span class="id-ref">pr-price-comparison</span>, <span class="id-ref">pain-hotel-cost</span>]
+      - [<span class="id-ref">pr-trust-framework</span>, <span class="id-ref">pain-trust-strangers</span>]
+      - [<span class="id-ref">gc-space-value</span>, <span class="id-ref">gain-cost-savings</span>]
+      - [<span class="id-ref">gc-authentic-travel</span>, <span class="id-ref">gain-local-immersion</span>]
 
-<span class="comment"># ... channels, revenue_streams, resources, activities, etc.</span></pre>
+<span class="comment"># Full example: examples/airbnb.bmml</span></pre>
             </div>
 
             <div class="example-links">
+                <a href="https://github.com/hiasinho/bmml/blob/main/examples/airbnb.bmml" class="example-link">Airbnb (full example)</a>
                 <a href="https://github.com/hiasinho/bmml/tree/main/examples" class="example-link">Browse all examples</a>
-                <a href="https://github.com/hiasinho/bmml/tree/main/examples/progressive" class="example-link">Progressive detail examples</a>
+                <a href="https://github.com/hiasinho/bmml/tree/main/examples/progressive" class="example-link">Progressive detail</a>
             </div>
         </div>
     </section>
