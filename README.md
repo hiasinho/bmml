@@ -20,4 +20,4 @@ pnpm test
 
 ## Learn More
 
-See `specs/bmclang-mvp.md` for the full specification.
+See `specs/bmclang-mvp.md` for the full specification (file retains historical name).

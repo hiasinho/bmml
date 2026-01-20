@@ -96,7 +96,7 @@ target: cs-remote-workers
 
 ## File Organization
 
-### .bmc Files
+### .bmml Files
 - One business model per file
 - Sections in order: meta, canvas blocks, environment, patterns, hypotheses, evidence
 - Use YAML comments to separate major sections

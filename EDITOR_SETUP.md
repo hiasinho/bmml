@@ -1,13 +1,13 @@
-# Editor Setup for BMCLang
+# Editor Setup for BMML
 
 This guide explains how to set up editor support for `.bmml` files.
 
 ## VS Code
 
-### Option 1: BMCLang Extension (Recommended)
+### Option 1: BMML Extension (Recommended)
 
 The `vscode-bmclang` extension provides:
-- Full syntax highlighting with BMCLang-specific tokens
+- Full syntax highlighting with BMML-specific tokens
 - ID reference highlighting
 - Enum value highlighting
 - JSON Schema validation
@@ -64,7 +64,7 @@ This provides:
 1. Go to **Settings > Languages & Frameworks > Schemas and DTDs > JSON Schema Mappings**
 2. Click **+** to add a new mapping
 3. Set:
-   - Name: `BMCLang`
+   - Name: `BMML`
    - Schema file or URL: `schemas/bmclang.schema.json` (or the raw GitHub URL)
    - File path pattern: `*.bmml`
 

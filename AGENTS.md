@@ -1,6 +1,6 @@
-# BMCLang
+# BMML
 
-A markup format for describing business models, based on Alexander Osterwalder's work.
+Business Model Markup Language - a format for describing business models, based on Alexander Osterwalder's work.
 
 ## Quick Start
 

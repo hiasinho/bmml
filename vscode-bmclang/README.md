@@ -1,10 +1,10 @@
-# BMCLang VS Code Extension
+# BMML VS Code Extension
 
-Language support for BMCLang business model files (`.bmml`).
+Language support for BMML (Business Model Markup Language) files (`.bmml`).
 
 ## Features
 
-- Syntax highlighting for BMCLang constructs
+- Syntax highlighting for BMML constructs
 - JSON Schema validation via YAML extension integration
 - Auto-completion for enum values (portfolio, stage, types, etc.)
 - Folding based on YAML indentation
