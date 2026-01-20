@@ -1,0 +1,207 @@
+version: "2.0"
+
+# =============================================================================
+# PROGRESSIVE DETAIL EXAMPLE - STAGE 2: +PROFILES
+# =============================================================================
+# Building on the minimal BMC, we now add Customer Profiles.
+# Jobs, pains, and gains help us understand WHY customers need our value.
+#
+# Previous: 01-minimal.bmml (basic 9-block BMC)
+# Next: 03-valuemaps.bmml adds value maps (products, pain relievers, gain creators)
+# =============================================================================
+
+meta:
+  name: "FreshBox"
+  tagline: "Chef-designed meals delivered to your door"
+  created: "2024-03-01"
+  updated: "2024-06-15"
+  portfolio: explore
+  stage: discovery
+
+# === CUSTOMER SEGMENTS ===
+# Now with full Customer Profiles: jobs, pains, and gains
+
+customer_segments:
+  - id: cs-busy-professionals
+    name: Busy Professionals
+    description: Time-strapped workers who want to eat well without the hassle
+    jobs:
+      - id: job-eat-well
+        description: Eat healthy, home-cooked meals regularly
+      - id: job-spend-time-wisely
+        description: Spend less time on meal logistics, more on what matters
+      - id: job-avoid-decision-fatigue
+        description: Not have to decide what to cook every night
+    pains:
+      - id: pain-no-time
+        description: No time to plan meals, shop for groceries, or cook from scratch
+      - id: pain-food-waste
+        description: Buying ingredients that spoil before being used
+      - id: pain-unhealthy-fallback
+        description: Defaulting to takeout or processed food due to time pressure
+      - id: pain-meal-monotony
+        description: Eating the same boring meals on repeat
+    gains:
+      - id: gain-time-back
+        description: Reclaim evening hours for relaxation or family
+      - id: gain-eat-healthy
+        description: Feel good about eating nutritious home-cooked meals
+      - id: gain-variety
+        description: Enjoy diverse cuisines without extra effort
+
+  - id: cs-home-cooks
+    name: Aspiring Home Cooks
+    description: People who enjoy cooking but want inspiration and convenience
+    jobs:
+      - id: job-explore-cuisines
+        description: Explore new recipes and cuisines from around the world
+      - id: job-improve-skills
+        description: Become a better cook with new techniques
+      - id: job-impress-others
+        description: Cook impressive meals for family and guests
+    pains:
+      - id: pain-recipe-hunting
+        description: Spending too much time searching for good recipes
+      - id: pain-hard-to-find-ingredients
+        description: Struggling to find specialty ingredients locally
+      - id: pain-technique-intimidation
+        description: Feeling intimidated by complex cooking techniques
+      - id: pain-inconsistent-results
+        description: Recipes not turning out as expected
+    gains:
+      - id: gain-culinary-confidence
+        description: Feel confident tackling any recipe
+      - id: gain-cooking-pride
+        description: Pride in serving restaurant-quality meals at home
+      - id: gain-skill-growth
+        description: Learn professional cooking techniques progressively
+
+# === VALUE PROPOSITIONS ===
+# Still without value maps - we'll add those in stage 3
+
+value_propositions:
+  - id: vp-convenience
+    name: Effortless Meal Planning
+    description: Remove the friction from home cooking with pre-portioned ingredients and curated recipes
+
+  - id: vp-culinary-experience
+    name: Chef-Quality Cooking at Home
+    description: Restaurant-inspired meals made accessible with specialty ingredients and techniques
+
+# === CHANNELS ===
+
+channels:
+  - id: ch-website
+    name: Website & Mobile App
+    for:
+      value_propositions: [vp-convenience, vp-culinary-experience]
+      customer_segments: [cs-busy-professionals, cs-home-cooks]
+
+  - id: ch-social-media
+    name: Social Media (Instagram, TikTok)
+    for:
+      value_propositions: [vp-culinary-experience]
+      customer_segments: [cs-home-cooks]
+
+  - id: ch-delivery
+    name: Home Delivery
+    for:
+      value_propositions: [vp-convenience, vp-culinary-experience]
+      customer_segments: [cs-busy-professionals, cs-home-cooks]
+
+# === CUSTOMER RELATIONSHIPS ===
+
+customer_relationships:
+  - id: cr-automated
+    name: Personalized Recommendations
+    for:
+      customer_segments: [cs-busy-professionals]
+
+  - id: cr-community
+    name: Recipe Sharing Community
+    for:
+      customer_segments: [cs-home-cooks]
+
+# === REVENUE STREAMS ===
+
+revenue_streams:
+  - id: rs-subscription
+    name: Weekly Subscription
+    from:
+      customer_segments: [cs-busy-professionals, cs-home-cooks]
+    for:
+      value_propositions: [vp-convenience]
+
+  - id: rs-addon-sales
+    name: Premium Add-on Products
+    from:
+      customer_segments: [cs-home-cooks]
+    for:
+      value_propositions: [vp-culinary-experience]
+
+# === KEY RESOURCES ===
+
+key_resources:
+  - id: kr-supply-chain
+    name: Ingredient Supply Chain
+    for:
+      value_propositions: [vp-convenience, vp-culinary-experience]
+
+  - id: kr-culinary-team
+    name: Culinary Team
+    for:
+      value_propositions: [vp-culinary-experience]
+
+  - id: kr-tech-platform
+    name: Technology Platform
+    for:
+      value_propositions: [vp-convenience, vp-culinary-experience]
+
+# === KEY ACTIVITIES ===
+
+key_activities:
+  - id: ka-fulfillment
+    name: Order Fulfillment & Logistics
+    for:
+      value_propositions: [vp-convenience]
+
+  - id: ka-recipe-dev
+    name: Recipe Development
+    for:
+      value_propositions: [vp-culinary-experience]
+
+  - id: ka-marketing
+    name: Customer Acquisition
+    for:
+      value_propositions: [vp-convenience, vp-culinary-experience]
+
+# === KEY PARTNERSHIPS ===
+
+key_partnerships:
+  - id: kp-farms
+    name: Local Farms & Producers
+    for:
+      key_resources: [kr-supply-chain]
+
+  - id: kp-delivery
+    name: Delivery Partners
+    for:
+      key_activities: [ka-fulfillment]
+
+# === COSTS ===
+
+costs:
+  - id: cost-ingredients
+    name: Ingredient Sourcing & Packaging
+    for:
+      key_resources: [kr-supply-chain]
+
+  - id: cost-fulfillment
+    name: Fulfillment & Logistics
+    for:
+      key_activities: [ka-fulfillment]
+
+  - id: cost-recipe-dev
+    name: Recipe Development
+    for:
+      key_resources: [kr-culinary-team]

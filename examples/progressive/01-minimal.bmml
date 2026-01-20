@@ -1,0 +1,134 @@
+version: "2.0"
+
+# =============================================================================
+# PROGRESSIVE DETAIL EXAMPLE - STAGE 1: MINIMAL
+# =============================================================================
+# A bare-bones Business Model Canvas with just the 9 blocks.
+# This is the simplest valid BMML file - useful for early ideation.
+#
+# Next: 02-profiles.bmml adds customer profiles (jobs, pains, gains)
+# =============================================================================
+
+meta:
+  name: "FreshBox"
+  tagline: "Chef-designed meals delivered to your door"
+  created: "2024-03-01"
+  updated: "2024-06-15"
+  portfolio: explore
+  stage: ideation
+
+# === CUSTOMER SEGMENTS ===
+# Who are we creating value for?
+
+customer_segments:
+  - id: cs-busy-professionals
+    name: Busy Professionals
+    description: Time-strapped workers who want to eat well without the hassle
+
+  - id: cs-home-cooks
+    name: Aspiring Home Cooks
+    description: People who enjoy cooking but want inspiration and convenience
+
+# === VALUE PROPOSITIONS ===
+# What value do we deliver?
+
+value_propositions:
+  - id: vp-convenience
+    name: Effortless Meal Planning
+    description: Remove the friction from home cooking with pre-portioned ingredients and curated recipes
+
+  - id: vp-culinary-experience
+    name: Chef-Quality Cooking at Home
+    description: Restaurant-inspired meals made accessible with specialty ingredients and techniques
+
+# === CHANNELS ===
+# How do we reach our customers?
+
+channels:
+  - id: ch-website
+    name: Website & Mobile App
+    for:
+      value_propositions: [vp-convenience, vp-culinary-experience]
+      customer_segments: [cs-busy-professionals, cs-home-cooks]
+
+  - id: ch-delivery
+    name: Home Delivery
+    for:
+      value_propositions: [vp-convenience, vp-culinary-experience]
+      customer_segments: [cs-busy-professionals, cs-home-cooks]
+
+# === CUSTOMER RELATIONSHIPS ===
+# What type of relationship does each segment expect?
+
+customer_relationships:
+  - id: cr-automated
+    name: Self-Service Platform
+    for:
+      customer_segments: [cs-busy-professionals, cs-home-cooks]
+
+# === REVENUE STREAMS ===
+# For what value are customers willing to pay?
+
+revenue_streams:
+  - id: rs-subscription
+    name: Weekly Subscription
+    from:
+      customer_segments: [cs-busy-professionals, cs-home-cooks]
+    for:
+      value_propositions: [vp-convenience, vp-culinary-experience]
+
+# === KEY RESOURCES ===
+# What key resources do our value propositions require?
+
+key_resources:
+  - id: kr-supply-chain
+    name: Ingredient Supply Chain
+    for:
+      value_propositions: [vp-convenience, vp-culinary-experience]
+
+  - id: kr-tech-platform
+    name: Technology Platform
+    for:
+      value_propositions: [vp-convenience, vp-culinary-experience]
+
+# === KEY ACTIVITIES ===
+# What key activities do our value propositions require?
+
+key_activities:
+  - id: ka-fulfillment
+    name: Order Fulfillment
+    for:
+      value_propositions: [vp-convenience]
+
+  - id: ka-recipe-dev
+    name: Recipe Development
+    for:
+      value_propositions: [vp-culinary-experience]
+
+# === KEY PARTNERSHIPS ===
+# Who are our key partners?
+
+key_partnerships:
+  - id: kp-farms
+    name: Local Farms & Producers
+    for:
+      key_resources: [kr-supply-chain]
+
+  - id: kp-delivery
+    name: Delivery Partners
+    for:
+      key_activities: [ka-fulfillment]
+
+# === COSTS ===
+# What are the most important costs?
+
+costs:
+  - id: cost-ingredients
+    name: Ingredient Sourcing
+    for:
+      key_resources: [kr-supply-chain]
+
+  - id: cost-fulfillment
+    name: Fulfillment & Logistics
+    for:
+      key_activities: [ka-fulfillment]
