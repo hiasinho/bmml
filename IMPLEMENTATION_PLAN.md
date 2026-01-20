@@ -362,32 +362,38 @@ Depends on: v2 Validator complete
 
 ### Core Migration Logic
 
-- [ ] Create `src/migrate.ts` with `migrateV1toV2()` function
+- [x] Create `src/migrate.ts` with `migrateV1toV2()` function
   - Input: v1 YAML string, Output: v2 YAML string
   - AC: Function exported, basic structure in place
-- [ ] Implement relationship pattern conversion
+  - Done: Created migrateV1toV2() and migrateDocumentV1toV2() functions, exported from src/index.ts
+- [x] Implement relationship pattern conversion
   - `for_value` → `for: { value_propositions: [] }`
   - `from_segments` → `from: { customer_segments: [] }`
   - `segments` → `for: { customer_segments: [] }`
   - `provides` → `for: { key_resources: [], key_activities: [] }`
   - AC: All v1 relationship patterns converted
-- [ ] Implement pain_relievers/gain_creators migration
+  - Done: All relationship patterns converted for channels, customer_relationships, revenue_streams, key_resources, key_activities, key_partnerships
+- [x] Implement pain_relievers/gain_creators migration
   - Move from `fits[].pain_relievers` to `value_propositions[].pain_relievers`
   - Group by VP reference in fit
   - Generate new `pr-*` and `gc-*` IDs
   - AC: Pain relievers correctly grouped under their VPs
-- [ ] Implement fit mapping transformation
+  - Done: Pain relievers and gain creators extracted from fits, grouped by VP, with generated pr-* and gc-* IDs
+- [x] Implement fit mapping transformation
   - Convert verbose objects `{ pain: pain-x, through: [ps-y] }` to tuple `[pr-generated, pain-x]`
   - Link to newly created pain_relievers
   - AC: Fit mappings are valid tuples referencing valid entities
-- [ ] Implement `cost_structure` → `costs` conversion
+  - Done: Fit mappings transformed to tuple format [pr-*, pain-*] and [gc-*, gain-*]
+- [x] Implement `cost_structure` → `costs` conversion
   - Convert `major_costs` array to top-level `costs` array
   - Generate `cost-*` IDs
   - Convert `linked_to` to `for:` pattern
   - AC: v1 cost_structure becomes valid v2 costs array
-- [ ] Implement `type` field removal
+  - Done: cost_structure.major_costs converted to costs array with cost-* IDs and for: pattern
+- [x] Implement `type` field removal
   - Strip all `type` fields from all entities
   - AC: No type fields in output
+  - Done: type/importance/severity fields stripped from jobs, pains, gains; type field stripped from products_services (description used as name)
 
 ### CLI Integration
 
@@ -402,13 +408,17 @@ Depends on: v2 Validator complete
 
 ### Migration Tests
 
+- [x] Create test/migrate.test.ts with comprehensive tests
+  - 29 tests covering all migration paths
+  - Done: Tests for basic functionality, version field, customer segments, value propositions, fits, channels, customer_relationships, revenue_streams, key_resources, key_activities, key_partnerships, cost_structure, and round-trip validation
 - [ ] Create `test/fixtures/migrate/` directory structure
 - [ ] Add before/after pairs for relationship pattern migration
 - [ ] Add before/after pairs for pain_relievers/gain_creators migration
 - [ ] Add before/after pairs for fit mapping migration
 - [ ] Add before/after pairs for cost_structure migration
-- [ ] Add test: round-trip validation (v1 → migrate → v2 validate)
+- [x] Add test: round-trip validation (v1 → migrate → v2 validate)
   - AC: All existing v1 examples can be migrated and validate as v2
+  - Done: Tests verify that valid-minimal.bmml and valid-complete.bmml migrate and validate as v2
 
 ---
 
