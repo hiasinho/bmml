@@ -10,7 +10,7 @@ BMCLang is a YAML-based markup format for describing business models. This plan 
 - **Validator**: Complete - parses YAML and validates against JSON Schema (src/validator.ts)
 - **Linter**: Complete - validates reference integrity rules (src/linter.ts)
 - **Schema**: Complete JSON Schema at `schemas/bmclang.schema.json` (702 lines)
-- **CLI**: Referenced in package.json but not implemented
+- **CLI**: Complete - validate and lint commands with --json output (src/cli.ts)
 - **Test fixtures**: 5 fixtures exist (2 valid, 3 invalid) - all validate correctly
 
 ---
@@ -105,12 +105,14 @@ The linter checks semantic rules that JSON Schema cannot express.
 
 Basic command-line interface for validation.
 
-- [ ] Create `src/cli.ts` with argument parsing
-- [ ] Implement `validate` command that loads .bmml file and runs validator
-- [ ] Implement `lint` command that runs linter after validation
-- [ ] Pretty-print errors with file location
-- [ ] Exit with non-zero code on errors
-- [ ] Add `--json` flag for machine-readable output
+- [x] Create `src/cli.ts` with argument parsing
+- [x] Implement `validate` command that loads .bmml file and runs validator
+- [x] Implement `lint` command that runs linter after validation
+- [x] Pretty-print errors with file location
+- [x] Exit with non-zero code on errors
+- [x] Add `--json` flag for machine-readable output
+
+**Completed**: CLI implemented with validate and lint commands. Pretty-printed error messages with file paths and lint rule icons. JSON output mode for CI integration. 21 tests in `test/cli.test.ts`. Usage: `bmclang validate|lint [--json] <file>`.
 
 ---
 
