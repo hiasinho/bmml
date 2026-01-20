@@ -21,7 +21,7 @@ Thumbs.db
 *.bak
 
 # Ralph workflow files
-IMPLEMENTATION_PLAN.md
+RALPH.md
 PROMPT_build.md
 PROMPT_plan.md
 loop.sh
