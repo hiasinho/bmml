@@ -517,6 +517,28 @@ function lintV1(doc: BMCDocument): LintResult {
     }
   }
 
+  // Warning: Job defined but never addressed (no fit mapping references it)
+  const addressedJobs = new Set<JobId>();
+  for (const fit of doc.fits ?? []) {
+    for (const ja of fit.job_addressers ?? []) {
+      addressedJobs.add(ja.job);
+    }
+  }
+
+  for (let csIdx = 0; csIdx < (doc.customer_segments ?? []).length; csIdx++) {
+    const cs = doc.customer_segments![csIdx];
+    for (let jobIdx = 0; jobIdx < (cs.jobs ?? []).length; jobIdx++) {
+      const job = cs.jobs![jobIdx];
+      if (!addressedJobs.has(job.id)) {
+        addWarning(
+          'job-never-addressed',
+          `/customer_segments/${csIdx}/jobs/${jobIdx}`,
+          `Job '${job.id}' is defined but never addressed in any fit mapping`
+        );
+      }
+    }
+  }
+
   return { issues, version: 'v1' };
 }
 
@@ -964,6 +986,35 @@ function lintV2(doc: BMCDocumentV2): LintResult {
           'gain-never-created',
           `/customer_segments/${csIdx}/gains/${gainIdx}`,
           `Gain '${gain.id}' is defined but never created in any fit mapping`
+        );
+      }
+    }
+  }
+
+  // Warning: Job defined but never addressed (no fit mapping references it)
+  // In v2, jobs would be addressed via tuple mappings: [ja-*, job-*]
+  // Note: Job addressers (ja-* prefix) are not yet implemented in v2
+  const addressedJobs = new Set<JobId>();
+  for (const fit of doc.fits ?? []) {
+    for (const mapping of fit.mappings ?? []) {
+      if (Array.isArray(mapping) && mapping.length === 2) {
+        const [, right] = mapping;
+        if (typeof right === 'string' && right.startsWith('job-')) {
+          addressedJobs.add(right as JobId);
+        }
+      }
+    }
+  }
+
+  for (let csIdx = 0; csIdx < (doc.customer_segments ?? []).length; csIdx++) {
+    const cs = doc.customer_segments![csIdx];
+    for (let jobIdx = 0; jobIdx < (cs.jobs ?? []).length; jobIdx++) {
+      const job = cs.jobs![jobIdx];
+      if (!addressedJobs.has(job.id)) {
+        addWarning(
+          'job-never-addressed',
+          `/customer_segments/${csIdx}/jobs/${jobIdx}`,
+          `Job '${job.id}' is defined but never addressed in any fit mapping`
         );
       }
     }

@@ -1072,6 +1072,203 @@ describe('lint', () => {
       expect(errors).toHaveLength(0);
     });
   });
+
+  describe('job-never-addressed warning rule', () => {
+    it('warns when job is defined but never addressed', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            jobs: [{ id: 'job-lonely', description: 'Lonely job' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'job-never-addressed');
+      expect(warning).toBeDefined();
+      expect(warning?.severity).toBe('warning');
+      expect(warning?.message).toContain('job-lonely');
+      expect(warning?.message).toContain('never addressed');
+      expect(warning?.path).toBe('/customer_segments/0/jobs/0');
+    });
+
+    it('does not warn when job is addressed in a fit', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            jobs: [{ id: 'job-addressed', description: 'Addressed job' }],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            products_services: [{ id: 'ps-test', type: 'physical', description: 'Test Product' }],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            value_proposition: 'vp-test',
+            customer_segment: 'cs-test',
+            job_addressers: [{ job: 'job-addressed', through: ['ps-test'] }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'job-never-addressed');
+      expect(warning).toBeUndefined();
+    });
+
+    it('warns for each job that is never addressed', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            jobs: [
+              { id: 'job-lonely-1', description: 'Lonely job 1' },
+              { id: 'job-lonely-2', description: 'Lonely job 2' },
+            ],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'job-never-addressed');
+      expect(warnings).toHaveLength(2);
+    });
+
+    it('only warns for jobs that are never addressed (mixed scenario)', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            jobs: [
+              { id: 'job-lonely', description: 'Lonely job' },
+              { id: 'job-addressed', description: 'Addressed job' },
+            ],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            products_services: [{ id: 'ps-test', type: 'physical', description: 'Test Product' }],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            value_proposition: 'vp-test',
+            customer_segment: 'cs-test',
+            job_addressers: [{ job: 'job-addressed', through: ['ps-test'] }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'job-never-addressed');
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain('job-lonely');
+    });
+
+    it('checks jobs across multiple customer segments', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-1',
+            name: 'Segment 1',
+            jobs: [{ id: 'job-lonely-1', description: 'Lonely 1' }],
+          },
+          {
+            id: 'cs-2',
+            name: 'Segment 2',
+            jobs: [{ id: 'job-lonely-2', description: 'Lonely 2' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'job-never-addressed');
+      expect(warnings).toHaveLength(2);
+      expect(warnings[0].path).toBe('/customer_segments/0/jobs/0');
+      expect(warnings[1].path).toBe('/customer_segments/1/jobs/0');
+    });
+
+    it('does not warn when job is addressed in a different fit', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-1',
+            name: 'Segment 1',
+            jobs: [{ id: 'job-shared', description: 'Shared job' }],
+          },
+          {
+            id: 'cs-2',
+            name: 'Segment 2',
+            jobs: [{ id: 'job-shared', description: 'Shared job' }],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            products_services: [{ id: 'ps-test', type: 'physical', description: 'Test Product' }],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            value_proposition: 'vp-test',
+            customer_segment: 'cs-1',
+            job_addressers: [{ job: 'job-shared', through: ['ps-test'] }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'job-never-addressed');
+      // job-shared is addressed by fit-test, so both instances should not warn
+      expect(warnings).toHaveLength(0);
+    });
+
+    it('validation still passes with job-never-addressed warning', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            jobs: [{ id: 'job-lonely', description: 'Lonely job' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const errors = result.issues.filter((i) => i.severity === 'error');
+      expect(errors).toHaveLength(0);
+    });
+  });
 });
 
 // ============================================================================
@@ -2458,6 +2655,214 @@ describe('lint v2', () => {
             id: 'cs-test',
             name: 'Test Segment',
             gains: [{ id: 'gain-lonely', name: 'Lonely' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const errors = result.issues.filter((i) => i.severity === 'error');
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('job-never-addressed warning rule (v2)', () => {
+    it('warns when job is defined but never addressed in tuple mappings', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            jobs: [{ id: 'job-lonely', name: 'Lonely job' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'job-never-addressed');
+      expect(warning).toBeDefined();
+      expect(warning?.severity).toBe('warning');
+      expect(warning?.message).toContain('job-lonely');
+      expect(warning?.message).toContain('never addressed');
+      expect(warning?.path).toBe('/customer_segments/0/jobs/0');
+    });
+
+    it('does not warn when job is addressed in a fit mapping (future ja-* support)', () => {
+      // Note: Job addressers (ja-* prefix) are not yet implemented in v2,
+      // but this test verifies the mechanism is ready for when they are added
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            jobs: [{ id: 'job-addressed', name: 'Addressed job' }],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            for: {
+              value_propositions: ['vp-test'],
+              customer_segments: ['cs-test'],
+            },
+            mappings: [
+              ['ja-addresser', 'job-addressed'],  // Future ja-* to job-* mapping
+            ],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'job-never-addressed');
+      expect(warning).toBeUndefined();
+    });
+
+    it('warns for each job that is never addressed', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            jobs: [
+              { id: 'job-lonely-1', name: 'Lonely job 1' },
+              { id: 'job-lonely-2', name: 'Lonely job 2' },
+            ],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'job-never-addressed');
+      expect(warnings).toHaveLength(2);
+    });
+
+    it('only warns for jobs that are never addressed (mixed scenario)', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            jobs: [
+              { id: 'job-lonely', name: 'Lonely job' },
+              { id: 'job-addressed', name: 'Addressed job' },
+            ],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            for: {
+              value_propositions: ['vp-test'],
+              customer_segments: ['cs-test'],
+            },
+            mappings: [
+              ['ja-test', 'job-addressed'],
+            ],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'job-never-addressed');
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain('job-lonely');
+    });
+
+    it('checks jobs across multiple customer segments', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-1',
+            name: 'Segment 1',
+            jobs: [{ id: 'job-lonely-1', name: 'Lonely 1' }],
+          },
+          {
+            id: 'cs-2',
+            name: 'Segment 2',
+            jobs: [{ id: 'job-lonely-2', name: 'Lonely 2' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'job-never-addressed');
+      expect(warnings).toHaveLength(2);
+      expect(warnings[0].path).toBe('/customer_segments/0/jobs/0');
+      expect(warnings[1].path).toBe('/customer_segments/1/jobs/0');
+    });
+
+    it('does not warn when job is addressed in a different fit', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-1',
+            name: 'Segment 1',
+            jobs: [{ id: 'job-shared', name: 'Shared job' }],
+          },
+          {
+            id: 'cs-2',
+            name: 'Segment 2',
+            jobs: [{ id: 'job-shared', name: 'Shared job' }],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            for: {
+              value_propositions: ['vp-test'],
+              customer_segments: ['cs-1'],
+            },
+            mappings: [
+              ['ja-test', 'job-shared'],
+            ],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'job-never-addressed');
+      // job-shared is addressed by fit-test, so both instances should not warn
+      expect(warnings).toHaveLength(0);
+    });
+
+    it('validation still passes with job-never-addressed warning', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            jobs: [{ id: 'job-lonely', name: 'Lonely job' }],
           },
         ],
       };
