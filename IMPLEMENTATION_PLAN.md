@@ -123,12 +123,13 @@ Comprehensive examples demonstrating format capabilities.
 - [x] Create `examples/meal-kit-delivery.bmml` (from spec mentions)
 - [x] Create `examples/saas-platform.bmml` (exploit portfolio example)
 - [x] Create `examples/marketplace.bmml` (two-sided market with multiple segments)
-- [ ] Add example showing `derived_from` lineage
+- [x] Add example showing `derived_from` lineage
 
 **Completed**:
 - meal-kit-delivery.bmml demonstrates a meal kit delivery business (like HelloFresh) with two customer segments (busy professionals, aspiring home cooks), two value propositions (convenience, culinary experience), full fits, channels, relationships, revenue streams, and infrastructure. 346 lines. Validates and lints cleanly. Portfolio: explore/validation.
 - saas-platform.bmml demonstrates a B2B project management SaaS (TaskFlow) in the exploit portfolio at grow stage. Two customer segments (SMB Teams, Enterprise Organizations), two value propositions (Team Productivity, Enterprise Scale), comprehensive fits, channels including partner networks, dedicated and self-service relationships, subscription and professional services revenue, and full infrastructure. 421 lines. Validates and lints cleanly.
 - marketplace.bmml demonstrates a two-sided freelance marketplace (SkillBridge) with four customer segments: two on demand side (Startups & SMBs, Enterprise Clients) and two on supply side (Independent Freelancers, Boutique Agencies). Four distinct value propositions target each segment. Comprehensive fits show how platform features address both sides of the market. Full infrastructure including trust & safety operations critical for marketplace businesses. 484 lines. Validates and lints cleanly. Portfolio: exploit/grow.
+- photo-sharing-v1.bmml and photo-sharing-pivot.bmml demonstrate the derived_from lineage feature. The v1 file models a location-based check-in app (Burbn-style) with photo attachment as a secondary feature. The pivot file models the evolution to a photo-first platform (Instagram-style) with filters and visual community, using `derived_from: ./photo-sharing-v1.bmml` to establish lineage. Together they show how pivots can be tracked while letting git handle the detailed change history. Portfolio: explore/discovery → explore/validation. 533 total lines across both files.
 
 ---
 
