@@ -437,10 +437,11 @@ Depends on: v2 Validator complete
 
 Depends on: v2 Schema + Migration Tooling
 
-- [ ] Create `examples/v2/meal-kit-minimal.bmml`
+- [x] Create `examples/v2/meal-kit-minimal.bmml`
   - BMC without VPC detail
   - Demonstrates progressive detail (start simple)
   - AC: Validates as v2, serves as minimal example
+  - Done: Created FreshBox minimal example with all 9 BMC blocks using v2 patterns. Also fixed CLI to auto-detect v1/v2 schemas.
 - [ ] Create `examples/v2/meal-kit-full.bmml`
   - Full BMC + VPC with fits and tuple mappings
   - Same business as minimal, more detail
