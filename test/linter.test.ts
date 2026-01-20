@@ -657,6 +657,105 @@ describe('lint', () => {
       expect(errors).toHaveLength(0);
     });
   });
+
+  describe('vp-no-fits warning rule', () => {
+    it('warns when value proposition has no fits', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        value_propositions: [
+          { id: 'vp-lonely', name: 'Lonely VP' },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'vp-no-fits');
+      expect(warning).toBeDefined();
+      expect(warning?.severity).toBe('warning');
+      expect(warning?.message).toContain('vp-lonely');
+      expect(warning?.message).toContain('has no fits defined');
+      expect(warning?.path).toBe('/value_propositions/0');
+    });
+
+    it('does not warn when value proposition has a fit', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-covered', name: 'Covered VP' },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            value_proposition: 'vp-covered',
+            customer_segment: 'cs-test',
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'vp-no-fits');
+      expect(warning).toBeUndefined();
+    });
+
+    it('warns for each value proposition without fits', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        value_propositions: [
+          { id: 'vp-lonely1', name: 'Lonely 1' },
+          { id: 'vp-lonely2', name: 'Lonely 2' },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'vp-no-fits');
+      expect(warnings).toHaveLength(2);
+    });
+
+    it('only warns for value propositions without fits (mixed scenario)', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-covered', name: 'Covered VP' },
+          { id: 'vp-lonely', name: 'Lonely VP' },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            value_proposition: 'vp-covered',
+            customer_segment: 'cs-test',
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'vp-no-fits');
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain('vp-lonely');
+    });
+
+    it('validation still passes with vp-no-fits warning', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        value_propositions: [
+          { id: 'vp-lonely', name: 'Lonely VP' },
+        ],
+      };
+
+      const result = lint(doc);
+      const errors = result.issues.filter((i) => i.severity === 'error');
+      expect(errors).toHaveLength(0);
+    });
+  });
 });
 
 // ============================================================================
@@ -1491,6 +1590,136 @@ describe('lint v2', () => {
         meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
         customer_segments: [
           { id: 'cs-lonely', name: 'Lonely Segment' },
+        ],
+      };
+
+      const result = lint(doc);
+      const errors = result.issues.filter((i) => i.severity === 'error');
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('vp-no-fits warning rule (v2)', () => {
+    it('warns when value proposition has no fits', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        value_propositions: [
+          { id: 'vp-lonely', name: 'Lonely VP' },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'vp-no-fits');
+      expect(warning).toBeDefined();
+      expect(warning?.severity).toBe('warning');
+      expect(warning?.message).toContain('vp-lonely');
+      expect(warning?.message).toContain('has no fits defined');
+      expect(warning?.path).toBe('/value_propositions/0');
+    });
+
+    it('does not warn when value proposition has a fit (v2 for: pattern)', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-covered', name: 'Covered VP' },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            for: {
+              value_propositions: ['vp-covered'],
+              customer_segments: ['cs-test'],
+            },
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'vp-no-fits');
+      expect(warning).toBeUndefined();
+    });
+
+    it('does not warn when VP is in any fit (multiple VPs per fit)', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-one', name: 'VP One' },
+          { id: 'vp-two', name: 'VP Two' },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            for: {
+              value_propositions: ['vp-one', 'vp-two'],
+              customer_segments: ['cs-test'],
+            },
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'vp-no-fits');
+      expect(warnings).toHaveLength(0);
+    });
+
+    it('warns for each value proposition without fits', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        value_propositions: [
+          { id: 'vp-lonely1', name: 'Lonely 1' },
+          { id: 'vp-lonely2', name: 'Lonely 2' },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'vp-no-fits');
+      expect(warnings).toHaveLength(2);
+    });
+
+    it('only warns for value propositions without fits (mixed scenario)', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-covered', name: 'Covered VP' },
+          { id: 'vp-lonely', name: 'Lonely VP' },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            for: {
+              value_propositions: ['vp-covered'],
+              customer_segments: ['cs-test'],
+            },
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'vp-no-fits');
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain('vp-lonely');
+    });
+
+    it('validation still passes with vp-no-fits warning', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        value_propositions: [
+          { id: 'vp-lonely', name: 'Lonely VP' },
         ],
       };
 

@@ -456,6 +456,23 @@ function lintV1(doc: BMCDocument): LintResult {
     }
   }
 
+  // Warning: Value proposition has no fits defined
+  const vpsWithFits = new Set<ValuePropositionId>();
+  for (const fit of doc.fits ?? []) {
+    vpsWithFits.add(fit.value_proposition);
+  }
+
+  for (let vpIdx = 0; vpIdx < (doc.value_propositions ?? []).length; vpIdx++) {
+    const vp = doc.value_propositions![vpIdx];
+    if (!vpsWithFits.has(vp.id)) {
+      addWarning(
+        'vp-no-fits',
+        `/value_propositions/${vpIdx}`,
+        `Value proposition '${vp.id}' has no fits defined`
+      );
+    }
+  }
+
   return { issues, version: 'v1' };
 }
 
@@ -829,6 +846,25 @@ function lintV2(doc: BMCDocumentV2): LintResult {
         'segment-no-fits',
         `/customer_segments/${csIdx}`,
         `Customer segment '${cs.id}' has no fits defined`
+      );
+    }
+  }
+
+  // Warning: Value proposition has no fits defined
+  const vpsWithFits = new Set<ValuePropositionId>();
+  for (const fit of doc.fits ?? []) {
+    for (const vpId of fit.for?.value_propositions ?? []) {
+      vpsWithFits.add(vpId);
+    }
+  }
+
+  for (let vpIdx = 0; vpIdx < (doc.value_propositions ?? []).length; vpIdx++) {
+    const vp = doc.value_propositions![vpIdx];
+    if (!vpsWithFits.has(vp.id)) {
+      addWarning(
+        'vp-no-fits',
+        `/value_propositions/${vpIdx}`,
+        `Value proposition '${vp.id}' has no fits defined`
       );
     }
   }
