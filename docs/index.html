@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BMML - Business Model Markup Language</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-subtle: #388bfd26;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    header {
+      text-align: center;
+      padding: 4rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    h1 span {
+      color: var(--accent);
+    }
+
+    .tagline {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .cta {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--bg);
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+
+    .cta:hover {
+      opacity: 0.9;
+    }
+
+    section {
+      padding: 3rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    section:last-child {
+      border-bottom: none;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    .feature h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: var(--accent);
+    }
+
+    .feature p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .canvas-blocks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .block {
+      background: var(--accent-subtle);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+
+    pre {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    code {
+      font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, monospace;
+      color: var(--text);
+    }
+
+    .highlight {
+      color: var(--accent);
+    }
+
+    .comment {
+      color: var(--text-muted);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1><span>BMML</span></h1>
+      <p class="tagline">Business Model Markup Language</p>
+      <p style="color: var(--text-muted); margin-bottom: 2rem;">
+        A YAML-based format for describing business models.<br>
+        Based on Alexander Osterwalder's frameworks.
+      </p>
+      <a href="https://github.com/hiasinho/bmclang" class="cta">View on GitHub</a>
+    </header>
+
+    <section>
+      <h2>Why BMML?</h2>
+      <div class="features">
+        <div class="feature">
+          <h3>AI-Analyzable</h3>
+          <p>Structured for machine parsing and analysis by AI agents</p>
+        </div>
+        <div class="feature">
+          <h3>Version-Controllable</h3>
+          <p>Git-friendly with meaningful diffs for tracking evolution</p>
+        </div>
+        <div class="feature">
+          <h3>Validatable</h3>
+          <p>Schema-enforced consistency and relationship checking</p>
+        </div>
+        <div class="feature">
+          <h3>Human-Readable</h3>
+          <p>Familiar YAML syntax for technical users</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Business Model Canvas</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1rem;">
+        Capture all 9 building blocks in a single <code>.bmml</code> file:
+      </p>
+      <div class="canvas-blocks">
+        <span class="block">Customer Segments</span>
+        <span class="block">Value Propositions</span>
+        <span class="block">Channels</span>
+        <span class="block">Customer Relationships</span>
+        <span class="block">Revenue Streams</span>
+        <span class="block">Key Resources</span>
+        <span class="block">Key Activities</span>
+        <span class="block">Key Partnerships</span>
+        <span class="block">Cost Structure</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>Value Proposition Canvas</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1rem;">
+        Deep-dive into customer-value fit with explicit relationships:
+      </p>
+      <div class="canvas-blocks">
+        <span class="block">Jobs to be Done</span>
+        <span class="block">Pains</span>
+        <span class="block">Gains</span>
+        <span class="block">Products & Services</span>
+        <span class="block">Pain Relievers</span>
+        <span class="block">Gain Creators</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>Example</h2>
+      <pre><code><span class="highlight">version:</span> "1.0"
+
+<span class="highlight">meta:</span>
+  <span class="highlight">name:</span> "My Startup"
+  <span class="highlight">tagline:</span> "Solving real problems"
+  <span class="highlight">portfolio:</span> explore
+  <span class="highlight">stage:</span> validation
+
+<span class="highlight">customer_segments:</span>
+  - <span class="highlight">id:</span> cs-early-adopters
+    <span class="highlight">name:</span> "Early Adopters"
+    <span class="highlight">jobs:</span>
+      - <span class="highlight">id:</span> job-main
+        <span class="highlight">type:</span> functional
+        <span class="highlight">description:</span> "Get work done faster"
+        <span class="highlight">importance:</span> high
+
+<span class="highlight">value_propositions:</span>
+  - <span class="highlight">id:</span> vp-core
+    <span class="highlight">name:</span> "Core Product"
+    <span class="highlight">products_services:</span>
+      - <span class="highlight">id:</span> ps-app
+        <span class="highlight">type:</span> digital
+        <span class="highlight">description:</span> "Mobile application"
+
+<span class="comment"># ... fits, channels, revenue, costs</span></code></pre>
+    </section>
+
+    <footer>
+      <p>
+        <a href="https://github.com/hiasinho/bmclang">GitHub</a> &middot;
+        <a href="https://github.com/hiasinho/bmclang/blob/main/specs/bmclang-mvp.md">Specification</a> &middot;
+        <a href="https://github.com/hiasinho/bmclang/blob/main/LICENSE">License</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>
