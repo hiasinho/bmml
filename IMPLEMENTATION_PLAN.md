@@ -477,7 +477,9 @@ Quality-of-life improvements. Lower priority than core v2 migration.
 - [x] Warning: Pain defined but never relieved (no mapping references it)
   - AC: Warning produced, validation still passes
   - Done: Added 'pain-never-relieved' rule to both v1 and v2 linters. v1 checks fits[].pain_relievers[].pain, v2 checks tuple mappings where second element starts with 'pain-'. 14 tests added covering warning generation, suppression when relieved, multiple pains, multiple segments, mixed scenarios, and validation pass-through.
-- [ ] Warning: Gain defined but never created (no mapping references it)
+- [x] Warning: Gain defined but never created (no mapping references it)
+  - AC: Warning produced, validation still passes
+  - Done: Added 'gain-never-created' rule to both v1 and v2 linters. v1 checks fits[].gain_creators[].gain, v2 checks tuple mappings where second element starts with 'gain-'. 13 tests added covering warning generation, suppression when created, multiple gains, multiple segments, mixed scenarios, different fits, and validation pass-through.
 - [ ] Warning: Job defined but never addressed (no mapping references it)
 - [ ] Warning: Product/service defined but never used in fit mapping
 
