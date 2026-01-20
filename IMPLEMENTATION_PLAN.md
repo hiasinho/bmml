@@ -239,19 +239,23 @@ Depends on: v2 Schema Phases 1-8 complete
 
 Depends on: v2 Schema + v2 Types complete
 
-- [ ] Add version/structure detection logic
+- [x] Add version/structure detection logic
   - Detect v1 vs v2 by presence of `for:`/`from:` patterns
   - AC: v1 file detected as v1, v2 file detected as v2
-- [ ] Load appropriate schema based on detected version
+  - Done: Added `detectVersion()` function that checks explicit version field first, then falls back to structural detection (checks fits, channels, customer_relationships, revenue_streams, key_resources, key_partnerships, costs patterns). Also added `validateAuto()`, `validateDocumentAuto()`, and `validateFileAuto()` functions that auto-detect and validate.
+- [x] Load appropriate schema based on detected version
   - v1 files use `bmclang.schema.json`
   - v2 files use `bmclang-v2.schema.json`
   - AC: Both v1 and v2 files validate against correct schemas
-- [ ] Add tuple mapping format validation
+  - Done: Auto-validation functions use detected version to load appropriate schema. Added 44 tests covering version detection and auto-validation.
+- [x] Add tuple mapping format validation
   - Each tuple must be `[string, string]` with valid prefixes
   - AC: `[[pr-x, pain-y]]` valid, `[pr-x, pain-y]` invalid (missing nesting)
-- [ ] Add `for:`/`from:` structural validation
+  - Done: Already enforced by v2 JSON Schema (`mappings` array of arrays with minItems/maxItems: 2). Prefix semantic validation (e.g., pr-* must pair with pain-*) is a linter concern covered in v2 Linter section.
+- [x] Add `for:`/`from:` structural validation
   - Sub-keys must match allowed entity types
   - AC: `for: { invalid_key: [] }` rejected
+  - Done: Already enforced by v2 JSON Schema with `additionalProperties: false` on ForRelation and FromRelation definitions.
 
 ---
 
