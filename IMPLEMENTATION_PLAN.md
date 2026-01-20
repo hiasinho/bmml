@@ -474,7 +474,9 @@ Quality-of-life improvements. Lower priority than core v2 migration.
 - [x] Warning: Value proposition has no fits defined
   - AC: Warning produced, validation still passes
   - Done: Added 'vp-no-fits' rule to both v1 and v2 linters. 12 tests added covering warning generation, suppression when fit exists, multiple VPs per fit (v2), mixed scenarios, and validation pass-through.
-- [ ] Warning: Pain defined but never relieved (no mapping references it)
+- [x] Warning: Pain defined but never relieved (no mapping references it)
+  - AC: Warning produced, validation still passes
+  - Done: Added 'pain-never-relieved' rule to both v1 and v2 linters. v1 checks fits[].pain_relievers[].pain, v2 checks tuple mappings where second element starts with 'pain-'. 14 tests added covering warning generation, suppression when relieved, multiple pains, multiple segments, mixed scenarios, and validation pass-through.
 - [ ] Warning: Gain defined but never created (no mapping references it)
 - [ ] Warning: Job defined but never addressed (no mapping references it)
 - [ ] Warning: Product/service defined but never used in fit mapping
@@ -524,12 +526,28 @@ Can be done in parallel with other work.
 
 ---
 
+## Medium Priority - v1 Deprecation
+
+v1 schema is not worth keeping. It will never be used and is not relevant going forward.
+
+- [ ] Remove `schemas/bmclang.schema.json` (v1 schema)
+- [ ] Remove v1 validation code paths from `src/validator.ts`
+- [ ] Remove v1 linting code paths from `src/linter.ts`
+- [ ] Remove v1 types from `src/types.ts` (keep only v2 types)
+- [ ] Remove `test/fixtures/valid-*.bmml` and `invalid-*.bmml` (v1 fixtures)
+- [ ] Remove `examples/v1/` directory
+- [ ] Update tests to remove v1-specific test cases
+- [ ] Simplify CLI to only support v2 (remove version detection for v1)
+
+---
+
 ## Low Priority - Developer Experience
 
-- [ ] Update VS Code extension for v2 keywords (`for:`, `from:`, `pr-*`, `gc-*`, `cost-*`)
-- [ ] Add TextMate grammar rules for tuple syntax highlighting
-- [ ] Create Neovim TreeSitter grammar
-- [ ] Add autocomplete snippets for common v2 patterns
+VS Code plugin is not needed. Neovim/Vim plugin would be useful but is low priority.
+
+- [ ] Remove `vscode-bmml/` extension directory
+- [ ] Create Neovim TreeSitter grammar for BMML v2
+- [ ] Add Vim syntax highlighting file (simpler alternative to TreeSitter)
 
 ---
 
