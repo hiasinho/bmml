@@ -397,14 +397,18 @@ Depends on: v2 Validator complete
 
 ### CLI Integration
 
-- [ ] Add `bmml migrate <file>` command to CLI
+- [x] Add `bmml migrate <file>` command to CLI
   - AC: `bmml migrate example.bmml` outputs migrated content
-- [ ] Add `--dry-run` flag (output to stdout, don't modify)
+  - Done: Added migrate command with full CLI integration
+- [x] Add `--dry-run` flag (output to stdout, don't modify)
   - AC: Original file unchanged, migrated content printed
-- [ ] Add `--in-place` flag (modify file directly)
+  - Done: Default behavior outputs to stdout without modifying file
+- [x] Add `--in-place` flag (modify file directly)
   - AC: File updated in place
-- [ ] Add migration validation (run v2 validator on output)
+  - Done: --in-place flag modifies file directly
+- [x] Add migration validation (run v2 validator on output)
   - AC: Invalid migration output produces error, not silent corruption
+  - Done: Validates migrated output against v2 schema before outputting/writing
 
 ### Migration Tests
 
