@@ -1,0 +1,64 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Validates a .bmc file against the schema
+# Usage: bin/validate path/to/file.bmc
+
+require "yaml"
+require "json"
+require "json_schemer"
+
+SCHEMA_PATH = File.expand_path("../schema/bmc.schema.json", __dir__)
+
+def main
+  if ARGV.empty?
+    warn "Usage: bin/validate <file.bmc>"
+    exit 1
+  end
+
+  file_path = ARGV[0]
+
+  unless File.exist?(file_path)
+    warn "Error: File not found: #{file_path}"
+    exit 1
+  end
+
+  unless file_path.end_with?(".bmc")
+    warn "Warning: File does not have .bmc extension"
+  end
+
+  # Parse YAML
+  begin
+    data = YAML.safe_load(File.read(file_path), permitted_classes: [Date])
+  rescue Psych::SyntaxError => e
+    warn "YAML syntax error: #{e.message}"
+    exit 1
+  end
+
+  # Load schema
+  unless File.exist?(SCHEMA_PATH)
+    warn "Error: Schema not found: #{SCHEMA_PATH}"
+    exit 1
+  end
+
+  schema = JSON.parse(File.read(SCHEMA_PATH))
+  schemer = JSONSchemer.schema(schema)
+
+  # Validate
+  errors = schemer.validate(data).to_a
+
+  if errors.empty?
+    puts "Valid: #{file_path}"
+    exit 0
+  else
+    warn "Validation errors in #{file_path}:"
+    errors.each do |error|
+      path = error["data_pointer"]
+      message = error["error"]
+      warn "  #{path}: #{message}"
+    end
+    exit 1
+  end
+end
+
+main if __FILE__ == $PROGRAM_NAME

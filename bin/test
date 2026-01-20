@@ -1,0 +1,27 @@
+#!/bin/bash
+# Run all tests
+# Usage: bin/test
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+echo "Running tests..."
+
+# Validate all example files
+for file in examples/*.bmc; do
+  if [ -f "$file" ]; then
+    echo "Validating $file..."
+    bin/validate "$file"
+  fi
+done
+
+# Run Ruby tests if they exist
+if [ -d "test" ] && ls test/*_test.rb 1> /dev/null 2>&1; then
+  echo ""
+  echo "Running Ruby tests..."
+  ruby -Ilib:test -e 'Dir.glob("test/**/*_test.rb").each { |f| require "./" + f }'
+fi
+
+echo ""
+echo "All tests passed!"

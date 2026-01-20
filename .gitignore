@@ -1,0 +1,21 @@
+# Dependencies
+/vendor/
+/node_modules/
+Gemfile.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary
+*.tmp
+*.bak
+
+# Generated
+IMPLEMENTATION_PLAN.md

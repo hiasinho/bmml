@@ -1,0 +1,328 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bmclang.dev/schema/bmc.schema.json",
+  "title": "Business Model Canvas",
+  "description": "Schema for BMCLang business model files",
+  "type": "object",
+  "required": ["version", "meta"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$",
+      "description": "Schema version"
+    },
+    "meta": {
+      "$ref": "#/$defs/meta"
+    },
+    "customer_segments": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/customer_segment" }
+    },
+    "value_propositions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/value_proposition" }
+    },
+    "channels": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/channel" }
+    },
+    "customer_relationships": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/customer_relationship" }
+    },
+    "revenue_streams": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/revenue_stream" }
+    },
+    "key_resources": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/key_resource" }
+    },
+    "key_activities": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/key_activity" }
+    },
+    "key_partnerships": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/key_partnership" }
+    },
+    "cost_structure": {
+      "$ref": "#/$defs/cost_structure"
+    },
+    "environment": {
+      "$ref": "#/$defs/environment"
+    },
+    "patterns": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/pattern" }
+    },
+    "hypotheses": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/hypothesis" }
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/evidence" }
+    }
+  },
+  "$defs": {
+    "meta": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "tagline": { "type": "string" },
+        "created": { "type": "string", "format": "date" },
+        "updated": { "type": "string", "format": "date" },
+        "stage": {
+          "type": "string",
+          "enum": ["ideation", "validation", "scaling", "mature"]
+        }
+      }
+    },
+    "customer_segment": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^cs-" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "size": { "type": "string", "enum": ["small", "medium", "large"] },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "jobs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/job" }
+        },
+        "pains": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/pain" }
+        },
+        "gains": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/gain" }
+        }
+      }
+    },
+    "job": {
+      "type": "object",
+      "required": ["id", "description"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^job-" },
+        "type": { "type": "string", "enum": ["functional", "emotional", "social"] },
+        "description": { "type": "string" },
+        "importance": { "type": "string", "enum": ["low", "medium", "high"] }
+      }
+    },
+    "pain": {
+      "type": "object",
+      "required": ["id", "description"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^pain-" },
+        "description": { "type": "string" },
+        "severity": { "type": "string", "enum": ["low", "medium", "high"] }
+      }
+    },
+    "gain": {
+      "type": "object",
+      "required": ["id", "description"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^gain-" },
+        "description": { "type": "string" },
+        "importance": { "type": "string", "enum": ["low", "medium", "high"] }
+      }
+    },
+    "value_proposition": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^vp-" },
+        "name": { "type": "string" },
+        "targets": { "type": "array", "items": { "type": "string" } },
+        "addresses_jobs": { "type": "array", "items": { "type": "string" } },
+        "relieves_pains": { "type": "array", "items": { "type": "string" } },
+        "creates_gains": { "type": "array", "items": { "type": "string" } },
+        "features": { "type": "array", "items": { "type": "string" } },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "channel": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^ch-" },
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["direct", "indirect", "owned", "partner"] },
+        "phases": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["awareness", "evaluation", "purchase", "delivery", "after_sales"]
+          }
+        },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "customer_relationship": {
+      "type": "object",
+      "required": ["id", "segment"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^cr-" },
+        "segment": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["personal_assistance", "dedicated", "self_service", "automated", "community", "co_creation"]
+        },
+        "description": { "type": "string" }
+      }
+    },
+    "revenue_stream": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^rs-" },
+        "name": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["transaction", "recurring", "licensing", "subscription", "usage", "advertising"]
+        },
+        "segments": { "type": "array", "items": { "type": "string" } },
+        "pricing": {
+          "type": "string",
+          "enum": ["fixed_menu", "dynamic", "negotiation", "auction", "market_dependent", "volume_dependent"]
+        },
+        "contribution": { "type": "string" }
+      }
+    },
+    "key_resource": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^kr-" },
+        "name": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["physical", "intellectual", "human", "financial"]
+        },
+        "description": { "type": "string" }
+      }
+    },
+    "key_activity": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^ka-" },
+        "name": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["production", "problem_solving", "platform"]
+        },
+        "description": { "type": "string" }
+      }
+    },
+    "key_partnership": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^kp-" },
+        "name": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["strategic_alliance", "coopetition", "joint_venture", "supplier"]
+        },
+        "motivation": {
+          "type": "string",
+          "enum": ["optimization", "risk_reduction", "resource_acquisition", "cost_optimization", "reliable_supply"]
+        },
+        "resources_acquired": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "cost_structure": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["cost_driven", "value_driven"]
+        },
+        "characteristics": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["fixed_costs_heavy", "variable_costs_heavy", "economies_of_scale", "economies_of_scope"]
+          }
+        },
+        "major_costs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string" },
+              "type": { "type": "string", "enum": ["fixed", "variable"] },
+              "proportion": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "properties": {
+        "market_forces": { "type": "array", "items": { "$ref": "#/$defs/force" } },
+        "industry_forces": { "type": "array", "items": { "$ref": "#/$defs/force" } },
+        "key_trends": { "type": "array", "items": { "$ref": "#/$defs/force" } },
+        "macro_economic": { "type": "array", "items": { "$ref": "#/$defs/force" } }
+      }
+    },
+    "force": {
+      "type": "object",
+      "required": ["id", "description"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string" },
+        "description": { "type": "string" },
+        "impact": { "type": "string", "enum": ["positive", "negative", "neutral"] },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "pattern": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^pat-" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "applies_to": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "hypothesis": {
+      "type": "object",
+      "required": ["id", "statement"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^hyp-" },
+        "statement": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["untested", "testing", "validated", "invalidated"]
+        },
+        "metric": { "type": "string" },
+        "target": { "type": "string" },
+        "evidence": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["id", "description"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^ev-" },
+        "date": { "type": "string", "format": "date" },
+        "type": {
+          "type": "string",
+          "enum": ["customer_interview", "market_research", "experiment", "analytics", "survey"]
+        },
+        "description": { "type": "string" },
+        "supports": { "type": "array", "items": { "type": "string" } },
+        "findings": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}
