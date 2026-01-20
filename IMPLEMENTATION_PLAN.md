@@ -415,14 +415,21 @@ Depends on: v2 Validator complete
 - [x] Create test/migrate.test.ts with comprehensive tests
   - 29 tests covering all migration paths
   - Done: Tests for basic functionality, version field, customer segments, value propositions, fits, channels, customer_relationships, revenue_streams, key_resources, key_activities, key_partnerships, cost_structure, and round-trip validation
-- [ ] Create `test/fixtures/migrate/` directory structure
-- [ ] Add before/after pairs for relationship pattern migration
-- [ ] Add before/after pairs for pain_relievers/gain_creators migration
-- [ ] Add before/after pairs for fit mapping migration
-- [ ] Add before/after pairs for cost_structure migration
+- [x] Create `test/fixtures/migrate/` directory structure
+  - Done: Created directory with before/after file pairs for each migration scenario
+- [x] Add before/after pairs for relationship pattern migration
+  - Done: relationships-v1.bmml → relationships-v2.bmml testing segments, for_value, from_segments, provides patterns
+- [x] Add before/after pairs for pain_relievers/gain_creators migration
+  - Done: valuemap-v1.bmml → valuemap-v2.bmml testing extraction from fits to value propositions
+- [x] Add before/after pairs for fit mapping migration
+  - Done: fitmappings-v1.bmml → fitmappings-v2.bmml testing tuple mapping transformation
+- [x] Add before/after pairs for cost_structure migration
+  - Done: costs-v1.bmml → costs-v2.bmml testing cost_structure to costs array conversion
 - [x] Add test: round-trip validation (v1 → migrate → v2 validate)
   - AC: All existing v1 examples can be migrated and validate as v2
   - Done: Tests verify that valid-minimal.bmml and valid-complete.bmml migrate and validate as v2
+- [x] Add fixture-based tests to migrate.test.ts
+  - Done: 36 new tests using fixture files covering all migration transformations
 
 ---
 
