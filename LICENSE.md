@@ -24,12 +24,18 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-## Attribution
+## Attribution and Third-Party Rights
 
-BMML is based on the following frameworks by Alexander Osterwalder and Yves Pigneur:
+BMML is inspired by the following frameworks by Alexander Osterwalder and Yves Pigneur:
 
 - **Business Model Canvas** - from "Business Model Generation" (2010)
 - **Value Proposition Canvas** - from "Value Proposition Design" (2014)
 
-These frameworks are licensed under Creative Commons by Strategyzer AG.
-See [strategyzer.com](https://www.strategyzer.com) for official resources.
+### Important Notice
+
+This license applies only to the BMML code, schema, and specification. It does **not** grant any license or rights to the Business Model Canvas, Value Proposition Canvas, or any other intellectual property owned by Strategyzer AG.
+
+- The **Business Model Canvas** is available under Creative Commons Attribution-ShareAlike.
+- The **Value Proposition Canvas** is Copyright © Strategyzer AG with restricted usage rights, particularly for software applications.
+
+If you intend to use these frameworks commercially or in software, please review Strategyzer's terms at [strategyzer.com/legal/usage-of-our-tools](https://www.strategyzer.com/legal/usage-of-our-tools).
