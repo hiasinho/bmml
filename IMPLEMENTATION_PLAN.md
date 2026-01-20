@@ -592,7 +592,8 @@ VS Code plugin is not needed. Neovim/Vim plugin would be useful but is low prior
   - Done: Added comprehensive guide covering prerequisites (Node 22+, pnpm 10+, mise), project structure, development commands, CLI usage during development, testing patterns with Vitest, commit format, code style, and ID prefix reference.
 - [x] Document v1→v2 migration process
   - Done: Created MIGRATION.md with comprehensive migration guide covering quick start CLI commands, all relationship pattern changes, type field removals, cost structure refactoring, pain reliever/gain creator extraction, fit mapping tuples, entity-by-entity reference, CLI usage, and troubleshooting. Updated README.md to reference the guide.
-- [ ] Add inline comments to v2 schema explaining design decisions
+- [x] Add inline comments to v2 schema explaining design decisions
+  - Done: Added $comment fields throughout bmclang-v2.schema.json explaining key design decisions: v2's three principles (symmetry/consistency/optionality), fits as first-class entities, costs array structure, portfolio/stage framework, value map placement, ID prefix type inference, for:/from: semantics, ternary channel relationships, bidirectional revenue streams, and infrastructure linking patterns.
 - [ ] Create v1 vs v2 comparison table
 
 ---
