@@ -1722,6 +1722,165 @@ describe('lint', () => {
       expect(errors).toHaveLength(0);
     });
   });
+
+  describe('duplicate-id warning rule', () => {
+    it('warns when same ID is used twice in different sections', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-busy', name: 'Busy Professionals' },
+        ],
+        value_propositions: [
+          { id: 'cs-busy', name: 'Convenience Service' }, // Duplicate ID!
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'duplicate-id');
+      expect(warnings).toHaveLength(2);
+      expect(warnings[0].severity).toBe('warning');
+      expect(warnings[0].message).toContain('cs-busy');
+      expect(warnings[0].message).toContain('Also found at');
+    });
+
+    it('does not warn when all IDs are unique', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-busy', name: 'Busy Professionals' },
+        ],
+        value_propositions: [
+          { id: 'vp-convenience', name: 'Convenience Service' },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'duplicate-id');
+      expect(warnings).toHaveLength(0);
+    });
+
+    it('detects duplicate IDs within nested entities', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-busy',
+            name: 'Busy Professionals',
+            jobs: [{ id: 'job-eat', description: 'Eat healthy' }],
+            pains: [{ id: 'job-eat', description: 'No time' }], // Duplicate with job ID!
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'duplicate-id');
+      expect(warnings).toHaveLength(2);
+      expect(warnings[0].message).toContain('job-eat');
+    });
+
+    it('detects duplicate IDs across different entity types', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+        channels: [
+          { id: 'vp-test', name: 'Test Channel', segments: ['cs-test'] }, // Duplicate with VP!
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'duplicate-id');
+      expect(warnings).toHaveLength(2);
+      expect(warnings[0].message).toContain('vp-test');
+    });
+
+    it('detects multiple occurrences of same duplicate ID', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'duplicate', name: 'First' },
+          { id: 'duplicate', name: 'Second' },
+          { id: 'duplicate', name: 'Third' },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'duplicate-id');
+      expect(warnings).toHaveLength(3);
+      // Each warning shows the other occurrences
+      expect(warnings[0].path).toBe('/customer_segments/0');
+      expect(warnings[1].path).toBe('/customer_segments/1');
+      expect(warnings[2].path).toBe('/customer_segments/2');
+    });
+
+    it('warns for duplicates in products_services', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            products_services: [
+              { id: 'ps-meal', type: 'product', description: 'Meal kit' },
+              { id: 'ps-meal', type: 'service', description: 'Delivery' }, // Duplicate!
+            ],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'duplicate-id');
+      expect(warnings).toHaveLength(2);
+      expect(warnings[0].message).toContain('ps-meal');
+    });
+
+    it('warns for duplicates in key_resources and key_activities', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        key_resources: [
+          { id: 'kr-platform', name: 'Platform' },
+        ],
+        key_activities: [
+          { id: 'kr-platform', name: 'Platform Development' }, // Duplicate with resource!
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'duplicate-id');
+      expect(warnings).toHaveLength(2);
+      expect(warnings[0].message).toContain('kr-platform');
+    });
+
+    it('validation still passes with duplicate-id warning', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-busy', name: 'Busy Professionals' },
+        ],
+        value_propositions: [
+          { id: 'cs-busy', name: 'Convenience Service' }, // Duplicate ID!
+        ],
+      };
+
+      const result = lint(doc);
+      const errors = result.issues.filter((i) => i.severity === 'error');
+      expect(errors).toHaveLength(0);
+      // lintIsValid returns true because duplicate-id is a warning, not an error
+      expect(lintIsValid(doc)).toBe(true);
+    });
+  });
 });
 
 // ============================================================================
@@ -3561,6 +3720,167 @@ describe('lint v2', () => {
       const result = lint(doc);
       const errors = result.issues.filter((i) => i.severity === 'error');
       expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('duplicate-id warning rule (v2)', () => {
+    it('warns when same ID is used twice in different sections', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-busy', name: 'Busy Professionals' },
+        ],
+        value_propositions: [
+          { id: 'cs-busy', name: 'Convenience Service' }, // Duplicate ID!
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'duplicate-id');
+      expect(warnings).toHaveLength(2);
+      expect(warnings[0].severity).toBe('warning');
+      expect(warnings[0].message).toContain('cs-busy');
+      expect(warnings[0].message).toContain('Also found at');
+    });
+
+    it('does not warn when all IDs are unique', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-busy', name: 'Busy Professionals' },
+        ],
+        value_propositions: [
+          { id: 'vp-convenience', name: 'Convenience Service' },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'duplicate-id');
+      expect(warnings).toHaveLength(0);
+    });
+
+    it('detects duplicate IDs within nested entities (Customer Profile)', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-busy',
+            name: 'Busy Professionals',
+            jobs: [{ id: 'job-eat', name: 'Eat healthy' }],
+            pains: [{ id: 'job-eat', name: 'No time' }], // Duplicate with job ID!
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'duplicate-id');
+      expect(warnings).toHaveLength(2);
+      expect(warnings[0].message).toContain('job-eat');
+    });
+
+    it('detects duplicate IDs in Value Map (pain_relievers, gain_creators)', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            pain_relievers: [{ id: 'pr-time', name: 'Time saver' }],
+            gain_creators: [{ id: 'pr-time', name: 'Also time related' }], // Duplicate!
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'duplicate-id');
+      expect(warnings).toHaveLength(2);
+      expect(warnings[0].message).toContain('pr-time');
+    });
+
+    it('detects duplicate IDs across different entity types', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+        channels: [
+          {
+            id: 'vp-test', // Duplicate with VP!
+            name: 'Test Channel',
+            for: { customer_segments: ['cs-test'] },
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'duplicate-id');
+      expect(warnings).toHaveLength(2);
+      expect(warnings[0].message).toContain('vp-test');
+    });
+
+    it('detects multiple occurrences of same duplicate ID', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'duplicate', name: 'First' },
+          { id: 'duplicate', name: 'Second' },
+          { id: 'duplicate', name: 'Third' },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'duplicate-id');
+      expect(warnings).toHaveLength(3);
+      // Each warning shows the other occurrences
+      expect(warnings[0].path).toBe('/customer_segments/0');
+      expect(warnings[1].path).toBe('/customer_segments/1');
+      expect(warnings[2].path).toBe('/customer_segments/2');
+    });
+
+    it('warns for duplicates in costs array', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        key_resources: [
+          { id: 'kr-platform', name: 'Platform' },
+        ],
+        costs: [
+          { id: 'kr-platform', name: 'Platform Costs', for: { key_resources: ['kr-platform'] } }, // Duplicate with resource!
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'duplicate-id');
+      expect(warnings).toHaveLength(2);
+      expect(warnings[0].message).toContain('kr-platform');
+    });
+
+    it('validation still passes with duplicate-id warning', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-busy', name: 'Busy Professionals' },
+        ],
+        value_propositions: [
+          { id: 'cs-busy', name: 'Convenience Service' }, // Duplicate ID!
+        ],
+      };
+
+      const result = lint(doc);
+      const errors = result.issues.filter((i) => i.severity === 'error');
+      expect(errors).toHaveLength(0);
+      // lintIsValid returns true because duplicate-id is a warning, not an error
+      expect(lintIsValid(doc)).toBe(true);
     });
   });
 });

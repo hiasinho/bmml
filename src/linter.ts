@@ -58,6 +58,111 @@ interface IdMapsV2 {
   keyActivities: Set<KeyActivityId>;
 }
 
+/**
+ * Represents an ID occurrence with its path for duplicate detection
+ */
+interface IdOccurrence {
+  id: string;
+  path: string;
+}
+
+/**
+ * Collect all IDs from a v1 document for duplicate detection
+ */
+function collectAllIds(doc: BMCDocument): IdOccurrence[] {
+  const occurrences: IdOccurrence[] = [];
+
+  // Customer segments and nested entities
+  for (let csIdx = 0; csIdx < (doc.customer_segments ?? []).length; csIdx++) {
+    const cs = doc.customer_segments![csIdx];
+    occurrences.push({ id: cs.id, path: `/customer_segments/${csIdx}` });
+
+    for (let jobIdx = 0; jobIdx < (cs.jobs ?? []).length; jobIdx++) {
+      occurrences.push({ id: cs.jobs![jobIdx].id, path: `/customer_segments/${csIdx}/jobs/${jobIdx}` });
+    }
+    for (let painIdx = 0; painIdx < (cs.pains ?? []).length; painIdx++) {
+      occurrences.push({ id: cs.pains![painIdx].id, path: `/customer_segments/${csIdx}/pains/${painIdx}` });
+    }
+    for (let gainIdx = 0; gainIdx < (cs.gains ?? []).length; gainIdx++) {
+      occurrences.push({ id: cs.gains![gainIdx].id, path: `/customer_segments/${csIdx}/gains/${gainIdx}` });
+    }
+  }
+
+  // Value propositions and products/services
+  for (let vpIdx = 0; vpIdx < (doc.value_propositions ?? []).length; vpIdx++) {
+    const vp = doc.value_propositions![vpIdx];
+    occurrences.push({ id: vp.id, path: `/value_propositions/${vpIdx}` });
+
+    for (let psIdx = 0; psIdx < (vp.products_services ?? []).length; psIdx++) {
+      occurrences.push({ id: vp.products_services![psIdx].id, path: `/value_propositions/${vpIdx}/products_services/${psIdx}` });
+    }
+  }
+
+  // Fits
+  for (let fitIdx = 0; fitIdx < (doc.fits ?? []).length; fitIdx++) {
+    occurrences.push({ id: doc.fits![fitIdx].id, path: `/fits/${fitIdx}` });
+  }
+
+  // Channels
+  for (let chIdx = 0; chIdx < (doc.channels ?? []).length; chIdx++) {
+    occurrences.push({ id: doc.channels![chIdx].id, path: `/channels/${chIdx}` });
+  }
+
+  // Customer relationships
+  for (let crIdx = 0; crIdx < (doc.customer_relationships ?? []).length; crIdx++) {
+    occurrences.push({ id: doc.customer_relationships![crIdx].id, path: `/customer_relationships/${crIdx}` });
+  }
+
+  // Revenue streams
+  for (let rsIdx = 0; rsIdx < (doc.revenue_streams ?? []).length; rsIdx++) {
+    occurrences.push({ id: doc.revenue_streams![rsIdx].id, path: `/revenue_streams/${rsIdx}` });
+  }
+
+  // Key resources
+  for (let krIdx = 0; krIdx < (doc.key_resources ?? []).length; krIdx++) {
+    occurrences.push({ id: doc.key_resources![krIdx].id, path: `/key_resources/${krIdx}` });
+  }
+
+  // Key activities
+  for (let kaIdx = 0; kaIdx < (doc.key_activities ?? []).length; kaIdx++) {
+    occurrences.push({ id: doc.key_activities![kaIdx].id, path: `/key_activities/${kaIdx}` });
+  }
+
+  // Key partnerships
+  for (let kpIdx = 0; kpIdx < (doc.key_partnerships ?? []).length; kpIdx++) {
+    occurrences.push({ id: doc.key_partnerships![kpIdx].id, path: `/key_partnerships/${kpIdx}` });
+  }
+
+  // Note: v1 cost_structure.major_costs don't have ID fields in the schema
+  // They use `name` instead, so we don't collect IDs from them
+
+  return occurrences;
+}
+
+/**
+ * Find duplicate IDs from a list of occurrences
+ * Returns a map of duplicate IDs to their occurrence paths
+ */
+function findDuplicateIds(occurrences: IdOccurrence[]): Map<string, string[]> {
+  const idPaths = new Map<string, string[]>();
+
+  for (const { id, path } of occurrences) {
+    const paths = idPaths.get(id) ?? [];
+    paths.push(path);
+    idPaths.set(id, paths);
+  }
+
+  // Filter to only duplicates (more than one occurrence)
+  const duplicates = new Map<string, string[]>();
+  for (const [id, paths] of idPaths) {
+    if (paths.length > 1) {
+      duplicates.set(id, paths);
+    }
+  }
+
+  return duplicates;
+}
+
 function buildIdMaps(doc: BMCDocument): IdMaps {
   const customerSegments = new Map<CustomerSegmentId, { jobs: Set<JobId>; pains: Set<PainId>; gains: Set<GainId> }>();
   const valuePropositions = new Map<ValuePropositionId, Set<ProductServiceId>>();
@@ -167,6 +272,87 @@ function buildIdMapsV2(doc: BMCDocumentV2): IdMapsV2 {
   }
 
   return { customerSegments, valuePropositions, keyResources, keyActivities };
+}
+
+/**
+ * Collect all IDs from a v2 document for duplicate detection
+ */
+function collectAllIdsV2(doc: BMCDocumentV2): IdOccurrence[] {
+  const occurrences: IdOccurrence[] = [];
+
+  // Customer segments and nested entities (Customer Profile)
+  for (let csIdx = 0; csIdx < (doc.customer_segments ?? []).length; csIdx++) {
+    const cs = doc.customer_segments![csIdx];
+    occurrences.push({ id: cs.id, path: `/customer_segments/${csIdx}` });
+
+    for (let jobIdx = 0; jobIdx < (cs.jobs ?? []).length; jobIdx++) {
+      occurrences.push({ id: cs.jobs![jobIdx].id, path: `/customer_segments/${csIdx}/jobs/${jobIdx}` });
+    }
+    for (let painIdx = 0; painIdx < (cs.pains ?? []).length; painIdx++) {
+      occurrences.push({ id: cs.pains![painIdx].id, path: `/customer_segments/${csIdx}/pains/${painIdx}` });
+    }
+    for (let gainIdx = 0; gainIdx < (cs.gains ?? []).length; gainIdx++) {
+      occurrences.push({ id: cs.gains![gainIdx].id, path: `/customer_segments/${csIdx}/gains/${gainIdx}` });
+    }
+  }
+
+  // Value propositions and Value Map (products/services, pain relievers, gain creators)
+  for (let vpIdx = 0; vpIdx < (doc.value_propositions ?? []).length; vpIdx++) {
+    const vp = doc.value_propositions![vpIdx];
+    occurrences.push({ id: vp.id, path: `/value_propositions/${vpIdx}` });
+
+    for (let psIdx = 0; psIdx < (vp.products_services ?? []).length; psIdx++) {
+      occurrences.push({ id: vp.products_services![psIdx].id, path: `/value_propositions/${vpIdx}/products_services/${psIdx}` });
+    }
+    for (let prIdx = 0; prIdx < (vp.pain_relievers ?? []).length; prIdx++) {
+      occurrences.push({ id: vp.pain_relievers![prIdx].id, path: `/value_propositions/${vpIdx}/pain_relievers/${prIdx}` });
+    }
+    for (let gcIdx = 0; gcIdx < (vp.gain_creators ?? []).length; gcIdx++) {
+      occurrences.push({ id: vp.gain_creators![gcIdx].id, path: `/value_propositions/${vpIdx}/gain_creators/${gcIdx}` });
+    }
+  }
+
+  // Fits
+  for (let fitIdx = 0; fitIdx < (doc.fits ?? []).length; fitIdx++) {
+    occurrences.push({ id: doc.fits![fitIdx].id, path: `/fits/${fitIdx}` });
+  }
+
+  // Channels
+  for (let chIdx = 0; chIdx < (doc.channels ?? []).length; chIdx++) {
+    occurrences.push({ id: doc.channels![chIdx].id, path: `/channels/${chIdx}` });
+  }
+
+  // Customer relationships
+  for (let crIdx = 0; crIdx < (doc.customer_relationships ?? []).length; crIdx++) {
+    occurrences.push({ id: doc.customer_relationships![crIdx].id, path: `/customer_relationships/${crIdx}` });
+  }
+
+  // Revenue streams
+  for (let rsIdx = 0; rsIdx < (doc.revenue_streams ?? []).length; rsIdx++) {
+    occurrences.push({ id: doc.revenue_streams![rsIdx].id, path: `/revenue_streams/${rsIdx}` });
+  }
+
+  // Key resources
+  for (let krIdx = 0; krIdx < (doc.key_resources ?? []).length; krIdx++) {
+    occurrences.push({ id: doc.key_resources![krIdx].id, path: `/key_resources/${krIdx}` });
+  }
+
+  // Key activities
+  for (let kaIdx = 0; kaIdx < (doc.key_activities ?? []).length; kaIdx++) {
+    occurrences.push({ id: doc.key_activities![kaIdx].id, path: `/key_activities/${kaIdx}` });
+  }
+
+  // Key partnerships
+  for (let kpIdx = 0; kpIdx < (doc.key_partnerships ?? []).length; kpIdx++) {
+    occurrences.push({ id: doc.key_partnerships![kpIdx].id, path: `/key_partnerships/${kpIdx}` });
+  }
+
+  // Costs (v2 uses costs array instead of cost_structure)
+  for (let costIdx = 0; costIdx < (doc.costs ?? []).length; costIdx++) {
+    occurrences.push({ id: doc.costs![costIdx].id, path: `/costs/${costIdx}` });
+  }
+
+  return occurrences;
 }
 
 /**
@@ -576,6 +762,24 @@ function lintV1(doc: BMCDocument): LintResult {
           `Product/service '${ps.id}' is defined but never used in any fit mapping`
         );
       }
+    }
+  }
+
+  // ============================================================================
+  // Data quality warnings
+  // ============================================================================
+
+  // Warning: Duplicate ID detected (same ID used twice across sections)
+  const allIds = collectAllIds(doc);
+  const duplicates = findDuplicateIds(allIds);
+  for (const [id, paths] of duplicates) {
+    // Report warning at each occurrence of the duplicate
+    for (const path of paths) {
+      addWarning(
+        'duplicate-id',
+        path,
+        `Duplicate ID '${id}' detected. Also found at: ${paths.filter(p => p !== path).join(', ')}`
+      );
     }
   }
 
@@ -1096,6 +1300,24 @@ function lintV2(doc: BMCDocumentV2): LintResult {
   // but fit mappings only connect pr-* to pain-* and gc-* to gain-* (not ps-*).
   // Products/services describe WHAT is offered, while pain_relievers/gain_creators describe HOW
   // the offering addresses customer needs. They are not directly used in fit mappings by design.
+
+  // ============================================================================
+  // Data quality warnings
+  // ============================================================================
+
+  // Warning: Duplicate ID detected (same ID used twice across sections)
+  const allIds = collectAllIdsV2(doc);
+  const duplicates = findDuplicateIds(allIds);
+  for (const [id, paths] of duplicates) {
+    // Report warning at each occurrence of the duplicate
+    for (const path of paths) {
+      addWarning(
+        'duplicate-id',
+        path,
+        `Duplicate ID '${id}' detected. Also found at: ${paths.filter(p => p !== path).join(', ')}`
+      );
+    }
+  }
 
   // ============================================================================
   // Portfolio hints (informational)
