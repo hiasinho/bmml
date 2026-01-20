@@ -4,7 +4,7 @@
  * Command-line interface for validating and linting BMML files
  */
 
-import { validateFile, parseYaml, validateDocument } from './validator.js';
+import { validateFileAuto, parseYaml, validateDocument } from './validator.js';
 import { lint } from './linter.js';
 import { migrateV1toV2 } from './migrate.js';
 import type { BMCDocument } from './types.js';
@@ -116,7 +116,7 @@ function outputResult(result: CliResult, options: CliOptions): void {
 }
 
 function runValidate(file: string, options: CliOptions): number {
-  const validationResult = validateFile(file);
+  const validationResult = validateFileAuto(file);
 
   const result: CliResult = {
     success: validationResult.valid,
@@ -129,8 +129,8 @@ function runValidate(file: string, options: CliOptions): number {
 }
 
 function runLint(file: string, options: CliOptions): number {
-  // First validate the file
-  const validationResult = validateFile(file);
+  // First validate the file with auto-detection
+  const validationResult = validateFileAuto(file);
 
   if (!validationResult.valid) {
     const result: CliResult = {
