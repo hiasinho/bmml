@@ -328,25 +328,31 @@ Depends on: v2 Types complete
 
 Depends on: v2 Schema complete
 
-- [ ] Create `test/fixtures/valid-v2-minimal.bmml`
+- [x] Create `test/fixtures/valid-v2-minimal.bmml`
   - BMC only, no VPC detail (no jobs/pains/gains/fits)
   - All 9 blocks with `for:`/`from:` patterns
   - AC: Validates against v2 schema, linter passes
-- [ ] Create `test/fixtures/valid-v2-complete.bmml`
+  - Done: Created complete BMC with all 9 blocks demonstrating v2 patterns
+- [x] Create `test/fixtures/valid-v2-complete.bmml`
   - Full BMC + VPC with customer profiles, value maps, and fits
   - Tuple mappings demonstrating pain relief and gain creation
   - AC: Validates, linter passes, demonstrates all v2 features
-- [ ] Create `test/fixtures/invalid-v2-tuple-format.bmml`
+  - Done: Created full example with 2 customer segments, 2 VPs, tuple mappings, and all BMC blocks
+- [x] Create `test/fixtures/invalid-v2-tuple-format.bmml`
   - Invalid tuple structures: missing nesting, wrong array depth
   - AC: Validator rejects with clear error
-- [ ] Create `test/fixtures/invalid-v2-scope-refs.bmml`
+  - Done: Flat array instead of nested tuples, schema rejects
+- [x] Create `test/fixtures/invalid-v2-scope-refs.bmml`
   - Pain reliever/gain creator refs outside their VP scope
   - AC: Linter produces scope reference errors
-- [ ] Create `test/fixtures/invalid-v2-type-mismatch.bmml`
+  - Done: References pr-other/gc-other from a different VP, linter catches scope errors
+- [x] Create `test/fixtures/invalid-v2-type-mismatch.bmml`
   - Fit mapping with `[pr-*, gain-*]` (type mismatch)
   - AC: Linter produces type mismatch error
-- [ ] Update test suite to run both v1 and v2 fixtures
+  - Done: pr-* mapped to gain-*, gc-* mapped to pain-*, linter catches both
+- [x] Update test suite to run both v1 and v2 fixtures
   - AC: All existing v1 tests still pass, all new v2 tests pass
+  - Done: Updated test/fixtures.test.ts with comprehensive tests for all v1 and v2 fixtures (214 total tests)
 
 ---
 
