@@ -18,6 +18,16 @@ pnpm install
 pnpm test
 ```
 
+## Migrating from v1
+
+If you have existing v1 `.bmml` files, migrate them to v2:
+
+```bash
+bmml migrate --in-place yourfile.bmml
+```
+
+See [MIGRATION.md](MIGRATION.md) for a complete migration guide.
+
 ## Learn More
 
 See `specs/bmclang-mvp.md` for the full specification (file retains historical name).
