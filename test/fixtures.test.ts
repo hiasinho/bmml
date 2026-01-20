@@ -10,7 +10,7 @@ import { load as loadYaml } from 'js-yaml';
 const FIXTURES_DIR = 'test/fixtures';
 
 describe('Test Fixtures', () => {
-  const fixtures = readdirSync(FIXTURES_DIR).filter((f) => f.endsWith('.bmc'));
+  const fixtures = readdirSync(FIXTURES_DIR).filter((f) => f.endsWith('.bml'));
 
   it('has fixture files', () => {
     expect(fixtures.length).toBeGreaterThan(0);

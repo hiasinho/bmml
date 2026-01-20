@@ -18,7 +18,7 @@ src/
   validator.ts  # stub - implement this
   linter.ts     # stub - implement this
 test/
-  fixtures/     # example .bmc files (valid and invalid)
+  fixtures/     # example .bml files (valid and invalid)
 specs/
   bmclang-mvp.md  # THE SPEC - read this first
 ```
@@ -33,6 +33,6 @@ specs/
 ## Patterns
 
 - Study `specs/bmclang-mvp.md` for the full specification
-- Test fixtures in `test/fixtures/*.bmc` show valid/invalid examples
-- `valid-*.bmc` should pass validation
-- `invalid-*.bmc` should fail with specific errors
+- Test fixtures in `test/fixtures/*.bml` show valid/invalid examples
+- `valid-*.bml` should pass validation
+- `invalid-*.bml` should fail with specific errors
