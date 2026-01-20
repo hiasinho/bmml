@@ -2,6 +2,27 @@
 
 This guide explains how to migrate your BMML files from version 1 to version 2.
 
+## v1 vs v2 Comparison Table
+
+| Feature | v1 | v2 |
+|---------|----|----|
+| **Version field** | `version: "1.0"` | `version: "2.0"` |
+| **Relationship pattern** | Mixed: `segments`, `segment`, `for_value`, `from_segments`, `provides`, `linked_to` | Uniform: `for:` and `from:` with typed sub-keys |
+| **Type fields** | Required on jobs, pains, gains, products/services, channels, relationships, resources, activities, partnerships | Removed from all entities |
+| **Importance/severity** | `importance:` on jobs/gains, `severity:` on pains | Removed |
+| **Pain relievers** | Inline in `fits[].pain_relievers[]` with `pain:`, `through:`, `description:` | In `value_propositions[].pain_relievers[]` with `id:`, `name:` |
+| **Gain creators** | Inline in `fits[].gain_creators[]` with `gain:`, `through:`, `description:` | In `value_propositions[].gain_creators[]` with `id:`, `name:` |
+| **Fit mappings** | Implicit via inline pain_relievers/gain_creators | Explicit tuples: `mappings: [[pr-*, pain-*], [gc-*, gain-*]]` |
+| **Fit references** | `value_proposition:` + `customer_segment:` (singular) | `for: { value_propositions: [], customer_segments: [] }` (arrays) |
+| **Cost structure** | `cost_structure: { type:, major_costs: [] }` | `costs: []` array with `id:`, `name:`, `for:` |
+| **Channel refs** | `segments: []` | `for: { customer_segments: [], value_propositions: [] }` |
+| **Relationship refs** | `segment:` (singular) | `for: { customer_segments: [] }` |
+| **Revenue refs** | `from_segments: []`, `for_value:` | `from: { customer_segments: [] }`, `for: { value_propositions: [] }` |
+| **Resource/activity refs** | `for_value: []` | `for: { value_propositions: [] }` |
+| **Partnership refs** | `provides: []` | `for: { key_resources: [], key_activities: [] }` |
+| **Product/service** | `type:` + `description:` | `name:` only |
+| **New ID prefixes** | - | `pr-`, `gc-`, `cost-` |
+
 ## Quick Start
 
 ```bash
