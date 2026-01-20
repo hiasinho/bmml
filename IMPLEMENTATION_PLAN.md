@@ -455,9 +455,10 @@ Depends on: v2 Schema + Migration Tooling
   - Option: Move v1 to `examples/v1/`, create fresh v2 in `examples/`
   - AC: Clear distinction between v1 and v2 examples
   - Done: Moved 5 original v1 examples to `examples/v1/`, migrated all to v2 format in `examples/` using `bmml migrate`. SkillBridge marketplace renamed to `skillbridge.bmml` to avoid collision with FoodRunner `marketplace.bmml`. All v2 examples validate and lint cleanly.
-- [ ] Add progressive detail example set
+- [x] Add progressive detail example set
   - 4 files showing same business: minimal → +profiles → +valuemaps → +fits
   - AC: Demonstrates optional VPC detail concept
+  - Done: Created `examples/progressive/` with 01-minimal.bmml, 02-profiles.bmml, 03-valuemaps.bmml, 04-fits.bmml showing FreshBox at increasing VPC detail levels. Each file includes header comments explaining progression. All validate and lint cleanly.
 
 ---
 
