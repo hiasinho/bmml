@@ -51,9 +51,41 @@ This provides:
 
 ## Vim/Neovim
 
-### Syntax Highlighting
+### Option 1: TreeSitter Highlighting (Neovim)
 
-BMML includes a Vim syntax file that provides highlighting for BMML-specific elements on top of YAML. To install:
+For Neovim users with [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter), use the TreeSitter queries for the best highlighting experience.
+
+**Setup:**
+
+1. Configure `.bmml` files to use the YAML parser:
+
+```lua
+vim.filetype.add({
+  extension = {
+    bmml = 'yaml',
+  },
+})
+```
+
+2. Install the highlight queries:
+
+```bash
+mkdir -p ~/.config/nvim/after/queries/yaml
+cp tree-sitter-bmml/queries/highlights.scm ~/.config/nvim/after/queries/yaml/bmml.scm
+```
+
+3. Ensure the YAML parser is installed:
+
+```lua
+require('nvim-treesitter.configs').setup({
+  ensure_installed = { 'yaml' },
+  highlight = { enable = true },
+})
+```
+
+### Option 2: Vim Syntax Highlighting
+
+BMML includes a Vim syntax file that provides highlighting for BMML-specific elements on top of YAML. Works with both Vim and Neovim.
 
 **Using vim-plug:**
 ```vim
@@ -75,7 +107,7 @@ cp -r vim/syntax vim/ftdetect ~/.vim/
 cp -r vim/syntax vim/ftdetect ~/.config/nvim/
 ```
 
-The syntax file highlights:
+Both syntax files highlight:
 - BMC building blocks (customer_segments, value_propositions, etc.)
 - VPC elements (jobs, pains, gains, pain_relievers, gain_creators)
 - ID prefixes (cs-, vp-, job-, pain-, pr-, gc-, etc.)
