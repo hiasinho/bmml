@@ -1,0 +1,101 @@
+version: "1.0"
+
+meta:
+  name: "Invalid References Test"
+  portfolio: explore
+  stage: ideation
+
+customer_segments:
+  - id: cs-valid
+    name: Valid Segment
+    jobs:
+      - id: job-valid
+        type: functional
+        description: A valid job
+    pains:
+      - id: pain-valid
+        description: A valid pain
+    gains:
+      - id: gain-valid
+        description: A valid gain
+
+value_propositions:
+  - id: vp-valid
+    name: Valid VP
+    products_services:
+      - id: ps-valid
+        type: product
+        description: A valid product
+
+fits:
+  - id: fit-invalid
+    value_proposition: vp-nonexistent  # Invalid: VP doesn't exist
+    customer_segment: cs-valid
+    pain_relievers:
+      - pain: pain-valid
+        through: [ps-valid]
+
+  - id: fit-invalid-cs
+    value_proposition: vp-valid
+    customer_segment: cs-nonexistent  # Invalid: CS doesn't exist
+    gain_creators:
+      - gain: gain-valid
+        through: [ps-valid]
+
+  - id: fit-invalid-pain
+    value_proposition: vp-valid
+    customer_segment: cs-valid
+    pain_relievers:
+      - pain: pain-nonexistent  # Invalid: Pain doesn't exist in cs-valid
+        through: [ps-valid]
+
+  - id: fit-invalid-through
+    value_proposition: vp-valid
+    customer_segment: cs-valid
+    pain_relievers:
+      - pain: pain-valid
+        through: [ps-nonexistent]  # Invalid: PS doesn't exist in vp-valid
+
+channels:
+  - id: ch-invalid
+    name: Invalid Channel
+    type: direct
+    segments: [cs-nonexistent]  # Invalid: CS doesn't exist
+
+customer_relationships:
+  - id: cr-invalid
+    segment: cs-nonexistent  # Invalid: CS doesn't exist
+    type: self_service
+
+revenue_streams:
+  - id: rs-invalid
+    name: Invalid Revenue
+    type: transaction
+    from_segments: [cs-nonexistent]  # Invalid: CS doesn't exist
+    for_value: vp-nonexistent  # Invalid: VP doesn't exist
+
+key_resources:
+  - id: kr-valid
+    name: Valid Resource
+    type: physical
+    for_value: [vp-nonexistent]  # Invalid: VP doesn't exist
+
+key_activities:
+  - id: ka-valid
+    name: Valid Activity
+    type: production
+    for_value: [vp-nonexistent]  # Invalid: VP doesn't exist
+
+key_partnerships:
+  - id: kp-invalid
+    name: Invalid Partnership
+    type: supplier
+    motivation: optimization
+    provides: [kr-nonexistent]  # Invalid: Resource doesn't exist
+
+cost_structure:
+  type: cost_driven
+  major_costs:
+    - name: Invalid Cost
+      type: fixed
+      linked_to: [kr-nonexistent]  # Invalid: Resource doesn't exist
