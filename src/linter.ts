@@ -195,6 +195,11 @@ function lintV1(doc: BMCDocument): LintResult {
     issues.push({ rule, severity: 'error', path, message });
   };
 
+  // Helper to add a warning
+  const addWarning = (rule: string, path: string, message: string) => {
+    issues.push({ rule, severity: 'warning', path, message });
+  };
+
   // Helper to check if a resource or activity exists
   const isValidResourceOrActivity = (id: ResourceOrActivityId): boolean => {
     return ids.keyResources.has(id) || ids.keyActivities.has(id);
@@ -430,6 +435,27 @@ function lintV1(doc: BMCDocument): LintResult {
     }
   }
 
+  // ============================================================================
+  // Coverage warnings (non-blocking)
+  // ============================================================================
+
+  // Warning: Customer segment has no fits defined
+  const segmentsWithFits = new Set<CustomerSegmentId>();
+  for (const fit of doc.fits ?? []) {
+    segmentsWithFits.add(fit.customer_segment);
+  }
+
+  for (let csIdx = 0; csIdx < (doc.customer_segments ?? []).length; csIdx++) {
+    const cs = doc.customer_segments![csIdx];
+    if (!segmentsWithFits.has(cs.id)) {
+      addWarning(
+        'segment-no-fits',
+        `/customer_segments/${csIdx}`,
+        `Customer segment '${cs.id}' has no fits defined`
+      );
+    }
+  }
+
   return { issues, version: 'v1' };
 }
 
@@ -443,6 +469,11 @@ function lintV2(doc: BMCDocumentV2): LintResult {
   // Helper to add an error
   const addError = (rule: string, path: string, message: string) => {
     issues.push({ rule, severity: 'error', path, message });
+  };
+
+  // Helper to add a warning
+  const addWarning = (rule: string, path: string, message: string) => {
+    issues.push({ rule, severity: 'warning', path, message });
   };
 
   // ============================================================================
@@ -776,6 +807,29 @@ function lintV2(doc: BMCDocumentV2): LintResult {
           `Key activity '${kaId}' does not exist`
         );
       }
+    }
+  }
+
+  // ============================================================================
+  // Coverage warnings (non-blocking)
+  // ============================================================================
+
+  // Warning: Customer segment has no fits defined
+  const segmentsWithFits = new Set<CustomerSegmentId>();
+  for (const fit of doc.fits ?? []) {
+    for (const csId of fit.for?.customer_segments ?? []) {
+      segmentsWithFits.add(csId);
+    }
+  }
+
+  for (let csIdx = 0; csIdx < (doc.customer_segments ?? []).length; csIdx++) {
+    const cs = doc.customer_segments![csIdx];
+    if (!segmentsWithFits.has(cs.id)) {
+      addWarning(
+        'segment-no-fits',
+        `/customer_segments/${csIdx}`,
+        `Customer segment '${cs.id}' has no fits defined`
+      );
     }
   }
 

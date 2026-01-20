@@ -558,6 +558,105 @@ describe('lint', () => {
       expect(errors).toHaveLength(2);
     });
   });
+
+  describe('coverage warnings', () => {
+    it('warns when customer segment has no fits defined', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-lonely', name: 'Lonely Segment' },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'segment-no-fits');
+      expect(warning).toBeDefined();
+      expect(warning?.severity).toBe('warning');
+      expect(warning?.message).toContain('cs-lonely');
+      expect(warning?.message).toContain('has no fits defined');
+      expect(warning?.path).toBe('/customer_segments/0');
+    });
+
+    it('does not warn when customer segment has a fit', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-covered', name: 'Covered Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            value_proposition: 'vp-test',
+            customer_segment: 'cs-covered',
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'segment-no-fits');
+      expect(warning).toBeUndefined();
+    });
+
+    it('warns for each segment without fits', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-lonely1', name: 'Lonely 1' },
+          { id: 'cs-lonely2', name: 'Lonely 2' },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'segment-no-fits');
+      expect(warnings).toHaveLength(2);
+    });
+
+    it('only warns for segments without fits (mixed scenario)', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-covered', name: 'Covered Segment' },
+          { id: 'cs-lonely', name: 'Lonely Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            value_proposition: 'vp-test',
+            customer_segment: 'cs-covered',
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'segment-no-fits');
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain('cs-lonely');
+    });
+
+    it('validation still passes with segment-no-fits warning', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-lonely', name: 'Lonely Segment' },
+        ],
+      };
+
+      const result = lint(doc);
+      const errors = result.issues.filter((i) => i.severity === 'error');
+      expect(errors).toHaveLength(0);
+    });
+  });
 });
 
 // ============================================================================
@@ -1268,6 +1367,136 @@ describe('lint v2', () => {
       const result = lint(doc);
       const error = result.issues.find((i) => i.rule === 'cost-linked-to-ref');
       expect(error).toBeUndefined();
+    });
+  });
+
+  describe('coverage warnings (v2)', () => {
+    it('warns when customer segment has no fits defined', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-lonely', name: 'Lonely Segment' },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'segment-no-fits');
+      expect(warning).toBeDefined();
+      expect(warning?.severity).toBe('warning');
+      expect(warning?.message).toContain('cs-lonely');
+      expect(warning?.message).toContain('has no fits defined');
+      expect(warning?.path).toBe('/customer_segments/0');
+    });
+
+    it('does not warn when customer segment has a fit (v2 for: pattern)', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-covered', name: 'Covered Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            for: {
+              value_propositions: ['vp-test'],
+              customer_segments: ['cs-covered'],
+            },
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'segment-no-fits');
+      expect(warning).toBeUndefined();
+    });
+
+    it('does not warn when segment is in any fit (multiple segments per fit)', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-one', name: 'Segment One' },
+          { id: 'cs-two', name: 'Segment Two' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            for: {
+              value_propositions: ['vp-test'],
+              customer_segments: ['cs-one', 'cs-two'],
+            },
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'segment-no-fits');
+      expect(warnings).toHaveLength(0);
+    });
+
+    it('warns for each segment without fits', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-lonely1', name: 'Lonely 1' },
+          { id: 'cs-lonely2', name: 'Lonely 2' },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'segment-no-fits');
+      expect(warnings).toHaveLength(2);
+    });
+
+    it('only warns for segments without fits (mixed scenario)', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-covered', name: 'Covered Segment' },
+          { id: 'cs-lonely', name: 'Lonely Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            for: {
+              value_propositions: ['vp-test'],
+              customer_segments: ['cs-covered'],
+            },
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'segment-no-fits');
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain('cs-lonely');
+    });
+
+    it('validation still passes with segment-no-fits warning', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-lonely', name: 'Lonely Segment' },
+        ],
+      };
+
+      const result = lint(doc);
+      const errors = result.issues.filter((i) => i.severity === 'error');
+      expect(errors).toHaveLength(0);
     });
   });
 });

@@ -468,8 +468,9 @@ Quality-of-life improvements. Lower priority than core v2 migration.
 
 ### Coverage Warnings (Non-blocking)
 
-- [ ] Warning: Customer segment has no fits defined
+- [x] Warning: Customer segment has no fits defined
   - AC: Warning produced, validation still passes
+  - Done: Added 'segment-no-fits' rule to both v1 and v2 linters. 11 tests added covering warning generation, mixed scenarios, and validation pass-through.
 - [ ] Warning: Value proposition has no fits defined
 - [ ] Warning: Pain defined but never relieved (no mapping references it)
 - [ ] Warning: Gain defined but never created (no mapping references it)
