@@ -1,7 +1,10 @@
 # Dependencies
-/vendor/
-/node_modules/
-Gemfile.lock
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+*.tsbuildinfo
 
 # IDE
 .idea/
@@ -17,5 +20,16 @@ Thumbs.db
 *.tmp
 *.bak
 
-# Generated
+# Ralph workflow files
 IMPLEMENTATION_PLAN.md
+PROMPT_build.md
+PROMPT_plan.md
+loop.sh
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Test coverage
+coverage/

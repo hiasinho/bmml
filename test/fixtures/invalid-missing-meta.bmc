@@ -1,0 +1,5 @@
+version: "1.0"
+
+customer_segments:
+  - id: cs-test
+    name: Test Segment

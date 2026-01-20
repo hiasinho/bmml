@@ -1,0 +1,200 @@
+version: "1.0"
+
+meta:
+  name: "Urban Brew"
+  tagline: "Third-wave coffee for the neighborhood"
+  created: "2024-01-15"
+  updated: "2024-01-20"
+  portfolio: explore
+  stage: validation
+
+customer_segments:
+  - id: cs-remote-workers
+    name: Remote Workers
+    description: Work-from-home professionals seeking a productive space
+    jobs:
+      - id: job-productive-space
+        type: functional
+        description: Find a productive workspace outside home
+        importance: high
+      - id: job-social-connection
+        type: social
+        description: Feel connected to a community
+        importance: medium
+    pains:
+      - id: pain-home-distractions
+        description: Too many distractions at home
+        severity: high
+      - id: pain-isolation
+        description: Feel isolated working alone
+        severity: medium
+    gains:
+      - id: gain-focus
+        description: Achieve deep focus on work
+        importance: high
+      - id: gain-serendipity
+        description: Chance encounters with interesting people
+        importance: medium
+
+  - id: cs-coffee-enthusiasts
+    name: Coffee Enthusiasts
+    description: People who appreciate specialty coffee
+    jobs:
+      - id: job-discover-coffee
+        type: functional
+        description: Discover new coffee origins and roasts
+        importance: high
+    pains:
+      - id: pain-bad-coffee
+        description: Frustrated by generic, over-roasted chain coffee
+        severity: high
+    gains:
+      - id: gain-coffee-experience
+        description: Enjoy a crafted coffee experience
+        importance: high
+
+value_propositions:
+  - id: vp-workspace
+    name: Laptop-Friendly Workspace
+    description: A productive space for remote workers
+    products_services:
+      - id: ps-wifi
+        type: service
+        description: Fast, reliable WiFi
+      - id: ps-power
+        type: product
+        description: Ample power outlets at every table
+      - id: ps-seating
+        type: product
+        description: Comfortable seating for long sessions
+
+  - id: vp-specialty-coffee
+    name: Single-Origin Specialty Coffee
+    description: High-quality coffee experience
+    products_services:
+      - id: ps-beans
+        type: product
+        description: Rotating single-origin beans
+      - id: ps-brew-methods
+        type: service
+        description: Multiple brew methods (pour-over, aeropress, espresso)
+
+fits:
+  - id: fit-workspace-remote
+    value_proposition: vp-workspace
+    customer_segment: cs-remote-workers
+    pain_relievers:
+      - pain: pain-home-distractions
+        through: [ps-wifi, ps-seating]
+        description: Dedicated workspace away from home distractions
+      - pain: pain-isolation
+        through: [ps-seating]
+        description: Work alongside others in a social environment
+    gain_creators:
+      - gain: gain-focus
+        through: [ps-wifi, ps-power, ps-seating]
+        description: Everything needed for productive work
+      - gain: gain-serendipity
+        through: [ps-seating]
+        description: Shared space encourages chance meetings
+    job_addressers:
+      - job: job-productive-space
+        through: [ps-wifi, ps-power, ps-seating]
+      - job: job-social-connection
+        through: [ps-seating]
+
+  - id: fit-coffee-enthusiasts
+    value_proposition: vp-specialty-coffee
+    customer_segment: cs-coffee-enthusiasts
+    pain_relievers:
+      - pain: pain-bad-coffee
+        through: [ps-beans, ps-brew-methods]
+        description: Quality beans and proper preparation
+    gain_creators:
+      - gain: gain-coffee-experience
+        through: [ps-beans, ps-brew-methods]
+        description: Discover new flavors and brewing techniques
+    job_addressers:
+      - job: job-discover-coffee
+        through: [ps-beans]
+
+channels:
+  - id: ch-physical
+    name: Physical Location
+    type: direct
+    segments: [cs-remote-workers, cs-coffee-enthusiasts]
+    phases: [purchase, delivery, after_sales]
+
+  - id: ch-instagram
+    name: Instagram
+    type: owned
+    segments: [cs-coffee-enthusiasts]
+    phases: [awareness, evaluation]
+
+customer_relationships:
+  - id: cr-community
+    segment: cs-remote-workers
+    type: community
+    description: Foster a community of regulars through events
+
+  - id: cr-personal
+    segment: cs-coffee-enthusiasts
+    type: personal_assistance
+    description: Baristas who remember preferences and recommend new roasts
+
+revenue_streams:
+  - id: rs-coffee-sales
+    name: Coffee & Beverage Sales
+    type: transaction
+    from_segments: [cs-remote-workers, cs-coffee-enthusiasts]
+    for_value: vp-specialty-coffee
+    pricing: fixed_menu
+
+key_resources:
+  - id: kr-location
+    name: Prime Neighborhood Location
+    type: physical
+    for_value: [vp-workspace]
+
+  - id: kr-equipment
+    name: Specialty Coffee Equipment
+    type: physical
+    description: La Marzocco espresso machine, Mahlkönig grinders
+    for_value: [vp-specialty-coffee]
+
+  - id: kr-baristas
+    name: Trained Baristas
+    type: human
+    for_value: [vp-specialty-coffee]
+
+key_activities:
+  - id: ka-coffee-service
+    name: Coffee Preparation & Service
+    type: production
+    for_value: [vp-specialty-coffee]
+
+  - id: ka-community
+    name: Community Building
+    type: production
+    description: Events, familiar service, comfortable environment
+    for_value: [vp-workspace]
+
+key_partnerships:
+  - id: kp-roasters
+    name: Local Roasters
+    type: supplier
+    motivation: resource_acquisition
+    provides: [kr-equipment]
+
+cost_structure:
+  type: value_driven
+  characteristics: [fixed_costs_heavy]
+  major_costs:
+    - name: Rent
+      type: fixed
+      linked_to: [kr-location]
+    - name: Labor
+      type: fixed
+      linked_to: [kr-baristas]
+    - name: Coffee Beans
+      type: variable
