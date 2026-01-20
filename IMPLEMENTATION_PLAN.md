@@ -265,47 +265,62 @@ Depends on: v2 Types complete
 
 ### Updated Reference Rules
 
-- [ ] Update `fit-value-proposition-ref` for `for:` pattern
+- [x] Update `fit-value-proposition-ref` for `for:` pattern
   - Check `fits[].for.value_propositions[]` refs exist
   - AC: Missing VP ref produces error
-- [ ] Update `fit-customer-segment-ref` for `for:` pattern
+  - Done: lintV2 checks for.value_propositions with proper path reporting
+- [x] Update `fit-customer-segment-ref` for `for:` pattern
   - Check `fits[].for.customer_segments[]` refs exist
   - AC: Missing CS ref produces error
-- [ ] Update fit mapping validation for tuple format
+  - Done: lintV2 checks for.customer_segments with proper path reporting
+- [x] Update fit mapping validation for tuple format
   - Each tuple `[left, right]` where prefixes must be compatible
   - AC: `[pr-x, pain-y]` valid, `[pr-x, gain-y]` produces type mismatch error
-- [ ] Update `channel-segment-ref` for `for:` pattern
+  - Done: lintV2 validates tuple format and type matching with fit-mapping-type-mismatch rule
+- [x] Update `channel-segment-ref` for `for:` pattern
   - Check `channels[].for.customer_segments[]` exist
   - AC: Missing segment ref produces error
-- [ ] Update `channel-value-ref` (new) for ternary pattern
+  - Done: lintV2 checks for.customer_segments
+- [x] Update `channel-value-ref` (new) for ternary pattern
   - Check `channels[].for.value_propositions[]` exist
   - AC: Missing VP ref produces error
-- [ ] Update `customer-relationship-segment-ref` for `for:` pattern
+  - Done: Added new channel-value-ref rule for v2 ternary channel pattern
+- [x] Update `customer-relationship-segment-ref` for `for:` pattern
   - AC: Consistent error messages
-- [ ] Update `revenue-stream-segment-ref` for `from:` pattern
+  - Done: lintV2 checks for.customer_segments
+- [x] Update `revenue-stream-segment-ref` for `from:` pattern
   - Check `revenue_streams[].from.customer_segments[]` exist
-- [ ] Update `revenue-stream-value-ref` for `for:` pattern
+  - Done: lintV2 checks from.customer_segments
+- [x] Update `revenue-stream-value-ref` for `for:` pattern
   - Check `revenue_streams[].for.value_propositions[]` exist
-- [ ] Update `key-resource-value-ref` for `for:` pattern
-- [ ] Update `key-activity-value-ref` for `for:` pattern
-- [ ] Update `key-partnership-provides-ref` for `for:` pattern
+  - Done: lintV2 checks for.value_propositions
+- [x] Update `key-resource-value-ref` for `for:` pattern
+  - Done: lintV2 checks for.value_propositions
+- [x] Update `key-activity-value-ref` for `for:` pattern
+  - Done: lintV2 checks for.value_propositions
+- [x] Update `key-partnership-provides-ref` for `for:` pattern
   - Check `key_partnerships[].for.key_resources[]` and `key_activities[]`
-- [ ] Update `cost-linked-to-ref` for v2 `costs` array
+  - Done: lintV2 checks for.key_resources and for.key_activities separately
+- [x] Update `cost-linked-to-ref` for v2 `costs` array
   - Check `costs[].for.key_resources[]` and `key_activities[]`
+  - Done: lintV2 validates costs array with for.key_resources and for.key_activities
 
 ### New Reference Rules (v2 Specific)
 
-- [ ] Add `pain-reliever-scope-ref` rule
+- [x] Add `pain-reliever-scope-ref` rule
   - `pr-*` refs in fit mappings must exist in linked VP's value map
   - AC: `pr-time` in fit must exist in `vp-convenience.pain_relievers`
-- [ ] Add `gain-creator-scope-ref` rule
+  - Done: lintV2 validates pain reliever scope within linked VP's value map
+- [x] Add `gain-creator-scope-ref` rule
   - `gc-*` refs in fit mappings must exist in linked VP's value map
   - AC: `gc-variety` in fit must exist in `vp-convenience.gain_creators`
-- [ ] Add `fit-mapping-type-inference` validation
+  - Done: lintV2 validates gain creator scope within linked VP's value map
+- [x] Add `fit-mapping-type-inference` validation
   - `[pr-*, pain-*]` = pain relief (valid)
   - `[gc-*, gain-*]` = gain creation (valid)
   - `[pr-*, gain-*]` = error (type mismatch)
   - AC: Mismatched tuple types produce clear error message
+  - Done: lintV2 validates type inference with fit-mapping-type-mismatch rule and clear error messages
 
 ---
 
