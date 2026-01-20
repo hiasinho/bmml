@@ -2,204 +2,567 @@
 
 ## Overview
 
-BMCLang is a YAML-based markup format for describing business models. This plan prioritizes building the format specification and validation tooling before any application code.
+BMCLang (to be renamed **BMML** - Business Model Markup Language) is a YAML-based markup format for describing business models. This plan covers the v2 migration and enhancements.
 
-## Current State
+## Current State (v1 MVP - COMPLETE)
 
-**🎉 MVP COMPLETE** - All core features implemented and tested.
-
-- **Types**: Complete TypeScript types matching JSON Schema (src/types.ts, ~480 lines)
-- **Validator**: Complete - parses YAML and validates against JSON Schema (src/validator.ts)
-- **Linter**: Complete - validates reference integrity rules (src/linter.ts)
-- **Schema**: Complete JSON Schema at `schemas/bmclang.schema.json` (702 lines)
-- **CLI**: Complete - validate and lint commands with --json output (src/cli.ts)
-- **Test fixtures**: 5 fixtures exist (2 valid, 3 invalid) - all validate correctly
-- **Examples**: 5 comprehensive examples covering various business model types
-- **Developer Experience**: VS Code extension with syntax highlighting and schema validation
-- **Test Coverage**: 95 tests across 5 test files, all passing
-
----
-
-## Critical - JSON Schema Foundation
-
-The JSON Schema is the source of truth for the format. Everything else derives from it.
-
-- [x] Create `schemas/bmclang.schema.json` with root structure (`version`, `meta`)
-- [x] Add `meta` object schema with required fields (`name`, `portfolio`, `stage`)
-- [x] Add `meta` optional fields (`tagline`, `created`, `updated`, `derived_from`)
-- [x] Implement portfolio-stage constraint (explore→ideation/discovery/validation/acceleration, exploit→improve/grow/sustain/retire, transfer→both)
-- [x] Add `customer_segments` array schema with full Customer Profile (jobs, pains, gains)
-- [x] Add `value_propositions` array schema with Value Map (products_services)
-- [x] Add `fits` array schema with pain_relievers, gain_creators, job_addressers
-- [x] Add `channels` array schema
-- [x] Add `customer_relationships` array schema
-- [x] Add `revenue_streams` array schema
-- [x] Add `cost_structure` object schema
-- [x] Add `key_resources` array schema
-- [x] Add `key_activities` array schema
-- [x] Add `key_partnerships` array schema
-
-**Completed**: Full schema created in single implementation. Uses JSON Schema draft-07 for ajv compatibility. All test fixtures validate correctly.
+| Component | Status | Location |
+|-----------|--------|----------|
+| Types | Complete | `src/types.ts` (~480 lines) |
+| Validator | Complete | `src/validator.ts` |
+| Linter | Complete | `src/linter.ts` (12 rules) |
+| Schema | Complete | `schemas/bmclang.schema.json` (702 lines) |
+| CLI | Complete | `src/cli.ts` |
+| Test fixtures | 5 fixtures (2 valid, 3 invalid) |
+| Examples | 5 comprehensive examples |
+| VS Code extension | Complete | `vscode-bmclang/` |
+| Test coverage | 95 tests, all passing |
 
 ---
 
-## High Priority - Core Type System
+## Critical - Renaming (BMCLang → BMML)
 
-TypeScript types should match the JSON Schema exactly.
+Per v2 spec: rename the project from BMCLang to BMML.
 
-- [x] Expand `BMCDocument` interface with all top-level fields (src/types.ts)
-- [x] Add `CustomerSegment` interface with jobs, pains, gains
-- [x] Add `Job`, `Pain`, `Gain` interfaces with their type/severity/importance enums
-- [x] Add `ValueProposition` interface with products_services
-- [x] Add `ProductService` interface with type enum
-- [x] Add `Fit` interface with pain_relievers, gain_creators, job_addressers
-- [x] Add `Channel` interface with type enum and phases
-- [x] Add `CustomerRelationship` interface with type enum
-- [x] Add `RevenueStream` interface with type and pricing enums
-- [x] Add `CostStructure` interface with type enum and characteristics
-- [x] Add `KeyResource` interface with type enum
-- [x] Add `KeyActivity` interface with type enum
-- [x] Add `KeyPartnership` interface with type and motivation enums
-- [x] Add ID prefix type guards (`isCustomerSegmentId`, `isValuePropositionId`, etc.)
-
-**Completed**: All interfaces implemented with JSDoc comments. Type aliases for all enums. ID type guards with regex validation matching JSON Schema patterns. Tests verify type guards and fixture compatibility.
+- [ ] Update `package.json` name field to "bmml"
+  - AC: `npm pack` produces `bmml-x.x.x.tgz`
+- [ ] Update CLI binary name from `bmclang` to `bmml`
+  - AC: `npx bmml validate file.bmml` works
+- [ ] Update all README and documentation references
+  - AC: No references to "BMCLang" remain (except historical notes)
+- [ ] Update VS Code extension name and ID
+  - AC: Extension marketplace ID becomes `bmml`
+- [ ] Update GitHub repo description (manual step)
 
 ---
 
-## High Priority - Validator Implementation
+## Critical - v2 Schema Foundation
 
-Schema validation using the JSON Schema.
+Foundation for all v2 work. Must complete before types/validator/linter.
 
-- [x] Implement `validate()` function to parse YAML and validate against schema (src/validator.ts)
-- [x] Return structured errors with JSON path and message
-- [x] Add helper to load schema from file
-- [x] Add test: valid-minimal.bmml passes validation
-- [x] Add test: valid-complete.bmml passes validation
-- [x] Add test: invalid-missing-meta.bmml fails with correct error
-- [x] Add test: invalid-portfolio-stage.bmml fails with portfolio-stage constraint error
+### Phase 1: Base Schema Setup
 
-**Completed**: Validator uses ajv for JSON Schema validation with ajv-formats for date validation. Exports `validate()` for YAML strings, `validateDocument()` for parsed objects, `validateFile()` for files, and `loadSchema()` helper. Error messages enhanced for common validation failures. Tests in `test/validator.test.ts` cover all fixtures plus edge cases.
+- [ ] Create `schemas/bmclang-v2.schema.json` with meta and version
+  - Copy base structure from v1 schema
+  - Set `$id`: `https://bmclang.dev/schemas/bmclang-v2.schema.json`
+  - AC: Empty document (just version + meta) validates, missing meta fails
+
+### Phase 2: Customer Side Schema
+
+- [ ] Define `customer_segments` with optional nested profile
+  - `jobs`, `pains`, `gains` arrays as optional properties
+  - AC: Segment without profile validates, segment with profile validates
+- [ ] Add ID pattern definitions for profile elements
+  - `job-[a-z0-9-]+`, `pain-[a-z0-9-]+`, `gain-[a-z0-9-]+`
+  - AC: `job-healthy` valid, `job_healthy` invalid
+
+### Phase 3: Value Side Schema
+
+- [ ] Define `value_propositions` with full Value Map
+  - `products_services`, `pain_relievers`, `gain_creators` as optional nested arrays
+  - AC: VP without value map validates, VP with full map validates
+- [ ] Add new ID patterns for v2 entities
+  - `pr-[a-z0-9-]+` (pain reliever), `gc-[a-z0-9-]+` (gain creator)
+  - AC: `pr-time-saver` valid, `reliever-time` invalid
+
+### Phase 4: Fit Schema (v2 Pattern)
+
+- [ ] Define `fits` with `for:` typed sub-keys pattern
+  - `for: { value_propositions: [], customer_segments: [] }`
+  - AC: v1 fit structure (with `value_proposition: vp-x`) rejected
+- [ ] Add tuple array mappings definition
+  - `mappings: [[string, string], ...]`
+  - AC: `mappings: [[pr-x, pain-y]]` valid, `mappings: [pr-x, pain-y]` invalid
+
+### Phase 5: Delivery Schema (Channels, Relationships)
+
+- [ ] Define `channels` with dual `for:` sub-keys
+  - `for: { value_propositions: [], customer_segments: [] }`
+  - AC: Channel referencing both VP and CS validates
+- [ ] Define `customer_relationships` with `for:` pattern
+  - `for: { customer_segments: [] }`
+  - AC: Consistent with other v2 entities
+
+### Phase 6: Capture Schema (Revenue)
+
+- [ ] Define `revenue_streams` with `for:` and `from:` patterns
+  - `from: { customer_segments: [] }` (who pays)
+  - `for: { value_propositions: [] }` (what for)
+  - AC: Bidirectional relationship correctly expressed
+
+### Phase 7: Infrastructure Schema
+
+- [ ] Define `key_resources` with `for:` pattern
+  - `for: { value_propositions: [] }`
+  - AC: Resources linked to VPs validate
+- [ ] Define `key_activities` with `for:` pattern
+  - `for: { value_propositions: [] }`
+  - AC: Activities linked to VPs validate
+- [ ] Define `key_partnerships` with `for:` pattern
+  - `for: { key_resources: [], key_activities: [] }`
+  - AC: Partnerships linked to resources/activities validate
+- [ ] Define `costs` array (replaces `cost_structure`)
+  - New `cost-[a-z0-9-]+` ID prefix
+  - `for: { key_resources: [], key_activities: [] }`
+  - AC: v1 `cost_structure` object rejected, v2 `costs` array accepted
+
+### Phase 8: Schema Cleanup
+
+- [ ] Remove all `type` field requirements from entities
+  - No `type` on jobs, products_services, channels, etc.
+  - AC: Files without type fields validate successfully
+- [ ] Final schema review and ID pattern consistency check
+  - AC: All 17 ID prefixes validated consistently
 
 ---
 
-## Medium Priority - Linter (Reference Integrity)
+## Critical - v2 TypeScript Types
 
-The linter checks semantic rules that JSON Schema cannot express.
+Depends on: v2 Schema Phases 1-8 complete
 
-- [x] Implement `lint()` function skeleton (src/linter.ts)
-- [x] Rule: All ID references must exist (e.g., `fit.customer_segment` references valid `cs-*`)
-- [x] Rule: `fits[].pain` must reference pain in the referenced customer_segment
-- [x] Rule: `fits[].gain` must reference gain in the referenced customer_segment
-- [x] Rule: `fits[].job` must reference job in the referenced customer_segment
-- [x] Rule: `fits[].through[]` must reference products_services in the referenced value_proposition
-- [x] Rule: `channels[].segments` must reference existing customer_segments
-- [x] Rule: `customer_relationships[].segment` must reference existing customer_segment
-- [x] Rule: `revenue_streams[].from_segments` must reference existing customer_segments
-- [x] Rule: `revenue_streams[].for_value` must reference existing value_proposition
-- [x] Rule: `key_resources[].for_value` must reference existing value_propositions
-- [x] Rule: `key_activities[].for_value` must reference existing value_propositions
-- [x] Rule: `key_partnerships[].provides` must reference existing resources or activities
-- [x] Rule: `cost_structure.major_costs[].linked_to` must reference existing resources or activities
-- [x] Add test fixtures for reference integrity violations
+### New Type Definitions
 
-**Completed**: Linter validates all cross-references between entities. Builds ID maps to track customer segments (with nested jobs/pains/gains), value propositions (with products_services), key resources, and key activities. Returns structured errors with rule name, severity, JSON path, and message. Test fixture `invalid-references.bmml` exercises all rules. 21 tests in `test/linter.test.ts`.
+- [ ] Add `PainReliever` interface (v2)
+  - `{ id: PainRelieverId; name: string; }`
+  - AC: Interface exported from `src/types.ts`
+- [ ] Add `GainCreator` interface (v2)
+  - `{ id: GainCreatorId; name: string; }`
+  - AC: Interface exported from `src/types.ts`
+- [ ] Add `ForRelation` generic interface
+  ```typescript
+  interface ForRelation {
+    value_propositions?: ValuePropositionId[];
+    customer_segments?: CustomerSegmentId[];
+    key_resources?: KeyResourceId[];
+    key_activities?: KeyActivityId[];
+  }
+  ```
+  - AC: Compiles, used by updated entity interfaces
+- [ ] Add `FromRelation` interface
+  ```typescript
+  interface FromRelation {
+    customer_segments?: CustomerSegmentId[];
+  }
+  ```
+  - AC: Compiles, used by RevenueStream interface
+- [ ] Add `Cost` interface (v2, replaces MajorCost)
+  - `{ id: CostId; name: string; for: ForRelation; }`
+  - AC: Interface exported, MajorCost marked deprecated
+
+### Type ID Aliases and Guards
+
+- [ ] Add `PainRelieverId` type alias with `pr-` pattern
+  - AC: `isPainRelieverId('pr-time')` returns true
+- [ ] Add `GainCreatorId` type alias with `gc-` pattern
+  - AC: `isGainCreatorId('gc-variety')` returns true
+- [ ] Add `CostId` type alias with `cost-` pattern
+  - AC: `isCostId('cost-ingredients')` returns true
+
+### Updated Entity Interfaces
+
+- [ ] Update `ValueProposition` interface
+  - Add optional `pain_relievers: PainReliever[]`
+  - Add optional `gain_creators: GainCreator[]`
+  - AC: VP with value map compiles correctly
+- [ ] Update `Fit` interface for v2 pattern
+  - Replace `value_proposition` + `customer_segment` with `for: ForRelation`
+  - Add `mappings: [string, string][]` tuple array
+  - AC: v2 fit structure type-checks correctly
+- [ ] Update `Channel` interface for v2 pattern
+  - Replace `segments` with `for: ForRelation`
+  - AC: Channel with dual refs compiles
+- [ ] Update `CustomerRelationship` interface
+  - Replace `segment` with `for: ForRelation`
+  - AC: Consistent with v2 pattern
+- [ ] Update `RevenueStream` interface
+  - Replace `from_segments` with `from: FromRelation`
+  - Replace `for_value` with `for: ForRelation`
+  - AC: Bidirectional refs compile
+- [ ] Update `KeyResource` interface
+  - Replace `for_value` with `for: ForRelation`
+  - AC: Consistent pattern
+- [ ] Update `KeyActivity` interface
+  - Replace `for_value` with `for: ForRelation`
+  - AC: Consistent pattern
+- [ ] Update `KeyPartnership` interface
+  - Replace `provides` with `for: ForRelation`
+  - AC: Partners ref resources/activities via `for`
+
+### Type Cleanup
+
+- [ ] Remove or deprecate v1-only type enums (if type fields removed)
+  - AC: No compilation errors, deprecated enums marked
+- [ ] Export all v2 types from `src/index.ts`
+  - AC: All new types importable from package
 
 ---
 
-## Medium Priority - CLI Tool
+## Critical - v2 Validator
 
-Basic command-line interface for validation.
+Depends on: v2 Schema + v2 Types complete
 
-- [x] Create `src/cli.ts` with argument parsing
-- [x] Implement `validate` command that loads .bmml file and runs validator
-- [x] Implement `lint` command that runs linter after validation
-- [x] Pretty-print errors with file location
-- [x] Exit with non-zero code on errors
-- [x] Add `--json` flag for machine-readable output
-
-**Completed**: CLI implemented with validate and lint commands. Pretty-printed error messages with file paths and lint rule icons. JSON output mode for CI integration. 21 tests in `test/cli.test.ts`. Usage: `bmclang validate|lint [--json] <file>`.
+- [ ] Add version/structure detection logic
+  - Detect v1 vs v2 by presence of `for:`/`from:` patterns
+  - AC: v1 file detected as v1, v2 file detected as v2
+- [ ] Load appropriate schema based on detected version
+  - v1 files use `bmclang.schema.json`
+  - v2 files use `bmclang-v2.schema.json`
+  - AC: Both v1 and v2 files validate against correct schemas
+- [ ] Add tuple mapping format validation
+  - Each tuple must be `[string, string]` with valid prefixes
+  - AC: `[[pr-x, pain-y]]` valid, `[pr-x, pain-y]` invalid (missing nesting)
+- [ ] Add `for:`/`from:` structural validation
+  - Sub-keys must match allowed entity types
+  - AC: `for: { invalid_key: [] }` rejected
 
 ---
 
-## Low Priority - Example Files
+## Critical - v2 Linter
 
-Comprehensive examples demonstrating format capabilities.
+Depends on: v2 Types complete
 
-- [x] Create `examples/meal-kit-delivery.bmml` (from spec mentions)
-- [x] Create `examples/saas-platform.bmml` (exploit portfolio example)
-- [x] Create `examples/marketplace.bmml` (two-sided market with multiple segments)
-- [x] Add example showing `derived_from` lineage
+### Updated Reference Rules
 
-**Completed**:
-- meal-kit-delivery.bmml demonstrates a meal kit delivery business (like HelloFresh) with two customer segments (busy professionals, aspiring home cooks), two value propositions (convenience, culinary experience), full fits, channels, relationships, revenue streams, and infrastructure. 346 lines. Validates and lints cleanly. Portfolio: explore/validation.
-- saas-platform.bmml demonstrates a B2B project management SaaS (TaskFlow) in the exploit portfolio at grow stage. Two customer segments (SMB Teams, Enterprise Organizations), two value propositions (Team Productivity, Enterprise Scale), comprehensive fits, channels including partner networks, dedicated and self-service relationships, subscription and professional services revenue, and full infrastructure. 421 lines. Validates and lints cleanly.
-- marketplace.bmml demonstrates a two-sided freelance marketplace (SkillBridge) with four customer segments: two on demand side (Startups & SMBs, Enterprise Clients) and two on supply side (Independent Freelancers, Boutique Agencies). Four distinct value propositions target each segment. Comprehensive fits show how platform features address both sides of the market. Full infrastructure including trust & safety operations critical for marketplace businesses. 484 lines. Validates and lints cleanly. Portfolio: exploit/grow.
-- photo-sharing-v1.bmml and photo-sharing-pivot.bmml demonstrate the derived_from lineage feature. The v1 file models a location-based check-in app (Burbn-style) with photo attachment as a secondary feature. The pivot file models the evolution to a photo-first platform (Instagram-style) with filters and visual community, using `derived_from: ./photo-sharing-v1.bmml` to establish lineage. Together they show how pivots can be tracked while letting git handle the detailed change history. Portfolio: explore/discovery → explore/validation. 533 total lines across both files.
+- [ ] Update `fit-value-proposition-ref` for `for:` pattern
+  - Check `fits[].for.value_propositions[]` refs exist
+  - AC: Missing VP ref produces error
+- [ ] Update `fit-customer-segment-ref` for `for:` pattern
+  - Check `fits[].for.customer_segments[]` refs exist
+  - AC: Missing CS ref produces error
+- [ ] Update fit mapping validation for tuple format
+  - Each tuple `[left, right]` where prefixes must be compatible
+  - AC: `[pr-x, pain-y]` valid, `[pr-x, gain-y]` produces type mismatch error
+- [ ] Update `channel-segment-ref` for `for:` pattern
+  - Check `channels[].for.customer_segments[]` exist
+  - AC: Missing segment ref produces error
+- [ ] Update `channel-value-ref` (new) for ternary pattern
+  - Check `channels[].for.value_propositions[]` exist
+  - AC: Missing VP ref produces error
+- [ ] Update `customer-relationship-segment-ref` for `for:` pattern
+  - AC: Consistent error messages
+- [ ] Update `revenue-stream-segment-ref` for `from:` pattern
+  - Check `revenue_streams[].from.customer_segments[]` exist
+- [ ] Update `revenue-stream-value-ref` for `for:` pattern
+  - Check `revenue_streams[].for.value_propositions[]` exist
+- [ ] Update `key-resource-value-ref` for `for:` pattern
+- [ ] Update `key-activity-value-ref` for `for:` pattern
+- [ ] Update `key-partnership-provides-ref` for `for:` pattern
+  - Check `key_partnerships[].for.key_resources[]` and `key_activities[]`
+- [ ] Update `cost-linked-to-ref` for v2 `costs` array
+  - Check `costs[].for.key_resources[]` and `key_activities[]`
+
+### New Reference Rules (v2 Specific)
+
+- [ ] Add `pain-reliever-scope-ref` rule
+  - `pr-*` refs in fit mappings must exist in linked VP's value map
+  - AC: `pr-time` in fit must exist in `vp-convenience.pain_relievers`
+- [ ] Add `gain-creator-scope-ref` rule
+  - `gc-*` refs in fit mappings must exist in linked VP's value map
+  - AC: `gc-variety` in fit must exist in `vp-convenience.gain_creators`
+- [ ] Add `fit-mapping-type-inference` validation
+  - `[pr-*, pain-*]` = pain relief (valid)
+  - `[gc-*, gain-*]` = gain creation (valid)
+  - `[pr-*, gain-*]` = error (type mismatch)
+  - AC: Mismatched tuple types produce clear error message
+
+---
+
+## High Priority - v2 Test Fixtures
+
+Depends on: v2 Schema complete
+
+- [ ] Create `test/fixtures/valid-v2-minimal.bmml`
+  - BMC only, no VPC detail (no jobs/pains/gains/fits)
+  - All 9 blocks with `for:`/`from:` patterns
+  - AC: Validates against v2 schema, linter passes
+- [ ] Create `test/fixtures/valid-v2-complete.bmml`
+  - Full BMC + VPC with customer profiles, value maps, and fits
+  - Tuple mappings demonstrating pain relief and gain creation
+  - AC: Validates, linter passes, demonstrates all v2 features
+- [ ] Create `test/fixtures/invalid-v2-tuple-format.bmml`
+  - Invalid tuple structures: missing nesting, wrong array depth
+  - AC: Validator rejects with clear error
+- [ ] Create `test/fixtures/invalid-v2-scope-refs.bmml`
+  - Pain reliever/gain creator refs outside their VP scope
+  - AC: Linter produces scope reference errors
+- [ ] Create `test/fixtures/invalid-v2-type-mismatch.bmml`
+  - Fit mapping with `[pr-*, gain-*]` (type mismatch)
+  - AC: Linter produces type mismatch error
+- [ ] Update test suite to run both v1 and v2 fixtures
+  - AC: All existing v1 tests still pass, all new v2 tests pass
+
+---
+
+## High Priority - Migration Tooling
+
+Depends on: v2 Validator complete
+
+### Core Migration Logic
+
+- [ ] Create `src/migrate.ts` with `migrateV1toV2()` function
+  - Input: v1 YAML string, Output: v2 YAML string
+  - AC: Function exported, basic structure in place
+- [ ] Implement relationship pattern conversion
+  - `for_value` → `for: { value_propositions: [] }`
+  - `from_segments` → `from: { customer_segments: [] }`
+  - `segments` → `for: { customer_segments: [] }`
+  - `provides` → `for: { key_resources: [], key_activities: [] }`
+  - AC: All v1 relationship patterns converted
+- [ ] Implement pain_relievers/gain_creators migration
+  - Move from `fits[].pain_relievers` to `value_propositions[].pain_relievers`
+  - Group by VP reference in fit
+  - Generate new `pr-*` and `gc-*` IDs
+  - AC: Pain relievers correctly grouped under their VPs
+- [ ] Implement fit mapping transformation
+  - Convert verbose objects `{ pain: pain-x, through: [ps-y] }` to tuple `[pr-generated, pain-x]`
+  - Link to newly created pain_relievers
+  - AC: Fit mappings are valid tuples referencing valid entities
+- [ ] Implement `cost_structure` → `costs` conversion
+  - Convert `major_costs` array to top-level `costs` array
+  - Generate `cost-*` IDs
+  - Convert `linked_to` to `for:` pattern
+  - AC: v1 cost_structure becomes valid v2 costs array
+- [ ] Implement `type` field removal
+  - Strip all `type` fields from all entities
+  - AC: No type fields in output
+
+### CLI Integration
+
+- [ ] Add `bmml migrate <file>` command to CLI
+  - AC: `bmml migrate example.bmml` outputs migrated content
+- [ ] Add `--dry-run` flag (output to stdout, don't modify)
+  - AC: Original file unchanged, migrated content printed
+- [ ] Add `--in-place` flag (modify file directly)
+  - AC: File updated in place
+- [ ] Add migration validation (run v2 validator on output)
+  - AC: Invalid migration output produces error, not silent corruption
+
+### Migration Tests
+
+- [ ] Create `test/fixtures/migrate/` directory structure
+- [ ] Add before/after pairs for relationship pattern migration
+- [ ] Add before/after pairs for pain_relievers/gain_creators migration
+- [ ] Add before/after pairs for fit mapping migration
+- [ ] Add before/after pairs for cost_structure migration
+- [ ] Add test: round-trip validation (v1 → migrate → v2 validate)
+  - AC: All existing v1 examples can be migrated and validate as v2
+
+---
+
+## High Priority - Example Updates
+
+Depends on: v2 Schema + Migration Tooling
+
+- [ ] Create `examples/v2/meal-kit-minimal.bmml`
+  - BMC without VPC detail
+  - Demonstrates progressive detail (start simple)
+  - AC: Validates as v2, serves as minimal example
+- [ ] Create `examples/v2/meal-kit-full.bmml`
+  - Full BMC + VPC with fits and tuple mappings
+  - Same business as minimal, more detail
+  - AC: Validates as v2, demonstrates all features
+- [ ] Create `examples/v2/marketplace.bmml`
+  - Two-sided marketplace demonstrating multi-segment channels
+  - AC: Shows ternary relationship pattern
+- [ ] Migrate existing v1 examples to v2
+  - Option: Move v1 to `examples/v1/`, create fresh v2 in `examples/`
+  - AC: Clear distinction between v1 and v2 examples
+- [ ] Add progressive detail example set
+  - 4 files showing same business: minimal → +profiles → +valuemaps → +fits
+  - AC: Demonstrates optional VPC detail concept
+
+---
+
+## Medium Priority - Enhanced Linter Rules
+
+Quality-of-life improvements. Lower priority than core v2 migration.
+
+### Coverage Warnings (Non-blocking)
+
+- [ ] Warning: Customer segment has no fits defined
+  - AC: Warning produced, validation still passes
+- [ ] Warning: Value proposition has no fits defined
+- [ ] Warning: Pain defined but never relieved (no mapping references it)
+- [ ] Warning: Gain defined but never created (no mapping references it)
+- [ ] Warning: Job defined but never addressed (no mapping references it)
+- [ ] Warning: Product/service defined but never used in fit mapping
+
+### Portfolio Hints
+
+- [ ] Info: Explore portfolio should have fits to validate desirability
+- [ ] Info: Exploit portfolio should have revenue streams defined
+
+### Data Quality
+
+- [ ] Warning: Duplicate ID detected (same ID used twice across sections)
+  - AC: `cs-busy` used twice produces warning
+
+---
+
+## Medium Priority - Website Redesign
+
+Can be done in parallel with other work.
+
+### Design & Layout
+
+- [ ] Study `ghuntley/cursed-website` for design patterns (via GitHub MCP)
+- [ ] Create new `docs/index.html` with bold gradient design
+- [ ] Fixed navigation header
+- [ ] Mobile responsive layout
+
+### Content Sections
+
+- [ ] Hero section: BMML name, tagline, CTA buttons (GitHub, Get Started)
+- [ ] Code example: v2 syntax highlighted (minimal + full)
+- [ ] What is BMC/VPC: Visual block representation
+- [ ] Examples gallery: Links to example files
+- [ ] Installation: CLI commands, VS Code extension link
+- [ ] Roadmap/WIP status: Clear progress indicator
+- [ ] FAQ accordion with all required questions
+- [ ] Footer: GitHub, spec link, license, Made by Hiasinho
+
+### Required FAQ Content
+
+- What is BMML?
+- Who made this? (Hiasinho, https://hia.sh)
+- Is this official/approved by Osterwalder? (No - independent project)
+- What's the goal?
+- How can I contribute?
+- Is this a commercial project? (No - open source)
 
 ---
 
 ## Low Priority - Developer Experience
 
-Tools for working with .bmml files.
+- [ ] Update VS Code extension for v2 keywords (`for:`, `from:`, `pr-*`, `gc-*`, `cost-*`)
+- [ ] Add TextMate grammar rules for tuple syntax highlighting
+- [ ] Create Neovim TreeSitter grammar
+- [ ] Add autocomplete snippets for common v2 patterns
 
-- [x] Create VS Code extension manifest for syntax highlighting
-- [x] Add JSON Schema to VS Code YAML extension settings example
-- [x] Document how to set up editor support
+---
 
-**Completed**:
-- vscode-bmclang/ extension with TextMate grammar for BMCLang-specific syntax highlighting (IDs, references, enums, top-level keys)
-- Language configuration for comments, brackets, folding
-- JSON Schema bundled in extension for validation via YAML extension integration
-- EDITOR_SETUP.md documenting setup for VS Code, JetBrains, Vim/Neovim, and Sublime Text
-- .vscode/settings.json example (gitignored) for local development
+## Low Priority - Documentation
+
+- [ ] Create CONTRIBUTING.md with development setup
+- [ ] Document v1→v2 migration process
+- [ ] Add inline comments to v2 schema explaining design decisions
+- [ ] Create v1 vs v2 comparison table
 
 ---
 
 ## Backlog - Future Phases
 
-Items explicitly out of scope per spec, tracked for future reference.
+Explicitly out of scope per spec.
 
-- [ ] Environment Map (market forces, trends, macro factors)
-- [ ] Hypotheses and Evidence tracking
-- [ ] Patterns (Freemium, Platform, Marketplace, etc.)
-- [ ] Market type classification (B2B, B2C, etc.)
-- [ ] Confidence scores
-- [ ] Rich pivot history (beyond `derived_from` lineage)
-- [ ] Multi-canvas support (multi-sided platforms)
+| Feature | Notes |
+|---------|-------|
+| Environment Map | Market forces, trends, macro factors |
+| Hypotheses & Evidence | Testing assumptions with data |
+| Patterns | Freemium, Platform, Marketplace templates |
+| Market type classification | B2B, B2C, C2C, B2G |
+| Confidence scores | Computed from evidence |
+| Rich pivot history | Beyond `derived_from` lineage |
+| Multi-canvas support | Multi-sided platforms |
+| Job addressers in v2 | Consider `ja-*` prefix for jobs (currently pain/gain only) |
 
 ---
 
-## Notes
+## Reference
 
-### Discoveries
+### v2 Design Principles
 
-1. **Test fixtures already exist** - 4 fixtures in `test/fixtures/` ready to use
-2. **Dependencies ready** - `ajv` (JSON Schema validator) and `js-yaml` already in package.json
-3. **Portfolio-stage constraint is key** - This is the most complex validation rule
-4. **Reference integrity is critical** - Many cross-references between entities need validation
-5. **JSON Schema draft-07 required** - ajv doesn't support draft-2020-12 out of the box without additional packages
-6. **bin/ scripts don't exist** - validation commands should use `pnpm test` and `pnpm lint` instead
+1. **Symmetry** - Customer Profile in segments, full Value Map in propositions
+2. **Consistency** - All relationships use `for:` and `from:` with typed sub-keys
+3. **Optionality** - VPC detail optional; BMC works standalone
 
-### Open Questions (from spec)
+### v2 Tuple Mapping Rules
 
-1. Should `fits` be nested under `value_propositions` or top-level? (Currently: top-level)
-2. How to handle jobs that span functional/emotional/social categories?
-3. Should channels have explicit links to value propositions (awareness of what)?
+```yaml
+mappings:
+  - [pr-time, pain-time]      # pain reliever → pain
+  - [gc-variety, gain-variety] # gain creator → gain
+```
+
+Type inference from ID prefixes:
+- `pr-*` with `pain-*` = pain relief
+- `gc-*` with `gain-*` = gain creation
+- `ja-*` with `job-*` = job addressing (if added)
 
 ### ID Prefix Reference
 
-| Prefix | Entity |
-|--------|--------|
-| `cs-` | Customer Segment |
-| `vp-` | Value Proposition |
-| `ps-` | Product/Service |
-| `job-` | Job to be Done |
-| `pain-` | Pain |
-| `gain-` | Gain |
-| `fit-` | Fit |
-| `ch-` | Channel |
-| `cr-` | Customer Relationship |
-| `rs-` | Revenue Stream |
-| `kr-` | Key Resource |
-| `ka-` | Key Activity |
-| `kp-` | Key Partnership |
+| Prefix | Entity | New in v2? |
+|--------|--------|------------|
+| `cs-` | Customer Segment | |
+| `vp-` | Value Proposition | |
+| `ps-` | Product/Service | |
+| `pr-` | Pain Reliever | Yes |
+| `gc-` | Gain Creator | Yes |
+| `job-` | Job to be Done | |
+| `pain-` | Pain | |
+| `gain-` | Gain | |
+| `fit-` | Fit | |
+| `ch-` | Channel | |
+| `cr-` | Customer Relationship | |
+| `rs-` | Revenue Stream | |
+| `kr-` | Key Resource | |
+| `ka-` | Key Activity | |
+| `kp-` | Key Partnership | |
+| `cost-` | Cost | Yes |
+
+### Relationship Summary (v2)
+
+| Entity | `for:` sub-keys | `from:` sub-keys |
+|--------|-----------------|------------------|
+| fits | value_propositions, customer_segments | - |
+| channels | value_propositions, customer_segments | - |
+| customer_relationships | customer_segments | - |
+| revenue_streams | value_propositions | customer_segments |
+| key_resources | value_propositions | - |
+| key_activities | value_propositions | - |
+| key_partnerships | key_resources, key_activities | - |
+| costs | key_resources, key_activities | - |
+
+### Open Questions
+
+1. Should job addressers (`ja-*`) be included in v2 value map?
+2. How to handle mixed v1/v2 files during migration period?
+3. Should we support explicit `version: "2.0"` field or detect structure automatically?
+
+### Implementation Order
+
+```
+┌─────────────────┐
+│    Renaming     │ ← First (branding)
+└────────┬────────┘
+         │
+┌────────▼────────┐
+│   v2 Schema     │ ← Foundation (8 phases)
+└────────┬────────┘
+         │
+┌────────▼────────┐
+│   v2 Types      │
+└────────┬────────┘
+         │
+    ┌────┴────┐
+    │         │
+┌───▼───┐ ┌───▼───┐
+│Valid- │ │Linter │
+│ator   │ │       │
+└───┬───┘ └───┬───┘
+    │         │
+    └────┬────┘
+         │
+┌────────▼────────┐
+│  Test Fixtures  │
+└────────┬────────┘
+         │
+┌────────▼────────┐
+│ Migration Tool  │
+└────────┬────────┘
+         │
+┌────────▼────────┐
+│    Examples     │
+└─────────────────┘
+```
+
+Website and enhanced linting can be done in parallel with any phase.

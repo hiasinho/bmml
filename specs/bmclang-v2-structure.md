@@ -1,5 +1,7 @@
 # Spec: BMCLang v2 Structure
 
+0. IMPORTANT: Rename BMCLang to BMML (or bmml if lowercase fits better)
+
 ## Overview
 
 This spec describes structural improvements to BMCLang based on three goals:
