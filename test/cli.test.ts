@@ -4,6 +4,9 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { main } from '../src/cli';
+import { readFileSync, writeFileSync, unlinkSync, copyFileSync } from 'fs';
+import { tmpdir } from 'os';
+import { join } from 'path';
 
 const FIXTURES_DIR = 'test/fixtures';
 
@@ -163,6 +166,128 @@ describe('CLI', () => {
       const parsed = JSON.parse(output);
       expect(parsed.success).toBe(false);
       expect(parsed.lintIssues.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('migrate command', () => {
+    it('migrates a v1 file to v2 (dry-run by default)', () => {
+      const exitCode = main(['migrate', `${FIXTURES_DIR}/valid-minimal.bmml`]);
+      expect(exitCode).toBe(0);
+      expect(consoleLogSpy).toHaveBeenCalled();
+      const output = consoleLogSpy.mock.calls[0][0];
+      expect(output).toContain('version: "2.0"');
+    });
+
+    it('migrates a complete v1 file', () => {
+      const exitCode = main(['migrate', `${FIXTURES_DIR}/valid-complete.bmml`]);
+      expect(exitCode).toBe(0);
+      expect(consoleLogSpy).toHaveBeenCalled();
+      const output = consoleLogSpy.mock.calls[0][0];
+      expect(output).toContain('version: "2.0"');
+      // v2 uses for: pattern
+      expect(output).toContain('for:');
+    });
+
+    it('fails for already v2 files', () => {
+      const exitCode = main(['migrate', `${FIXTURES_DIR}/valid-v2-minimal.bmml`]);
+      expect(exitCode).toBe(1);
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      const errorOutput = consoleErrorSpy.mock.calls.flat().join('\n');
+      expect(errorOutput).toContain('already be v2');
+    });
+
+    it('requires a file argument', () => {
+      const exitCode = main(['migrate']);
+      expect(exitCode).toBe(1);
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      const errorOutput = consoleErrorSpy.mock.calls.flat().join('\n');
+      expect(errorOutput).toContain('requires a file argument');
+    });
+
+    it('fails for non-existent file', () => {
+      const exitCode = main(['migrate', 'non-existent-file.bmml']);
+      expect(exitCode).toBe(1);
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      const errorOutput = consoleErrorSpy.mock.calls.flat().join('\n');
+      expect(errorOutput).toContain('File not found');
+    });
+
+    it('outputs JSON with --json flag', () => {
+      const exitCode = main(['migrate', '--json', `${FIXTURES_DIR}/valid-minimal.bmml`]);
+      expect(exitCode).toBe(0);
+      expect(consoleLogSpy).toHaveBeenCalled();
+      const output = consoleLogSpy.mock.calls[0][0];
+      const parsed = JSON.parse(output);
+      expect(parsed.success).toBe(true);
+      expect(parsed.output).toContain('version: "2.0"');
+    });
+
+    it('outputs JSON errors with --json flag', () => {
+      const exitCode = main(['migrate', '--json', `${FIXTURES_DIR}/valid-v2-minimal.bmml`]);
+      expect(exitCode).toBe(1);
+      expect(consoleLogSpy).toHaveBeenCalled();
+      const output = consoleLogSpy.mock.calls[0][0];
+      const parsed = JSON.parse(output);
+      expect(parsed.success).toBe(false);
+      expect(parsed.errors.length).toBeGreaterThan(0);
+    });
+
+    it('respects --dry-run flag explicitly', () => {
+      const exitCode = main(['migrate', '--dry-run', `${FIXTURES_DIR}/valid-minimal.bmml`]);
+      expect(exitCode).toBe(0);
+      expect(consoleLogSpy).toHaveBeenCalled();
+      const output = consoleLogSpy.mock.calls[0][0];
+      expect(output).toContain('version: "2.0"');
+    });
+
+    it('modifies file with --in-place flag', () => {
+      // Create a temporary copy of the v1 file
+      const tempFile = join(tmpdir(), `test-migrate-${Date.now()}.bmml`);
+      copyFileSync(`${FIXTURES_DIR}/valid-minimal.bmml`, tempFile);
+
+      try {
+        // Verify it's v1
+        const originalContent = readFileSync(tempFile, 'utf-8');
+        expect(originalContent).toContain('version: "1.0"');
+
+        // Run migration with --in-place
+        const exitCode = main(['migrate', '--in-place', tempFile]);
+        expect(exitCode).toBe(0);
+        expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Migrated'));
+
+        // Verify the file was modified
+        const newContent = readFileSync(tempFile, 'utf-8');
+        expect(newContent).toContain('version: "2.0"');
+        expect(newContent).not.toContain('version: "1.0"');
+      } finally {
+        // Cleanup
+        try {
+          unlinkSync(tempFile);
+        } catch {
+          // Ignore cleanup errors
+        }
+      }
+    });
+
+    it('outputs JSON with --in-place and --json flags', () => {
+      // Create a temporary copy of the v1 file
+      const tempFile = join(tmpdir(), `test-migrate-json-${Date.now()}.bmml`);
+      copyFileSync(`${FIXTURES_DIR}/valid-minimal.bmml`, tempFile);
+
+      try {
+        const exitCode = main(['migrate', '--in-place', '--json', tempFile]);
+        expect(exitCode).toBe(0);
+        const output = consoleLogSpy.mock.calls[0][0];
+        const parsed = JSON.parse(output);
+        expect(parsed.success).toBe(true);
+        expect(parsed.file).toBe(tempFile);
+      } finally {
+        try {
+          unlinkSync(tempFile);
+        } catch {
+          // Ignore cleanup errors
+        }
+      }
     });
   });
 

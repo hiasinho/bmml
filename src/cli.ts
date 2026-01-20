@@ -4,14 +4,17 @@
  * Command-line interface for validating and linting BMML files
  */
 
-import { validateFile, parseYaml } from './validator.js';
+import { validateFile, parseYaml, validateDocument } from './validator.js';
 import { lint } from './linter.js';
+import { migrateV1toV2 } from './migrate.js';
 import type { BMCDocument } from './types.js';
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 
 interface CliOptions {
   json: boolean;
   help: boolean;
+  dryRun: boolean;
+  inPlace: boolean;
 }
 
 interface CliResult {
@@ -29,20 +32,25 @@ USAGE:
 COMMANDS:
   validate <file>    Validate a .bmml file against the schema
   lint <file>        Run linter checks (includes validation)
+  migrate <file>     Migrate a v1 file to v2 format
   help               Show this help message
 
 OPTIONS:
   --json             Output results as JSON
   --help, -h         Show help for a command
+  --dry-run          (migrate) Output to stdout without modifying file (default)
+  --in-place         (migrate) Modify the file in place
 
 EXAMPLES:
   bmml validate model.bmml
   bmml lint model.bmml --json
   bmml validate --json model.bmml
+  bmml migrate model.bmml
+  bmml migrate --in-place model.bmml
 `.trim();
 
 function parseArgs(args: string[]): { command: string; file: string | null; options: CliOptions } {
-  const options: CliOptions = { json: false, help: false };
+  const options: CliOptions = { json: false, help: false, dryRun: false, inPlace: false };
   const positional: string[] = [];
 
   for (const arg of args) {
@@ -50,6 +58,10 @@ function parseArgs(args: string[]): { command: string; file: string | null; opti
       options.json = true;
     } else if (arg === '--help' || arg === '-h') {
       options.help = true;
+    } else if (arg === '--dry-run') {
+      options.dryRun = true;
+    } else if (arg === '--in-place') {
+      options.inPlace = true;
     } else if (!arg.startsWith('-')) {
       positional.push(arg);
     } else {
@@ -157,6 +169,107 @@ function runLint(file: string, options: CliOptions): number {
   return result.success ? 0 : 1;
 }
 
+interface MigrateResult {
+  success: boolean;
+  output?: string;
+  errors: string[];
+  validationErrors?: Array<{ path: string; message: string }>;
+}
+
+function runMigrate(file: string, options: CliOptions): number {
+  // Read the file
+  let content: string;
+  try {
+    content = readFileSync(file, 'utf-8');
+  } catch {
+    const result: MigrateResult = {
+      success: false,
+      errors: [`File not found: ${file}`],
+    };
+    if (options.json) {
+      console.log(JSON.stringify(result, null, 2));
+    } else {
+      console.error(`Error: File not found: ${file}`);
+    }
+    return 1;
+  }
+
+  // Perform migration
+  const migrationResult = migrateV1toV2(content);
+
+  if (!migrationResult.success || !migrationResult.output) {
+    const result: MigrateResult = {
+      success: false,
+      errors: migrationResult.errors,
+    };
+    if (options.json) {
+      console.log(JSON.stringify(result, null, 2));
+    } else {
+      console.error('Migration failed:');
+      for (const error of migrationResult.errors) {
+        console.error(`  ${error}`);
+      }
+    }
+    return 1;
+  }
+
+  // Validate the migrated output
+  const parseResult = parseYaml(migrationResult.output);
+  if ('error' in parseResult) {
+    const result: MigrateResult = {
+      success: false,
+      errors: ['Migrated output failed to parse'],
+      validationErrors: [parseResult.error],
+    };
+    if (options.json) {
+      console.log(JSON.stringify(result, null, 2));
+    } else {
+      console.error('Migration produced invalid YAML:');
+      console.error(`  ${parseResult.error.message}`);
+    }
+    return 1;
+  }
+
+  // Validate against v2 schema
+  const validationResult = validateDocument(parseResult.data, 'v2');
+  if (!validationResult.valid) {
+    const result: MigrateResult = {
+      success: false,
+      errors: ['Migrated output failed v2 validation'],
+      validationErrors: validationResult.errors,
+    };
+    if (options.json) {
+      console.log(JSON.stringify(result, null, 2));
+    } else {
+      console.error('Migration produced invalid v2 document:');
+      for (const error of validationResult.errors) {
+        const path = error.path === '/' ? '(root)' : error.path;
+        console.error(`  ${path}: ${error.message}`);
+      }
+    }
+    return 1;
+  }
+
+  // Handle output
+  if (options.inPlace) {
+    writeFileSync(file, migrationResult.output, 'utf-8');
+    if (options.json) {
+      console.log(JSON.stringify({ success: true, errors: [], file }, null, 2));
+    } else {
+      console.log(`Migrated ${file} to v2 format`);
+    }
+  } else {
+    // Default: dry-run (output to stdout)
+    if (options.json) {
+      console.log(JSON.stringify({ success: true, errors: [], output: migrationResult.output }, null, 2));
+    } else {
+      console.log(migrationResult.output);
+    }
+  }
+
+  return 0;
+}
+
 function showHelp(): void {
   console.log(USAGE);
 }
@@ -185,6 +298,15 @@ export function main(args: string[] = process.argv.slice(2)): number {
       return 1;
     }
     return runLint(file, options);
+  }
+
+  if (command === 'migrate') {
+    if (!file) {
+      console.error('Error: migrate command requires a file argument');
+      console.error('Usage: bmml migrate <file>');
+      return 1;
+    }
+    return runMigrate(file, options);
   }
 
   console.error(`Unknown command: ${command}`);
