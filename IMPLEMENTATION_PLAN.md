@@ -137,9 +137,16 @@ Comprehensive examples demonstrating format capabilities.
 
 Tools for working with .bmml files.
 
-- [ ] Create VS Code extension manifest for syntax highlighting
-- [ ] Add JSON Schema to VS Code YAML extension settings example
-- [ ] Document how to set up editor support
+- [x] Create VS Code extension manifest for syntax highlighting
+- [x] Add JSON Schema to VS Code YAML extension settings example
+- [x] Document how to set up editor support
+
+**Completed**:
+- vscode-bmclang/ extension with TextMate grammar for BMCLang-specific syntax highlighting (IDs, references, enums, top-level keys)
+- Language configuration for comments, brackets, folding
+- JSON Schema bundled in extension for validation via YAML extension integration
+- EDITOR_SETUP.md documenting setup for VS Code, JetBrains, Vim/Neovim, and Sublime Text
+- .vscode/settings.json example (gitignored) for local development
 
 ---
 
