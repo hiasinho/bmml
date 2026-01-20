@@ -121,11 +121,13 @@ Basic command-line interface for validation.
 Comprehensive examples demonstrating format capabilities.
 
 - [x] Create `examples/meal-kit-delivery.bmml` (from spec mentions)
-- [ ] Create `examples/saas-platform.bmml` (exploit portfolio example)
+- [x] Create `examples/saas-platform.bmml` (exploit portfolio example)
 - [ ] Create `examples/marketplace.bmml` (two-sided market with multiple segments)
 - [ ] Add example showing `derived_from` lineage
 
-**Completed**: meal-kit-delivery.bmml demonstrates a meal kit delivery business (like HelloFresh) with two customer segments (busy professionals, aspiring home cooks), two value propositions (convenience, culinary experience), full fits, channels, relationships, revenue streams, and infrastructure. 346 lines. Validates and lints cleanly.
+**Completed**:
+- meal-kit-delivery.bmml demonstrates a meal kit delivery business (like HelloFresh) with two customer segments (busy professionals, aspiring home cooks), two value propositions (convenience, culinary experience), full fits, channels, relationships, revenue streams, and infrastructure. 346 lines. Validates and lints cleanly. Portfolio: explore/validation.
+- saas-platform.bmml demonstrates a B2B project management SaaS (TaskFlow) in the exploit portfolio at grow stage. Two customer segments (SMB Teams, Enterprise Organizations), two value propositions (Team Productivity, Enterprise Scale), comprehensive fits, channels including partner networks, dedicated and self-service relationships, subscription and professional services revenue, and full infrastructure. 421 lines. Validates and lints cleanly.
 
 ---
 
