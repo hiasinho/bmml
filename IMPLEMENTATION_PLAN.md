@@ -480,7 +480,9 @@ Quality-of-life improvements. Lower priority than core v2 migration.
 - [x] Warning: Gain defined but never created (no mapping references it)
   - AC: Warning produced, validation still passes
   - Done: Added 'gain-never-created' rule to both v1 and v2 linters. v1 checks fits[].gain_creators[].gain, v2 checks tuple mappings where second element starts with 'gain-'. 13 tests added covering warning generation, suppression when created, multiple gains, multiple segments, mixed scenarios, different fits, and validation pass-through.
-- [ ] Warning: Job defined but never addressed (no mapping references it)
+- [x] Warning: Job defined but never addressed (no mapping references it)
+  - AC: Warning produced, validation still passes
+  - Done: Added 'job-never-addressed' rule to both v1 and v2 linters. v1 checks fits[].job_addressers[].job, v2 checks tuple mappings where second element starts with 'job-' (forward-compatible with planned ja-* prefix). 14 tests added covering warning generation, suppression when addressed, multiple jobs, multiple segments, mixed scenarios, different fits, and validation pass-through.
 - [ ] Warning: Product/service defined but never used in fit mapping
 
 ### Portfolio Hints
