@@ -1,0 +1,341 @@
+version: "2.0"
+
+meta:
+  name: "FreshBox"
+  tagline: "Chef-designed meals delivered to your door"
+  created: "2024-03-01"
+  updated: "2024-06-15"
+  portfolio: explore
+  stage: validation
+
+# === CUSTOMER SEGMENTS ===
+# Who are we creating value for? Now with full Customer Profile (jobs, pains, gains)
+
+customer_segments:
+  - id: cs-busy-professionals
+    name: Busy Professionals
+    description: Time-strapped workers who want to eat well without the hassle
+    jobs:
+      - id: job-eat-well
+        description: Eat healthy, home-cooked meals regularly
+      - id: job-spend-time-wisely
+        description: Spend less time on meal logistics, more on what matters
+      - id: job-avoid-decision-fatigue
+        description: Not have to decide what to cook every night
+    pains:
+      - id: pain-no-time
+        description: No time to plan meals, shop for groceries, or cook from scratch
+      - id: pain-food-waste
+        description: Buying ingredients that spoil before being used
+      - id: pain-unhealthy-fallback
+        description: Defaulting to takeout or processed food due to time pressure
+      - id: pain-meal-monotony
+        description: Eating the same boring meals on repeat
+    gains:
+      - id: gain-time-back
+        description: Reclaim evening hours for relaxation or family
+      - id: gain-eat-healthy
+        description: Feel good about eating nutritious home-cooked meals
+      - id: gain-variety
+        description: Enjoy diverse cuisines without extra effort
+
+  - id: cs-home-cooks
+    name: Aspiring Home Cooks
+    description: People who enjoy cooking but want inspiration and convenience
+    jobs:
+      - id: job-explore-cuisines
+        description: Explore new recipes and cuisines from around the world
+      - id: job-improve-skills
+        description: Become a better cook with new techniques
+      - id: job-impress-others
+        description: Cook impressive meals for family and guests
+    pains:
+      - id: pain-recipe-hunting
+        description: Spending too much time searching for good recipes
+      - id: pain-hard-to-find-ingredients
+        description: Struggling to find specialty ingredients locally
+      - id: pain-technique-intimidation
+        description: Feeling intimidated by complex cooking techniques
+      - id: pain-inconsistent-results
+        description: Recipes not turning out as expected
+    gains:
+      - id: gain-culinary-confidence
+        description: Feel confident tackling any recipe
+      - id: gain-cooking-pride
+        description: Pride in serving restaurant-quality meals at home
+      - id: gain-skill-growth
+        description: Learn professional cooking techniques progressively
+
+# === VALUE PROPOSITIONS ===
+# What value do we deliver? Now with full Value Map (products, pain relievers, gain creators)
+
+value_propositions:
+  - id: vp-convenience
+    name: Effortless Meal Planning
+    description: Remove the friction from home cooking with pre-portioned ingredients and curated recipes
+    products_services:
+      - id: ps-weekly-delivery
+        name: Weekly meal kit delivery to your door
+      - id: ps-meal-selection
+        name: Online menu selection each week
+      - id: ps-portioned-ingredients
+        name: Pre-measured, fresh ingredients in each kit
+      - id: ps-recipe-cards
+        name: Simple step-by-step recipe cards
+      - id: ps-flexible-subscription
+        name: Skip, pause, or cancel anytime
+    pain_relievers:
+      - id: pr-no-planning
+        name: Curated weekly menus eliminate meal planning
+      - id: pr-no-shopping
+        name: Ingredients delivered, no grocery trips needed
+      - id: pr-zero-waste
+        name: Exact portions mean nothing goes to waste
+      - id: pr-quick-prep
+        name: 30-minute recipes fit busy schedules
+      - id: pr-healthy-default
+        name: Nutritionist-approved meals as the easy default
+    gain_creators:
+      - id: gc-rotating-menu
+        name: New dishes weekly keep meals exciting
+      - id: gc-dietary-options
+        name: Vegetarian, low-carb, and family-friendly options
+      - id: gc-time-savings
+        name: Average 5+ hours saved per week
+
+  - id: vp-culinary-experience
+    name: Chef-Quality Cooking at Home
+    description: Restaurant-inspired meals made accessible with specialty ingredients and techniques
+    products_services:
+      - id: ps-chef-recipes
+        name: Recipes designed by professional chefs
+      - id: ps-specialty-ingredients
+        name: Hard-to-find specialty ingredients included
+      - id: ps-technique-guides
+        name: Detailed technique explanations with photos
+      - id: ps-wine-pairings
+        name: Optional wine pairing suggestions
+    pain_relievers:
+      - id: pr-curated-recipes
+        name: No more endless recipe searching online
+      - id: pr-ingredients-included
+        name: Specialty ingredients delivered - no hunting required
+      - id: pr-clear-instructions
+        name: Professional techniques broken into simple steps
+      - id: pr-tested-recipes
+        name: Every recipe kitchen-tested for consistent results
+    gain_creators:
+      - id: gc-new-techniques
+        name: Learn searing, braising, sauce-making, and more
+      - id: gc-global-cuisines
+        name: Explore Thai, Moroccan, Japanese, and beyond
+      - id: gc-wow-factor
+        name: Impress dinner guests with stunning presentations
+      - id: gc-skill-building
+        name: Progressive difficulty builds lasting cooking skills
+
+# === FITS ===
+# How do our value propositions address customer needs? Tuple mappings connect the dots.
+
+fits:
+  - id: fit-convenience-busy
+    for:
+      value_propositions: [vp-convenience]
+      customer_segments: [cs-busy-professionals]
+    mappings:
+      # Pain relievers addressing pains
+      - [pr-no-planning, pain-no-time]
+      - [pr-no-shopping, pain-no-time]
+      - [pr-zero-waste, pain-food-waste]
+      - [pr-healthy-default, pain-unhealthy-fallback]
+      - [pr-quick-prep, pain-no-time]
+      # Gain creators delivering gains
+      - [gc-rotating-menu, gain-variety]
+      - [gc-time-savings, gain-time-back]
+      - [gc-dietary-options, gain-eat-healthy]
+
+  - id: fit-culinary-cooks
+    for:
+      value_propositions: [vp-culinary-experience]
+      customer_segments: [cs-home-cooks]
+    mappings:
+      # Pain relievers addressing pains
+      - [pr-curated-recipes, pain-recipe-hunting]
+      - [pr-ingredients-included, pain-hard-to-find-ingredients]
+      - [pr-clear-instructions, pain-technique-intimidation]
+      - [pr-tested-recipes, pain-inconsistent-results]
+      # Gain creators delivering gains
+      - [gc-new-techniques, gain-skill-growth]
+      - [gc-global-cuisines, gain-culinary-confidence]
+      - [gc-wow-factor, gain-cooking-pride]
+      - [gc-skill-building, gain-skill-growth]
+
+  # Cross-fit: Convenience VP also serves home cooks who want easy variety
+  - id: fit-convenience-cooks
+    for:
+      value_propositions: [vp-convenience]
+      customer_segments: [cs-home-cooks]
+    mappings:
+      - [pr-no-planning, pain-recipe-hunting]
+      - [gc-rotating-menu, gain-culinary-confidence]
+
+  # Cross-fit: Culinary VP also serves busy professionals who want to impress
+  - id: fit-culinary-busy
+    for:
+      value_propositions: [vp-culinary-experience]
+      customer_segments: [cs-busy-professionals]
+    mappings:
+      - [pr-tested-recipes, pain-meal-monotony]
+      - [gc-wow-factor, gain-variety]
+
+# === CHANNELS ===
+# How do we reach our customers with our value propositions?
+
+channels:
+  - id: ch-website
+    name: Website & Mobile App
+    for:
+      value_propositions: [vp-convenience, vp-culinary-experience]
+      customer_segments: [cs-busy-professionals, cs-home-cooks]
+
+  - id: ch-social-media
+    name: Social Media (Instagram, TikTok)
+    for:
+      value_propositions: [vp-culinary-experience]
+      customer_segments: [cs-home-cooks]
+
+  - id: ch-referrals
+    name: Customer Referral Program
+    for:
+      value_propositions: [vp-convenience]
+      customer_segments: [cs-busy-professionals, cs-home-cooks]
+
+  - id: ch-delivery
+    name: Home Delivery Network
+    for:
+      value_propositions: [vp-convenience, vp-culinary-experience]
+      customer_segments: [cs-busy-professionals, cs-home-cooks]
+
+# === CUSTOMER RELATIONSHIPS ===
+# What type of relationship does each segment expect?
+
+customer_relationships:
+  - id: cr-automated
+    name: Personalized Recommendations
+    for:
+      customer_segments: [cs-busy-professionals]
+
+  - id: cr-community
+    name: Recipe Sharing Community
+    for:
+      customer_segments: [cs-home-cooks]
+
+# === REVENUE STREAMS ===
+# For what value are customers willing to pay?
+
+revenue_streams:
+  - id: rs-subscription
+    name: Weekly Subscription
+    from:
+      customer_segments: [cs-busy-professionals, cs-home-cooks]
+    for:
+      value_propositions: [vp-convenience]
+
+  - id: rs-addon-sales
+    name: Premium Add-on Products
+    from:
+      customer_segments: [cs-home-cooks]
+    for:
+      value_propositions: [vp-culinary-experience]
+
+# === KEY RESOURCES ===
+# What key resources do our value propositions require?
+
+key_resources:
+  - id: kr-supply-chain
+    name: Ingredient Supply Chain
+    for:
+      value_propositions: [vp-convenience, vp-culinary-experience]
+
+  - id: kr-culinary-team
+    name: Culinary Team
+    for:
+      value_propositions: [vp-culinary-experience]
+
+  - id: kr-fulfillment-center
+    name: Temperature-Controlled Fulfillment Centers
+    for:
+      value_propositions: [vp-convenience]
+
+  - id: kr-tech-platform
+    name: Technology Platform
+    for:
+      value_propositions: [vp-convenience, vp-culinary-experience]
+
+# === KEY ACTIVITIES ===
+# What key activities do our value propositions require?
+
+key_activities:
+  - id: ka-recipe-dev
+    name: Recipe Development
+    for:
+      value_propositions: [vp-culinary-experience]
+
+  - id: ka-fulfillment
+    name: Order Fulfillment & Logistics
+    for:
+      value_propositions: [vp-convenience]
+
+  - id: ka-marketing
+    name: Customer Acquisition
+    for:
+      value_propositions: [vp-convenience, vp-culinary-experience]
+
+  - id: ka-personalization
+    name: Personalization Engine
+    for:
+      value_propositions: [vp-convenience]
+
+# === KEY PARTNERSHIPS ===
+# Who are our key partners?
+
+key_partnerships:
+  - id: kp-farms
+    name: Local Farms & Producers
+    for:
+      key_resources: [kr-supply-chain]
+      key_activities: [ka-recipe-dev]
+
+  - id: kp-delivery
+    name: Delivery Partners
+    for:
+      key_activities: [ka-fulfillment]
+
+  - id: kp-packaging
+    name: Sustainable Packaging Supplier
+    for:
+      key_resources: [kr-supply-chain]
+
+# === COSTS ===
+# What are the most important costs inherent in our business model?
+
+costs:
+  - id: cost-ingredients
+    name: Ingredient Sourcing & Packaging
+    for:
+      key_resources: [kr-supply-chain]
+
+  - id: cost-fulfillment
+    name: Fulfillment & Logistics
+    for:
+      key_activities: [ka-fulfillment]
+
+  - id: cost-recipe-dev
+    name: Recipe Development
+    for:
+      key_resources: [kr-culinary-team]
+
+  - id: cost-marketing
+    name: Customer Acquisition
+    for:
+      key_activities: [ka-marketing]
