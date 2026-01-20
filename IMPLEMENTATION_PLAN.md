@@ -560,8 +560,8 @@ v1 schema is deprecated. Only v2 is supported for validation and linting. Migrat
   - Done: validate(), validateDocument(), validateFile() no longer take version parameter. Auto-detect functions return error for v1 documents with migration hint.
 - [x] Remove v1 linting code paths from `src/linter.ts`
   - Done: Removed collectAllIds (v1), buildIdMaps (v1), lintV1 functions. lint() now only accepts BMCDocumentV2.
-- [ ] Remove v1 types from `src/types.ts` (keep only v2 types)
-  - Note: v1 types retained because migration tool (src/migrate.ts) needs them to parse v1 input. Could be moved to internal-only exports in future.
+- [~] Remove v1 types from `src/types.ts` (keep only v2 types)
+  - Deferred: v1 types retained because migration tool (src/migrate.ts) needs them to parse v1 input. Could be moved to internal-only exports in future refactor.
 - [x] Remove `test/fixtures/valid-*.bmml` and `invalid-*.bmml` (v1 fixtures)
   - Done: Removed valid-minimal.bmml, valid-complete.bmml, invalid-missing-meta.bmml, invalid-portfolio-stage.bmml, invalid-references.bmml. Migration fixtures in test/fixtures/migrate/ retained for migration tests.
 - [x] Remove `examples/v1/` directory
