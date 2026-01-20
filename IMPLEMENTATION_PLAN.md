@@ -15,7 +15,7 @@ BMCLang (to be renamed **BMML** - Business Model Markup Language) is a YAML-base
 | CLI | Complete | `src/cli.ts` |
 | Test fixtures | 5 fixtures (2 valid, 3 invalid) |
 | Examples | 5 comprehensive examples |
-| VS Code extension | Complete | `vscode-bmclang/` |
+| VS Code extension | Complete | `vscode-bmml/` |
 | Test coverage | 95 tests, all passing |
 
 ---
@@ -32,9 +32,10 @@ Per v2 spec: rename the project from BMCLang to BMML.
   - Done: Updated package.json bin field, CLI usage/help messages, and test assertions
 - [x] Update all README and documentation references
   - AC: No references to "BMCLang" remain (except historical notes)
-  - Done: Updated AGENTS.md, EDITOR_SETUP.md, README.md, STYLE.md, vscode-bmclang/README.md
-- [ ] Update VS Code extension name and ID
+  - Done: Updated AGENTS.md, EDITOR_SETUP.md, README.md, STYLE.md, vscode-bmml/README.md
+- [x] Update VS Code extension name and ID
   - AC: Extension marketplace ID becomes `bmml`
+  - Done: Renamed extension to bmml (name, displayName, publisher, language ID, scopeName), renamed folder to vscode-bmml, renamed grammar to bmml.tmLanguage.json, renamed icon to bmml.svg, updated all documentation references
 - [ ] Update GitHub repo description (manual step)
 
 ---

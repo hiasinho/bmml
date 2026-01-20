@@ -14,13 +14,13 @@ Language support for BMML (Business Model Markup Language) files (`.bmml`).
 
 ### From VSIX (Local Install)
 
-1. Package the extension: `cd vscode-bmclang && npx vsce package`
+1. Package the extension: `cd vscode-bmml && npx vsce package`
 2. In VS Code: Extensions > ... > Install from VSIX
 3. Select the generated `.vsix` file
 
 ### Development
 
-1. Open the `vscode-bmclang` folder in VS Code
+1. Open the `vscode-bmml` folder in VS Code
 2. Press F5 to launch the Extension Development Host
 3. Open a `.bmml` file to test
 

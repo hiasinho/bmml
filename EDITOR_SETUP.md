@@ -6,7 +6,7 @@ This guide explains how to set up editor support for `.bmml` files.
 
 ### Option 1: BMML Extension (Recommended)
 
-The `vscode-bmclang` extension provides:
+The `vscode-bmml` extension provides:
 - Full syntax highlighting with BMML-specific tokens
 - ID reference highlighting
 - Enum value highlighting
@@ -15,7 +15,7 @@ The `vscode-bmclang` extension provides:
 To install locally:
 
 ```bash
-cd vscode-bmclang
+cd vscode-bmml
 npm install
 npx vsce package
 # Install the .vsix file via VS Code Extensions panel
