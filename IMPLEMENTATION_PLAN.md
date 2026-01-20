@@ -24,8 +24,9 @@ BMCLang (to be renamed **BMML** - Business Model Markup Language) is a YAML-base
 
 Per v2 spec: rename the project from BMCLang to BMML.
 
-- [ ] Update `package.json` name field to "bmml"
+- [x] Update `package.json` name field to "bmml"
   - AC: `npm pack` produces `bmml-x.x.x.tgz`
+  - Done: package.json name changed from "bmclang" to "bmml", verified with pnpm pack
 - [ ] Update CLI binary name from `bmclang` to `bmml`
   - AC: `npx bmml validate file.bmml` works
 - [ ] Update all README and documentation references
