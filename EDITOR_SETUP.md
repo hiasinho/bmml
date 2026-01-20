@@ -51,7 +51,42 @@ This provides:
 
 ## Vim/Neovim
 
-### With coc.nvim
+### Syntax Highlighting
+
+BMML includes a Vim syntax file that provides highlighting for BMML-specific elements on top of YAML. To install:
+
+**Using vim-plug:**
+```vim
+Plug 'bmclang/bmclang', { 'rtp': 'vim' }
+```
+
+**Using lazy.nvim:**
+```lua
+{ "bmclang/bmclang", config = function()
+  vim.opt.rtp:append(vim.fn.stdpath("data") .. "/lazy/bmclang/vim")
+end }
+```
+
+**Manual installation:**
+```bash
+# Copy to your Vim runtime path
+cp -r vim/syntax vim/ftdetect ~/.vim/
+# Or for Neovim
+cp -r vim/syntax vim/ftdetect ~/.config/nvim/
+```
+
+The syntax file highlights:
+- BMC building blocks (customer_segments, value_propositions, etc.)
+- VPC elements (jobs, pains, gains, pain_relievers, gain_creators)
+- ID prefixes (cs-, vp-, job-, pain-, pr-, gc-, etc.)
+- v2 relationship patterns (for:, from:, mappings:)
+- Portfolio/stage values
+
+### Schema Validation with LSP
+
+For schema validation and auto-completion, configure a YAML language server.
+
+**With coc.nvim:**
 
 Add to your `coc-settings.json`:
 
@@ -63,7 +98,7 @@ Add to your `coc-settings.json`:
 }
 ```
 
-### With nvim-lspconfig
+**With nvim-lspconfig:**
 
 Configure yamlls:
 
