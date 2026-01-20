@@ -120,10 +120,12 @@ Basic command-line interface for validation.
 
 Comprehensive examples demonstrating format capabilities.
 
-- [ ] Create `examples/meal-kit-delivery.bmml` (from spec mentions)
+- [x] Create `examples/meal-kit-delivery.bmml` (from spec mentions)
 - [ ] Create `examples/saas-platform.bmml` (exploit portfolio example)
 - [ ] Create `examples/marketplace.bmml` (two-sided market with multiple segments)
 - [ ] Add example showing `derived_from` lineage
+
+**Completed**: meal-kit-delivery.bmml demonstrates a meal kit delivery business (like HelloFresh) with two customer segments (busy professionals, aspiring home cooks), two value propositions (convenience, culinary experience), full fits, channels, relationships, revenue streams, and infrastructure. 346 lines. Validates and lints cleanly.
 
 ---
 
