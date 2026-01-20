@@ -199,8 +199,8 @@ describe('ID Type Guards', () => {
 });
 
 describe('Type Compatibility', () => {
-  it('valid-complete.bml conforms to BMCDocument type', () => {
-    const content = readFileSync('test/fixtures/valid-complete.bml', 'utf-8');
+  it('valid-complete.bmml conforms to BMCDocument type', () => {
+    const content = readFileSync('test/fixtures/valid-complete.bmml', 'utf-8');
     const doc = loadYaml(content) as BMCDocument;
 
     // Verify top-level structure
@@ -224,8 +224,8 @@ describe('Type Compatibility', () => {
     expect(doc.cost_structure).toBeDefined();
   });
 
-  it('valid-minimal.bml conforms to BMCDocument type', () => {
-    const content = readFileSync('test/fixtures/valid-minimal.bml', 'utf-8');
+  it('valid-minimal.bmml conforms to BMCDocument type', () => {
+    const content = readFileSync('test/fixtures/valid-minimal.bmml', 'utf-8');
     const doc = loadYaml(content) as BMCDocument;
 
     expect(doc.version).toBe('1.0');
@@ -236,7 +236,7 @@ describe('Type Compatibility', () => {
   });
 
   it('customer segment IDs in fixtures are valid', () => {
-    const content = readFileSync('test/fixtures/valid-complete.bml', 'utf-8');
+    const content = readFileSync('test/fixtures/valid-complete.bmml', 'utf-8');
     const doc = loadYaml(content) as BMCDocument;
 
     for (const segment of doc.customer_segments || []) {
@@ -245,7 +245,7 @@ describe('Type Compatibility', () => {
   });
 
   it('value proposition IDs in fixtures are valid', () => {
-    const content = readFileSync('test/fixtures/valid-complete.bml', 'utf-8');
+    const content = readFileSync('test/fixtures/valid-complete.bmml', 'utf-8');
     const doc = loadYaml(content) as BMCDocument;
 
     for (const vp of doc.value_propositions || []) {

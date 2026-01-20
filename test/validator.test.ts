@@ -47,16 +47,16 @@ describe('parseYaml', () => {
 
 describe('validate', () => {
   describe('valid fixtures', () => {
-    it('valid-minimal.bml passes validation', () => {
-      const content = readFileSync(`${FIXTURES_DIR}/valid-minimal.bml`, 'utf-8');
+    it('valid-minimal.bmml passes validation', () => {
+      const content = readFileSync(`${FIXTURES_DIR}/valid-minimal.bmml`, 'utf-8');
       const result = validate(content);
 
       expect(result.valid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
 
-    it('valid-complete.bml passes validation', () => {
-      const content = readFileSync(`${FIXTURES_DIR}/valid-complete.bml`, 'utf-8');
+    it('valid-complete.bmml passes validation', () => {
+      const content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
       const result = validate(content);
 
       expect(result.valid).toBe(true);
@@ -65,8 +65,8 @@ describe('validate', () => {
   });
 
   describe('invalid fixtures', () => {
-    it('invalid-missing-meta.bml fails with correct error', () => {
-      const content = readFileSync(`${FIXTURES_DIR}/invalid-missing-meta.bml`, 'utf-8');
+    it('invalid-missing-meta.bmml fails with correct error', () => {
+      const content = readFileSync(`${FIXTURES_DIR}/invalid-missing-meta.bmml`, 'utf-8');
       const result = validate(content);
 
       expect(result.valid).toBe(false);
@@ -79,8 +79,8 @@ describe('validate', () => {
       expect(metaError).toBeDefined();
     });
 
-    it('invalid-portfolio-stage.bml fails with portfolio-stage constraint error', () => {
-      const content = readFileSync(`${FIXTURES_DIR}/invalid-portfolio-stage.bml`, 'utf-8');
+    it('invalid-portfolio-stage.bmml fails with portfolio-stage constraint error', () => {
+      const content = readFileSync(`${FIXTURES_DIR}/invalid-portfolio-stage.bmml`, 'utf-8');
       const result = validate(content);
 
       expect(result.valid).toBe(false);
@@ -187,12 +187,12 @@ describe('validateDocument', () => {
 
 describe('validateFile', () => {
   it('validates a file from disk', () => {
-    const result = validateFile(`${FIXTURES_DIR}/valid-minimal.bml`);
+    const result = validateFile(`${FIXTURES_DIR}/valid-minimal.bmml`);
     expect(result.valid).toBe(true);
   });
 
   it('returns error for non-existent file', () => {
-    const result = validateFile('non-existent-file.bml');
+    const result = validateFile('non-existent-file.bmml');
     expect(result.valid).toBe(false);
     expect(result.errors[0].message).toContain('File not found');
   });

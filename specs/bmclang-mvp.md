@@ -69,13 +69,13 @@ The file captures facts and relationships. Scores, coverage metrics, and fit str
 
 ### 3. Single File Per Business Model
 
-One `.bml` file contains the complete business model.
+One `.bmml` file contains the complete business model.
 
 **Rationale**: Business models are inherently interconnected. Splitting creates artificial boundaries and complicates tooling.
 
 ### 4. YAML Format
 
-File extension: `.bml` (YAML syntax)
+File extension: `.bmml` (YAML syntax)
 
 **Rationale**: Best balance of human readability, tooling ecosystem, and expressiveness for nested structures.
 
@@ -98,7 +98,7 @@ A business model can reference its parent via `derived_from`:
 
 ```yaml
 meta:
-  derived_from: ./meal-kit-v1.bml
+  derived_from: ./meal-kit-v1.bmml
 ```
 
 **Rationale**:
@@ -123,7 +123,7 @@ meta:
   stage: ideation | discovery | validation | acceleration | transfer | improve | grow | sustain | retire
 
   # Lineage (optional) - reference to parent business model
-  derived_from: ./previous-version.bml  # relative path to parent
+  derived_from: ./previous-version.bmml  # relative path to parent
 
 # === CUSTOMER SIDE ===
 
@@ -279,7 +279,7 @@ All elements use prefixed IDs for clarity:
 ## Acceptance Criteria
 
 - [ ] Update JSON Schema to match this structure
-- [ ] Create example `.bml` file using the meal kit example
+- [ ] Create example `.bmml` file using the meal kit example
 - [ ] Validate schema works with example
 - [ ] Document all relationship types
 - [ ] Create validation rules for relationship integrity
