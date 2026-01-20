@@ -1,13 +1,160 @@
 /**
  * BMCLang Validator
- * TODO: Implement schema validation per specs/bmclang-mvp.md
+ * Validates BMCLang documents against the JSON Schema
  */
+
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
+import { load as loadYaml, YAMLException } from 'js-yaml';
+import { readFileSync } from 'fs';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+
+// Handle CJS/ESM interop
+const AjvClass = Ajv.default ?? Ajv;
+const addFormatsPlugin = addFormats.default ?? addFormats;
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+export interface ValidationError {
+  path: string;
+  message: string;
+}
 
 export interface ValidationResult {
   valid: boolean;
-  errors: { path: string; message: string }[];
+  errors: ValidationError[];
 }
 
-export function validate(_doc: unknown): ValidationResult {
-  throw new Error('Not implemented');
+interface AjvError {
+  instancePath: string;
+  message?: string;
+  keyword: string;
+  params: Record<string, unknown>;
+}
+
+/**
+ * Load the BMCLang JSON Schema from the schemas directory
+ */
+export function loadSchema(): object {
+  const schemaPath = join(__dirname, '..', 'schemas', 'bmclang.schema.json');
+  const schemaContent = readFileSync(schemaPath, 'utf-8');
+  return JSON.parse(schemaContent);
+}
+
+/**
+ * Create a configured Ajv instance with the BMCLang schema
+ */
+function createValidator(): InstanceType<typeof AjvClass> {
+  const ajv = new AjvClass({
+    allErrors: true,
+    verbose: true,
+  });
+  addFormatsPlugin(ajv);
+  return ajv;
+}
+
+/**
+ * Convert Ajv errors to ValidationError format
+ */
+function formatErrors(errors: AjvError[] | null | undefined): ValidationError[] {
+  if (!errors) return [];
+
+  return errors.map((err) => {
+    const path = err.instancePath || '/';
+    let message = err.message || 'Unknown error';
+
+    // Enhance error messages for common cases
+    if (err.keyword === 'additionalProperties') {
+      message = `Unknown property '${err.params.additionalProperty}'`;
+    } else if (err.keyword === 'required') {
+      message = `Missing required property '${err.params.missingProperty}'`;
+    } else if (err.keyword === 'enum') {
+      const allowed = err.params.allowedValues as string[];
+      message = `Must be one of: ${allowed.join(', ')}`;
+    } else if (err.keyword === 'pattern') {
+      message = `Invalid format. ${message}`;
+    } else if (err.keyword === 'const') {
+      message = `Must be '${err.params.allowedValue}'`;
+    }
+
+    return { path, message };
+  });
+}
+
+/**
+ * Parse YAML content into a JavaScript object
+ * Returns errors if YAML is invalid
+ */
+export function parseYaml(content: string): { data: unknown } | { error: ValidationError } {
+  try {
+    const data = loadYaml(content);
+    return { data };
+  } catch (err) {
+    if (err instanceof YAMLException) {
+      return {
+        error: {
+          path: '/',
+          message: `YAML parse error: ${err.message}`,
+        },
+      };
+    }
+    throw err;
+  }
+}
+
+/**
+ * Validate a BMCLang document (as parsed object) against the schema
+ */
+export function validateDocument(doc: unknown): ValidationResult {
+  const ajv = createValidator();
+  const schema = loadSchema();
+  const validateFn = ajv.compile(schema);
+
+  const valid = validateFn(doc);
+
+  if (valid) {
+    return { valid: true, errors: [] };
+  }
+
+  return {
+    valid: false,
+    errors: formatErrors(validateFn.errors as AjvError[] | null),
+  };
+}
+
+/**
+ * Validate a BMCLang YAML string
+ * Parses YAML and validates against the JSON Schema
+ */
+export function validate(content: string): ValidationResult {
+  // First parse the YAML
+  const parseResult = parseYaml(content);
+  if ('error' in parseResult) {
+    return {
+      valid: false,
+      errors: [parseResult.error],
+    };
+  }
+
+  // Then validate against schema
+  return validateDocument(parseResult.data);
+}
+
+/**
+ * Validate a BMCLang file from disk
+ */
+export function validateFile(filePath: string): ValidationResult {
+  try {
+    const content = readFileSync(filePath, 'utf-8');
+    return validate(content);
+  } catch (err) {
+    if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
+      return {
+        valid: false,
+        errors: [{ path: '/', message: `File not found: ${filePath}` }],
+      };
+    }
+    throw err;
+  }
 }
