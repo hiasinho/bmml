@@ -1,0 +1,88 @@
+version: "2.0"
+
+meta:
+  name: "Minimal V2 Example"
+  tagline: "A complete BMC with all 9 blocks, no VPC detail"
+  portfolio: explore
+  stage: validation
+
+# Customer Segments - the business targets
+customer_segments:
+  - id: cs-busy-professionals
+    name: Busy Professionals
+    description: Time-poor urban dwellers seeking convenience
+
+# Value Propositions - what we offer
+value_propositions:
+  - id: vp-convenience
+    name: Convenient Meal Kit
+    description: Pre-portioned ingredients with easy recipes
+
+# Channels - how we reach customers (v2 for: pattern)
+channels:
+  - id: ch-online
+    name: Online Store
+    for:
+      value_propositions: [vp-convenience]
+      customer_segments: [cs-busy-professionals]
+  - id: ch-social
+    name: Social Media
+    for:
+      customer_segments: [cs-busy-professionals]
+
+# Customer Relationships - how we maintain relationships (v2 for: pattern)
+customer_relationships:
+  - id: cr-self-service
+    name: Self-Service App
+    for:
+      customer_segments: [cs-busy-professionals]
+
+# Revenue Streams - how we earn (v2 for:/from: pattern)
+revenue_streams:
+  - id: rs-subscription
+    name: Weekly Subscription
+    from:
+      customer_segments: [cs-busy-professionals]
+    for:
+      value_propositions: [vp-convenience]
+
+# Key Resources - what we need
+key_resources:
+  - id: kr-supply-chain
+    name: Supply Chain Network
+    for:
+      value_propositions: [vp-convenience]
+  - id: kr-recipes
+    name: Recipe Database
+    for:
+      value_propositions: [vp-convenience]
+
+# Key Activities - what we do
+key_activities:
+  - id: ka-sourcing
+    name: Ingredient Sourcing
+    for:
+      value_propositions: [vp-convenience]
+  - id: ka-assembly
+    name: Kit Assembly
+    for:
+      value_propositions: [vp-convenience]
+
+# Key Partnerships - who helps us
+key_partnerships:
+  - id: kp-farms
+    name: Local Organic Farms
+    for:
+      key_resources: [kr-supply-chain]
+      key_activities: [ka-sourcing]
+
+# Costs - what we spend (v2 costs array)
+costs:
+  - id: cost-ingredients
+    name: Ingredient Costs
+    for:
+      key_activities: [ka-sourcing]
+  - id: cost-logistics
+    name: Logistics & Delivery
+    for:
+      key_resources: [kr-supply-chain]

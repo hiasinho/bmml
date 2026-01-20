@@ -1,0 +1,40 @@
+version: "2.0"
+
+meta:
+  name: "Invalid Type Mismatch Example"
+  portfolio: explore
+  stage: ideation
+
+customer_segments:
+  - id: cs-test
+    name: Test Segment
+    pains:
+      - id: pain-test
+        description: Test pain
+    gains:
+      - id: gain-test
+        description: Test gain
+
+value_propositions:
+  - id: vp-test
+    name: Test VP
+    pain_relievers:
+      - id: pr-test
+        name: Test pain reliever
+    gain_creators:
+      - id: gc-test
+        name: Test gain creator
+
+# INVALID: type mismatch in mappings
+# Pain relievers (pr-*) should map to pains (pain-*)
+# Gain creators (gc-*) should map to gains (gain-*)
+fits:
+  - id: fit-test
+    for:
+      value_propositions: [vp-test]
+      customer_segments: [cs-test]
+    mappings:
+      # INVALID: pain reliever mapped to gain (should be mapped to pain)
+      - [pr-test, gain-test]
+      # INVALID: gain creator mapped to pain (should be mapped to gain)
+      - [gc-test, pain-test]

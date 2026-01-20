@@ -1,0 +1,49 @@
+version: "2.0"
+
+meta:
+  name: "Invalid Scope References Example"
+  portfolio: explore
+  stage: ideation
+
+customer_segments:
+  - id: cs-test
+    name: Test Segment
+    pains:
+      - id: pain-test
+        description: Test pain
+    gains:
+      - id: gain-test
+        description: Test gain
+
+value_propositions:
+  - id: vp-test
+    name: Test VP
+    # Note: only pr-actual and gc-actual exist in this VP
+    pain_relievers:
+      - id: pr-actual
+        name: Actual pain reliever
+    gain_creators:
+      - id: gc-actual
+        name: Actual gain creator
+
+  - id: vp-other
+    name: Other VP
+    # These are in a different VP, should not be accessible from fit-test
+    pain_relievers:
+      - id: pr-other
+        name: Pain reliever in other VP
+    gain_creators:
+      - id: gc-other
+        name: Gain creator in other VP
+
+# INVALID: mappings reference pr-other and gc-other which are not in vp-test
+fits:
+  - id: fit-test
+    for:
+      value_propositions: [vp-test]
+      customer_segments: [cs-test]
+    mappings:
+      # This is INVALID: pr-other exists but not in vp-test scope
+      - [pr-other, pain-test]
+      # This is INVALID: gc-other exists but not in vp-test scope
+      - [gc-other, gain-test]

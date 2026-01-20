@@ -1,0 +1,30 @@
+version: "2.0"
+
+meta:
+  name: "Invalid Tuple Format Example"
+  portfolio: explore
+  stage: ideation
+
+customer_segments:
+  - id: cs-test
+    name: Test Segment
+    pains:
+      - id: pain-test
+        description: Test pain
+
+value_propositions:
+  - id: vp-test
+    name: Test VP
+    pain_relievers:
+      - id: pr-test
+        name: Test reliever
+
+# INVALID: mappings should be tuples [[a, b], [c, d]] but this is flat [a, b]
+fits:
+  - id: fit-test
+    for:
+      value_propositions: [vp-test]
+      customer_segments: [cs-test]
+    mappings:
+      - pr-test
+      - pain-test

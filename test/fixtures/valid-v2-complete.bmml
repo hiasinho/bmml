@@ -1,0 +1,239 @@
+version: "2.0"
+
+meta:
+  name: "Meal Kit Co"
+  tagline: "Chef-quality meals made easy"
+  created: "2024-01-15"
+  updated: "2024-06-01"
+  portfolio: explore
+  stage: validation
+
+# Customer Segments with full Customer Profile (jobs, pains, gains)
+customer_segments:
+  - id: cs-busy-professionals
+    name: Busy Professionals
+    description: Time-poor, money-rich urban dwellers aged 25-45
+    jobs:
+      - id: job-eat-healthy
+        description: Eat healthy meals despite time constraints
+      - id: job-impress-guests
+        description: Impress dinner guests with good food
+    pains:
+      - id: pain-no-time
+        description: No time to plan meals, shop, or cook
+      - id: pain-food-waste
+        description: Ingredients go bad before using them
+      - id: pain-boring-meals
+        description: End up eating the same meals repeatedly
+    gains:
+      - id: gain-variety
+        description: Explore new cuisines and flavors
+      - id: gain-skill-building
+        description: Learn new cooking techniques
+      - id: gain-pride
+        description: Feel accomplished after cooking a real meal
+
+  - id: cs-cooking-learners
+    name: Cooking Learners
+    description: People wanting to develop cooking skills
+    jobs:
+      - id: job-learn-cooking
+        description: Learn to cook properly
+    pains:
+      - id: pain-intimidation
+        description: Intimidated by complex recipes
+      - id: pain-wrong-ingredients
+        description: Don't know which ingredients to buy
+    gains:
+      - id: gain-confidence
+        description: Build confidence in the kitchen
+      - id: gain-independence
+        description: Become self-sufficient with meals
+
+# Value Propositions with full Value Map (products, pain relievers, gain creators)
+value_propositions:
+  - id: vp-convenience
+    name: Convenient Meal Kit
+    description: Pre-portioned ingredients with step-by-step recipes
+    products_services:
+      - id: ps-weekly-box
+        name: Weekly meal kit delivery
+      - id: ps-recipe-cards
+        name: Chef-designed recipe cards
+      - id: ps-pre-portioned
+        name: Pre-portioned fresh ingredients
+    pain_relievers:
+      - id: pr-no-planning
+        name: Eliminates meal planning
+      - id: pr-no-shopping
+        name: No grocery shopping needed
+      - id: pr-no-waste
+        name: Exact portions prevent food waste
+    gain_creators:
+      - id: gc-rotating-menu
+        name: Weekly rotating menu with new cuisines
+      - id: gc-cooking-tips
+        name: Pro tips on each recipe card
+
+  - id: vp-skill-building
+    name: Skill-Building Recipes
+    description: Progressive difficulty recipes that teach techniques
+    products_services:
+      - id: ps-beginner-recipes
+        name: Beginner-friendly recipes
+      - id: ps-video-tutorials
+        name: Video tutorial access
+    pain_relievers:
+      - id: pr-step-by-step
+        name: Clear step-by-step instructions
+      - id: pr-exact-ingredients
+        name: Exactly what you need, nothing more
+    gain_creators:
+      - id: gc-skill-progression
+        name: Recipe difficulty levels for progression
+      - id: gc-technique-library
+        name: Growing library of learned techniques
+
+# Fits - connecting VPs to Customer Segments with tuple mappings
+fits:
+  - id: fit-convenience-busy
+    for:
+      value_propositions: [vp-convenience]
+      customer_segments: [cs-busy-professionals]
+    mappings:
+      # Pain relievers -> Pains
+      - [pr-no-planning, pain-no-time]
+      - [pr-no-shopping, pain-no-time]
+      - [pr-no-waste, pain-food-waste]
+      # Gain creators -> Gains
+      - [gc-rotating-menu, gain-variety]
+      - [gc-cooking-tips, gain-skill-building]
+
+  - id: fit-skill-learners
+    for:
+      value_propositions: [vp-skill-building]
+      customer_segments: [cs-cooking-learners]
+    mappings:
+      # Pain relievers -> Pains
+      - [pr-step-by-step, pain-intimidation]
+      - [pr-exact-ingredients, pain-wrong-ingredients]
+      # Gain creators -> Gains
+      - [gc-skill-progression, gain-confidence]
+      - [gc-technique-library, gain-independence]
+
+# Channels - reaching customers with VPs (v2 ternary pattern)
+channels:
+  - id: ch-website
+    name: E-commerce Website
+    for:
+      value_propositions: [vp-convenience, vp-skill-building]
+      customer_segments: [cs-busy-professionals, cs-cooking-learners]
+  - id: ch-instagram
+    name: Instagram
+    for:
+      value_propositions: [vp-convenience]
+      customer_segments: [cs-busy-professionals]
+  - id: ch-youtube
+    name: YouTube Tutorials
+    for:
+      value_propositions: [vp-skill-building]
+      customer_segments: [cs-cooking-learners]
+
+# Customer Relationships
+customer_relationships:
+  - id: cr-self-service
+    name: Self-Service Platform
+    for:
+      customer_segments: [cs-busy-professionals]
+  - id: cr-community
+    name: Online Cooking Community
+    for:
+      customer_segments: [cs-cooking-learners]
+
+# Revenue Streams (v2 for:/from: pattern)
+revenue_streams:
+  - id: rs-subscription
+    name: Weekly Subscription
+    from:
+      customer_segments: [cs-busy-professionals]
+    for:
+      value_propositions: [vp-convenience]
+  - id: rs-course-sales
+    name: Premium Course Sales
+    from:
+      customer_segments: [cs-cooking-learners]
+    for:
+      value_propositions: [vp-skill-building]
+
+# Key Resources
+key_resources:
+  - id: kr-supply-chain
+    name: Supply Chain Network
+    for:
+      value_propositions: [vp-convenience]
+  - id: kr-recipe-database
+    name: Recipe Database
+    for:
+      value_propositions: [vp-convenience, vp-skill-building]
+  - id: kr-content-library
+    name: Video Content Library
+    for:
+      value_propositions: [vp-skill-building]
+  - id: kr-tech-platform
+    name: Technology Platform
+    for:
+      value_propositions: [vp-convenience, vp-skill-building]
+
+# Key Activities
+key_activities:
+  - id: ka-sourcing
+    name: Ingredient Sourcing
+    for:
+      value_propositions: [vp-convenience]
+  - id: ka-recipe-dev
+    name: Recipe Development
+    for:
+      value_propositions: [vp-convenience, vp-skill-building]
+  - id: ka-content-creation
+    name: Video Content Creation
+    for:
+      value_propositions: [vp-skill-building]
+  - id: ka-fulfillment
+    name: Order Fulfillment
+    for:
+      value_propositions: [vp-convenience]
+
+# Key Partnerships
+key_partnerships:
+  - id: kp-farms
+    name: Local Organic Farms
+    for:
+      key_resources: [kr-supply-chain]
+      key_activities: [ka-sourcing]
+  - id: kp-chefs
+    name: Partner Chefs
+    for:
+      key_activities: [ka-recipe-dev, ka-content-creation]
+  - id: kp-logistics
+    name: Cold Chain Logistics Partner
+    for:
+      key_activities: [ka-fulfillment]
+
+# Costs (v2 costs array)
+costs:
+  - id: cost-ingredients
+    name: Ingredient Costs
+    for:
+      key_activities: [ka-sourcing]
+  - id: cost-logistics
+    name: Fulfillment & Delivery
+    for:
+      key_activities: [ka-fulfillment]
+  - id: cost-content
+    name: Content Production
+    for:
+      key_activities: [ka-content-creation]
+  - id: cost-platform
+    name: Technology & Platform
+    for:
+      key_resources: [kr-tech-platform]
