@@ -1,346 +1,290 @@
-version: "1.0"
-
+version: "2.0"
 meta:
-  name: "FreshBox"
-  tagline: "Chef-designed meals delivered to your door"
+  name: FreshBox
+  tagline: Chef-designed meals delivered to your door
   created: "2024-03-01"
   updated: "2024-03-15"
   portfolio: explore
   stage: validation
-
-# === CUSTOMER SIDE ===
-
 customer_segments:
   - id: cs-busy-professionals
     name: Busy Professionals
     description: Time-strapped workers who want to eat well without the hassle
     jobs:
       - id: job-eat-healthy
-        type: functional
         description: Eat nutritious, balanced meals regularly
-        importance: high
       - id: job-save-time
-        type: functional
         description: Minimize time spent on meal planning and grocery shopping
-        importance: high
       - id: job-feel-accomplished
-        type: emotional
         description: Feel like a capable home cook
-        importance: medium
     pains:
       - id: pain-no-time-planning
         description: No time or energy to plan weekly meals
-        severity: high
       - id: pain-grocery-hassle
         description: Grocery shopping is tedious and time-consuming
-        severity: high
       - id: pain-food-waste
         description: Ingredients go bad before they can use them
-        severity: medium
       - id: pain-boring-rotation
         description: End up cooking the same few meals on repeat
-        severity: medium
     gains:
       - id: gain-variety
         description: Eat diverse, interesting meals throughout the week
-        importance: high
       - id: gain-cooking-skills
         description: Learn new cooking techniques and cuisines
-        importance: medium
       - id: gain-health-confidence
         description: Know exactly what goes into their food
-        importance: medium
-
   - id: cs-home-cooks
     name: Aspiring Home Cooks
     description: People who enjoy cooking but want inspiration and convenience
     jobs:
       - id: job-learn-cooking
-        type: functional
         description: Improve cooking skills and expand repertoire
-        importance: high
       - id: job-impress-others
-        type: social
         description: Cook impressive meals for family and friends
-        importance: high
       - id: job-creative-outlet
-        type: emotional
         description: Express creativity through cooking
-        importance: medium
     pains:
       - id: pain-recipe-rut
         description: Stuck making the same dishes, lacking inspiration
-        severity: high
       - id: pain-ingredient-sourcing
         description: Hard to find specialty ingredients for new recipes
-        severity: medium
       - id: pain-portion-sizes
         description: Recipes require buying more ingredients than needed
-        severity: medium
     gains:
       - id: gain-chef-experience
         description: Cook restaurant-quality dishes at home
-        importance: high
       - id: gain-compliments
         description: Receive praise for delicious home-cooked meals
-        importance: high
       - id: gain-culinary-adventure
         description: Explore cuisines from around the world
-        importance: medium
-
-# === VALUE SIDE ===
-
 value_propositions:
   - id: vp-convenience
     name: Effortless Meal Planning
     description: Remove the friction from home cooking
     products_services:
       - id: ps-weekly-delivery
-        type: service
-        description: Weekly delivery of pre-portioned ingredients
+        name: Weekly delivery of pre-portioned ingredients
       - id: ps-meal-selection
-        type: digital
-        description: Choose from 20+ chef-designed recipes each week
+        name: Choose from 20+ chef-designed recipes each week
       - id: ps-flexible-subscription
-        type: service
-        description: Pause, skip, or cancel anytime
+        name: Pause, skip, or cancel anytime
       - id: ps-pre-portioned
-        type: product
-        description: Pre-measured, pre-portioned ingredients
+        name: Pre-measured, pre-portioned ingredients
       - id: ps-recipe-cards
-        type: product
-        description: Step-by-step recipe cards with photos
-
+        name: Step-by-step recipe cards with photos
+    pain_relievers:
+      - id: pr-no-time-planning
+        name: Curated menu eliminates decision fatigue
+      - id: pr-grocery-hassle
+        name: Everything arrives at your door
+      - id: pr-food-waste
+        name: Exact portions mean no waste
+      - id: pr-boring-rotation
+        name: New recipes every week
+    gain_creators:
+      - id: gc-variety
+        name: 20+ new recipes weekly from different cuisines
+      - id: gc-health-confidence
+        name: Clear nutrition info and fresh ingredients
   - id: vp-culinary-experience
     name: Chef-Quality Cooking at Home
     description: Restaurant-inspired meals made accessible
     products_services:
       - id: ps-chef-recipes
-        type: product
-        description: Step-by-step chef-designed recipe cards with photos
+        name: Step-by-step chef-designed recipe cards with photos
       - id: ps-portioned-ingredients
-        type: product
-        description: Pre-measured, pre-portioned ingredients
+        name: Pre-measured, pre-portioned ingredients
       - id: ps-specialty-ingredients
-        type: product
-        description: Hard-to-find sauces, spices, and ingredients
+        name: Hard-to-find sauces, spices, and ingredients
       - id: ps-video-tutorials
-        type: digital
-        description: Video tutorials for complex techniques
+        name: Video tutorials for complex techniques
       - id: ps-menu-variety
-        type: digital
-        description: Rotating selection of 20+ recipes weekly
-
-# === FIT ===
-
+        name: Rotating selection of 20+ recipes weekly
+    pain_relievers:
+      - id: pr-recipe-rut
+        name: Constant stream of new, tested recipes
+      - id: pr-ingredient-sourcing
+        name: Hard-to-find ingredients delivered with the kit
+      - id: pr-portion-sizes
+        name: Exactly what you need, no more
+    gain_creators:
+      - id: gc-chef-experience
+        name: Professional techniques and quality ingredients
+      - id: gc-compliments
+        name: Impress with restaurant-quality presentation
+      - id: gc-culinary-adventure
+        name: Explore Thai, Moroccan, Korean, and more
 fits:
   - id: fit-convenience-professionals
-    value_proposition: vp-convenience
-    customer_segment: cs-busy-professionals
-    pain_relievers:
-      - pain: pain-no-time-planning
-        through: [ps-meal-selection, ps-weekly-delivery]
-        description: Curated menu eliminates decision fatigue
-      - pain: pain-grocery-hassle
-        through: [ps-weekly-delivery]
-        description: Everything arrives at your door
-      - pain: pain-food-waste
-        through: [ps-pre-portioned]
-        description: Exact portions mean no waste
-      - pain: pain-boring-rotation
-        through: [ps-meal-selection]
-        description: New recipes every week
-    gain_creators:
-      - gain: gain-variety
-        through: [ps-meal-selection]
-        description: 20+ new recipes weekly from different cuisines
-      - gain: gain-health-confidence
-        through: [ps-recipe-cards, ps-pre-portioned]
-        description: Clear nutrition info and fresh ingredients
-    job_addressers:
-      - job: job-eat-healthy
-        through: [ps-pre-portioned, ps-recipe-cards]
-        description: Balanced meals with nutritional information
-      - job: job-save-time
-        through: [ps-weekly-delivery, ps-meal-selection, ps-pre-portioned]
-        description: From delivery to table in 30 minutes
-      - job: job-feel-accomplished
-        through: [ps-recipe-cards]
-        description: Cook real meals, not just heat and eat
-
+    for:
+      value_propositions:
+        - vp-convenience
+      customer_segments:
+        - cs-busy-professionals
+    mappings:
+      - - pr-no-time-planning
+        - pain-no-time-planning
+      - - pr-grocery-hassle
+        - pain-grocery-hassle
+      - - pr-food-waste
+        - pain-food-waste
+      - - pr-boring-rotation
+        - pain-boring-rotation
+      - - gc-variety
+        - gain-variety
+      - - gc-health-confidence
+        - gain-health-confidence
   - id: fit-culinary-homecooks
-    value_proposition: vp-culinary-experience
-    customer_segment: cs-home-cooks
-    pain_relievers:
-      - pain: pain-recipe-rut
-        through: [ps-chef-recipes, ps-video-tutorials]
-        description: Constant stream of new, tested recipes
-      - pain: pain-ingredient-sourcing
-        through: [ps-specialty-ingredients, ps-portioned-ingredients]
-        description: Hard-to-find ingredients delivered with the kit
-      - pain: pain-portion-sizes
-        through: [ps-portioned-ingredients]
-        description: Exactly what you need, no more
-    gain_creators:
-      - gain: gain-chef-experience
-        through: [ps-specialty-ingredients, ps-chef-recipes, ps-video-tutorials]
-        description: Professional techniques and quality ingredients
-      - gain: gain-compliments
-        through: [ps-chef-recipes, ps-specialty-ingredients]
-        description: Impress with restaurant-quality presentation
-      - gain: gain-culinary-adventure
-        through: [ps-menu-variety, ps-specialty-ingredients]
-        description: Explore Thai, Moroccan, Korean, and more
-    job_addressers:
-      - job: job-learn-cooking
-        through: [ps-chef-recipes, ps-video-tutorials]
-        description: Learn techniques from professional chefs
-      - job: job-impress-others
-        through: [ps-specialty-ingredients, ps-chef-recipes]
-        description: Serve dishes that look and taste impressive
-      - job: job-creative-outlet
-        through: [ps-menu-variety, ps-specialty-ingredients]
-        description: Express creativity with new flavors and techniques
-
-# === DELIVERY ===
-
+    for:
+      value_propositions:
+        - vp-culinary-experience
+      customer_segments:
+        - cs-home-cooks
+    mappings:
+      - - pr-recipe-rut
+        - pain-recipe-rut
+      - - pr-ingredient-sourcing
+        - pain-ingredient-sourcing
+      - - pr-portion-sizes
+        - pain-portion-sizes
+      - - gc-chef-experience
+        - gain-chef-experience
+      - - gc-compliments
+        - gain-compliments
+      - - gc-culinary-adventure
+        - gain-culinary-adventure
 channels:
   - id: ch-website
     name: Website & App
-    type: owned
-    segments: [cs-busy-professionals, cs-home-cooks]
-    phases: [awareness, evaluation, purchase, after_sales]
-
+    for:
+      customer_segments:
+        - cs-busy-professionals
+        - cs-home-cooks
   - id: ch-social-media
     name: Social Media
-    type: owned
-    segments: [cs-home-cooks]
-    phases: [awareness, evaluation]
-
+    for:
+      customer_segments:
+        - cs-home-cooks
   - id: ch-referrals
     name: Customer Referral Program
-    type: direct
-    segments: [cs-busy-professionals, cs-home-cooks]
-    phases: [awareness]
-
+    for:
+      customer_segments:
+        - cs-busy-professionals
+        - cs-home-cooks
   - id: ch-delivery
     name: Home Delivery
-    type: partner
-    segments: [cs-busy-professionals, cs-home-cooks]
-    phases: [delivery]
-
+    for:
+      customer_segments:
+        - cs-busy-professionals
+        - cs-home-cooks
 customer_relationships:
   - id: cr-automated-professionals
-    segment: cs-busy-professionals
-    type: automated
-    description: Personalized recommendations based on preferences and history
-
+    name: Personalized recommendations based on preferences and history
+    for:
+      customer_segments:
+        - cs-busy-professionals
   - id: cr-community-cooks
-    segment: cs-home-cooks
-    type: community
-    description: Recipe reviews, cooking tips, and photo sharing community
-
-# === FINANCES ===
-
+    name: Recipe reviews, cooking tips, and photo sharing community
+    for:
+      customer_segments:
+        - cs-home-cooks
 revenue_streams:
   - id: rs-subscription
     name: Weekly Subscription
-    type: subscription
-    from_segments: [cs-busy-professionals, cs-home-cooks]
-    for_value: vp-convenience
-    pricing: fixed_menu
-
+    from:
+      customer_segments:
+        - cs-busy-professionals
+        - cs-home-cooks
+    for:
+      value_propositions:
+        - vp-convenience
   - id: rs-addon-sales
     name: Add-on Products
-    type: transaction
-    from_segments: [cs-home-cooks]
-    for_value: vp-culinary-experience
-    pricing: fixed_menu
-
-cost_structure:
-  type: cost_driven
-  characteristics: [variable_costs_heavy, economies_of_scale]
-  major_costs:
-    - name: Ingredient Sourcing & Packaging
-      type: variable
-      linked_to: [kr-supply-chain]
-    - name: Fulfillment & Logistics
-      type: variable
-      linked_to: [ka-fulfillment]
-    - name: Recipe Development
-      type: fixed
-      linked_to: [kr-culinary-team]
-    - name: Customer Acquisition
-      type: variable
-      linked_to: [ka-marketing]
-
-# === INFRASTRUCTURE ===
-
+    from:
+      customer_segments:
+        - cs-home-cooks
+    for:
+      value_propositions:
+        - vp-culinary-experience
 key_resources:
   - id: kr-supply-chain
     name: Ingredient Supply Chain
-    type: physical
-    description: Relationships with farms, distributors, and specialty suppliers
-    for_value: [vp-convenience, vp-culinary-experience]
-
+    for:
+      value_propositions:
+        - vp-convenience
+        - vp-culinary-experience
   - id: kr-culinary-team
     name: Culinary Team
-    type: human
-    description: Chefs who design and test recipes
-    for_value: [vp-culinary-experience]
-
+    for:
+      value_propositions:
+        - vp-culinary-experience
   - id: kr-fulfillment-center
     name: Fulfillment Centers
-    type: physical
-    description: Temperature-controlled facilities for packing and shipping
-    for_value: [vp-convenience]
-
+    for:
+      value_propositions:
+        - vp-convenience
   - id: kr-tech-platform
     name: Technology Platform
-    type: intellectual
-    description: Website, mobile app, and logistics software
-    for_value: [vp-convenience]
-
+    for:
+      value_propositions:
+        - vp-convenience
 key_activities:
   - id: ka-recipe-dev
     name: Recipe Development
-    type: production
-    description: Create, test, and photograph new recipes weekly
-    for_value: [vp-culinary-experience]
-
+    for:
+      value_propositions:
+        - vp-culinary-experience
   - id: ka-fulfillment
     name: Order Fulfillment
-    type: production
-    description: Pick, pack, and ship meal kits on schedule
-    for_value: [vp-convenience]
-
+    for:
+      value_propositions:
+        - vp-convenience
   - id: ka-marketing
     name: Customer Acquisition
-    type: problem_solving
-    description: Attract new subscribers through digital marketing and referrals
-    for_value: [vp-convenience, vp-culinary-experience]
-
+    for:
+      value_propositions:
+        - vp-convenience
+        - vp-culinary-experience
   - id: ka-personalization
     name: Personalization Engine
-    type: platform
-    description: Match customers to recipes based on preferences and history
-    for_value: [vp-convenience]
-
+    for:
+      value_propositions:
+        - vp-convenience
 key_partnerships:
   - id: kp-farms
     name: Local Farms & Producers
-    type: supplier
-    motivation: resource_acquisition
-    provides: [kr-supply-chain]
-
+    for:
+      key_resources:
+        - kr-supply-chain
   - id: kp-delivery
     name: Delivery Partners
-    type: strategic_alliance
-    motivation: optimization
-    provides: [ka-fulfillment]
-
+    for:
+      key_activities:
+        - ka-fulfillment
   - id: kp-packaging
     name: Sustainable Packaging Supplier
-    type: supplier
-    motivation: resource_acquisition
-    provides: [kr-supply-chain]
+    for:
+      key_resources:
+        - kr-supply-chain
+costs:
+  - id: cost-ingredient-sourcing-packaging
+    name: Ingredient Sourcing & Packaging
+    for:
+      key_resources:
+        - kr-supply-chain
+  - id: cost-fulfillment-logistics
+    name: Fulfillment & Logistics
+    for:
+      key_activities:
+        - ka-fulfillment
+  - id: cost-recipe-development
+    name: Recipe Development
+    for:
+      key_resources:
+        - kr-culinary-team
+  - id: cost-customer-acquisition
+    name: Customer Acquisition
+    for:
+      key_activities:
+        - ka-marketing
+

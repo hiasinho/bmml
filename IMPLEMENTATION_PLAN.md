@@ -451,9 +451,10 @@ Depends on: v2 Schema + Migration Tooling
   - Two-sided marketplace demonstrating multi-segment channels
   - AC: Shows ternary relationship pattern
   - Done: FoodRunner marketplace with consumers and restaurants, different VPs per side, ternary channels, dual revenue streams, full VPC detail with fits
-- [ ] Migrate existing v1 examples to v2
+- [x] Migrate existing v1 examples to v2
   - Option: Move v1 to `examples/v1/`, create fresh v2 in `examples/`
   - AC: Clear distinction between v1 and v2 examples
+  - Done: Moved 5 original v1 examples to `examples/v1/`, migrated all to v2 format in `examples/` using `bmml migrate`. SkillBridge marketplace renamed to `skillbridge.bmml` to avoid collision with FoodRunner `marketplace.bmml`. All v2 examples validate and lint cleanly.
 - [ ] Add progressive detail example set
   - 4 files showing same business: minimal → +profiles → +valuemaps → +fits
   - AC: Demonstrates optional VPC detail concept

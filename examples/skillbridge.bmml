@@ -1,0 +1,606 @@
+version: "2.0"
+meta:
+  name: SkillBridge
+  tagline: Connect with vetted freelancers for on-demand expertise
+  created: "2022-03-10"
+  updated: "2024-12-15"
+  portfolio: exploit
+  stage: grow
+customer_segments:
+  - id: cs-startups
+    name: Startups & SMBs
+    description: Early-stage companies and small businesses needing flexible talent without full-time hiring
+    jobs:
+      - id: job-scale-quickly
+        description: Scale team capacity quickly for specific projects
+      - id: job-access-expertise
+        description: Access specialized skills not available in-house
+      - id: job-control-costs
+        description: Manage project costs with clear pricing and no long-term commitments
+      - id: job-move-fast
+        description: Feel confident they can execute quickly despite limited resources
+    pains:
+      - id: pain-hiring-slow
+        description: Traditional hiring takes too long for urgent project needs
+      - id: pain-quality-unknown
+        description: Hard to assess freelancer quality before committing
+      - id: pain-payment-disputes
+        description: Disputes over deliverables and payment terms
+      - id: pain-no-accountability
+        description: Freelancers disappear or miss deadlines
+    gains:
+      - id: gain-fast-start
+        description: Start projects within days, not months
+      - id: gain-vetted-talent
+        description: Access to pre-screened, quality-verified professionals
+      - id: gain-flexible-scale
+        description: Scale up or down based on actual needs
+      - id: gain-cost-savings
+        description: Pay only for work delivered, no overhead costs
+  - id: cs-enterprise
+    name: Enterprise Clients
+    description: Large organizations using freelance talent for specialized projects and overflow work
+    jobs:
+      - id: job-augment-teams
+        description: Augment internal teams with specialized expertise
+      - id: job-manage-vendors
+        description: Consolidate freelance spending under one platform with visibility
+      - id: job-ensure-compliance
+        description: Ensure contractor relationships comply with employment regulations
+      - id: job-prove-value
+        description: Demonstrate ROI of flexible workforce strategy to leadership
+    pains:
+      - id: pain-fragmented-spend
+        description: Freelance spending scattered across departments without oversight
+      - id: pain-compliance-risk
+        description: Risk of misclassification and labor law violations
+      - id: pain-inconsistent-quality
+        description: No standardized vetting across different freelancer sources
+      - id: pain-no-visibility
+        description: Finance and procurement lack visibility into freelance engagements
+    gains:
+      - id: gain-consolidated-vendor
+        description: Single platform for all freelance talent acquisition
+      - id: gain-compliance-assurance
+        description: Built-in compliance checks and proper contractor classification
+      - id: gain-spend-analytics
+        description: Complete visibility into freelance spending and ROI
+      - id: gain-quality-consistency
+        description: Consistent quality standards across all freelance engagements
+  - id: cs-freelancers
+    name: Independent Freelancers
+    description: Skilled professionals seeking project-based work with flexibility and fair compensation
+    jobs:
+      - id: job-find-clients
+        description: Find quality clients without extensive marketing or networking
+      - id: job-get-paid-fairly
+        description: Get paid fairly and on time for work delivered
+      - id: job-build-reputation
+        description: Build a portable reputation that attracts better opportunities
+      - id: job-work-flexibility
+        description: Maintain work-life balance and choose projects that fit lifestyle
+      - id: job-feel-valued
+        description: Be recognized as a professional, not just a commodity
+    pains:
+      - id: pain-client-acquisition
+        description: Spending too much time on marketing and proposals that go nowhere
+      - id: pain-payment-delays
+        description: Clients pay late or dispute invoices
+      - id: pain-race-to-bottom
+        description: Competing on price against low-cost providers
+      - id: pain-feast-or-famine
+        description: Inconsistent work flow - either overwhelmed or idle
+      - id: pain-platform-fees
+        description: Platforms take large percentage of earnings
+    gains:
+      - id: gain-steady-work
+        description: Consistent pipeline of quality projects
+      - id: gain-guaranteed-payment
+        description: Guaranteed payment for completed work
+      - id: gain-reputation-portability
+        description: Reviews and credentials that follow them
+      - id: gain-premium-rates
+        description: Command premium rates based on proven expertise
+      - id: gain-professional-growth
+        description: Access to challenging projects that build skills
+  - id: cs-agencies
+    name: Boutique Agencies
+    description: Small agencies and consultancies using the platform to find overflow talent or subcontractors
+    jobs:
+      - id: job-fulfill-contracts
+        description: Fulfill client contracts when internal capacity is maxed
+      - id: job-expand-capabilities
+        description: Offer services outside core expertise through vetted partners
+      - id: job-protect-margins
+        description: Maintain healthy margins when subcontracting
+    pains:
+      - id: pain-reliable-subs
+        description: Difficult to find reliable subcontractors who meet quality standards
+      - id: pain-white-label
+        description: Need subcontractors who can work under agency's brand seamlessly
+      - id: pain-markup-transparency
+        description: Clients may discover subcontractor rates
+    gains:
+      - id: gain-elastic-capacity
+        description: Elastically scale team without full-time hires
+      - id: gain-trusted-network
+        description: Build a trusted network of go-to specialists
+      - id: gain-seamless-handoff
+        description: Smooth handoffs with integrated project management
+value_propositions:
+  - id: vp-client-platform
+    name: Client Hiring Platform
+    description: End-to-end platform for finding, hiring, and managing freelance talent
+    products_services:
+      - id: ps-talent-matching
+        name: AI-powered matching connecting projects with best-fit freelancers
+      - id: ps-vetting-service
+        name: Skills assessments, background checks, and portfolio verification
+      - id: ps-escrow-payments
+        name: Secure escrow holding funds until work is approved
+      - id: ps-project-workspace
+        name: Collaboration workspace with messaging, file sharing, and milestones
+      - id: ps-dispute-resolution
+        name: Mediation service for handling disagreements
+      - id: ps-contract-templates
+        name: Legally vetted contract templates for different engagement types
+    pain_relievers:
+      - id: pr-hiring-slow
+        name: AI matching surfaces qualified candidates within hours
+      - id: pr-quality-unknown
+        name: Pre-vetted freelancers with verified portfolios and reviews
+      - id: pr-payment-disputes
+        name: Escrow protects both parties, mediation resolves disputes
+      - id: pr-no-accountability
+        name: Milestones and escrow create accountability for delivery
+    gain_creators:
+      - id: gc-fast-start
+        name: Find and engage freelancers within days with ready contracts
+      - id: gc-vetted-talent
+        name: Skills tests and background checks ensure quality
+      - id: gc-flexible-scale
+        name: Easily find talent for projects of any size
+      - id: gc-cost-savings
+        name: Pay only for approved work with no employment overhead
+  - id: vp-enterprise-platform
+    name: Enterprise Talent Cloud
+    description: Managed freelance workforce solution with compliance and analytics
+    products_services:
+      - id: ps-vendor-consolidation
+        name: Single pane of glass for all freelance engagements
+      - id: ps-compliance-engine
+        name: Automated compliance checks and contractor classification
+      - id: ps-spend-analytics
+        name: Dashboards and reports for freelance spend management
+      - id: ps-sso-integration
+        name: SSO and enterprise system integrations (HRIS, procurement)
+      - id: ps-dedicated-curator
+        name: Dedicated talent curator for enterprise accounts
+      - id: ps-private-talent-pool
+        name: Private pools of approved freelancers for the enterprise
+    pain_relievers:
+      - id: pr-fragmented-spend
+        name: Single platform consolidates all freelance procurement
+      - id: pr-compliance-risk
+        name: Automated classification and compliance monitoring
+      - id: pr-inconsistent-quality
+        name: Dedicated curator ensures consistent quality standards
+      - id: pr-no-visibility
+        name: Real-time dashboards and procurement integration
+    gain_creators:
+      - id: gc-consolidated-vendor
+        name: One vendor relationship for global freelance talent
+      - id: gc-compliance-assurance
+        name: Stay compliant across jurisdictions automatically
+      - id: gc-spend-analytics
+        name: Full visibility into spend, utilization, and ROI
+      - id: gc-quality-consistency
+        name: Curated talent pools maintain quality bar
+  - id: vp-freelancer-platform
+    name: Freelancer Marketplace
+    description: Platform for freelancers to find work, get paid, and build reputation
+    products_services:
+      - id: ps-job-board
+        name: Curated job feed matching skills and preferences
+      - id: ps-profile-portfolio
+        name: Professional profile with portfolio, reviews, and credentials
+      - id: ps-proposal-tools
+        name: Templates and AI assistance for writing winning proposals
+      - id: ps-payment-protection
+        name: Guaranteed payment with multiple withdrawal options
+      - id: ps-skill-certifications
+        name: Platform-verified skill badges and certifications
+      - id: ps-financial-tools
+        name: Invoicing, tax documents, and earnings tracking
+    pain_relievers:
+      - id: pr-client-acquisition
+        name: Inbound project invites based on profile match
+      - id: pr-payment-delays
+        name: Escrow ensures funds are available before work begins
+      - id: pr-race-to-bottom
+        name: Certifications and reviews justify premium rates
+      - id: pr-feast-or-famine
+        name: Steady pipeline of matched opportunities
+      - id: pr-platform-fees
+        name: Competitive fees that decrease with earnings
+    gain_creators:
+      - id: gc-steady-work
+        name: Algorithm prioritizes active, high-rated freelancers
+      - id: gc-guaranteed-payment
+        name: Never chase payments again with escrow protection
+      - id: gc-reputation-portability
+        name: Profile with reviews transfers across the platform
+      - id: gc-premium-rates
+        name: Top-rated badge unlocks premium project access
+      - id: gc-professional-growth
+        name: Access to challenging projects and skill development
+  - id: vp-agency-tools
+    name: Agency Partner Suite
+    description: Tools for agencies to manage subcontractors and expand capabilities
+    products_services:
+      - id: ps-team-management
+        name: Manage a team of freelancers as an agency
+      - id: ps-white-label
+        name: White-label collaboration spaces for agency clients
+      - id: ps-margin-management
+        name: Set markups and manage subcontractor billing
+      - id: ps-agency-badge
+        name: Verified agency badge for credibility
+    pain_relievers:
+      - id: pr-reliable-subs
+        name: Access to vetted freelancer pool with reviews
+      - id: pr-white-label
+        name: Branded workspaces for seamless client experience
+      - id: pr-markup-transparency
+        name: Separate billing streams protect margins
+    gain_creators:
+      - id: gc-elastic-capacity
+        name: Scale team up or down with trusted freelancers
+      - id: gc-trusted-network
+        name: Build and manage a go-to roster of specialists
+      - id: gc-seamless-handoff
+        name: Integrated tools for smooth collaboration
+fits:
+  - id: fit-client-startups
+    for:
+      value_propositions:
+        - vp-client-platform
+      customer_segments:
+        - cs-startups
+    mappings:
+      - - pr-hiring-slow
+        - pain-hiring-slow
+      - - pr-quality-unknown
+        - pain-quality-unknown
+      - - pr-payment-disputes
+        - pain-payment-disputes
+      - - pr-no-accountability
+        - pain-no-accountability
+      - - gc-fast-start
+        - gain-fast-start
+      - - gc-vetted-talent
+        - gain-vetted-talent
+      - - gc-flexible-scale
+        - gain-flexible-scale
+      - - gc-cost-savings
+        - gain-cost-savings
+  - id: fit-client-enterprise
+    for:
+      value_propositions:
+        - vp-enterprise-platform
+      customer_segments:
+        - cs-enterprise
+    mappings:
+      - - pr-fragmented-spend
+        - pain-fragmented-spend
+      - - pr-compliance-risk
+        - pain-compliance-risk
+      - - pr-inconsistent-quality
+        - pain-inconsistent-quality
+      - - pr-no-visibility
+        - pain-no-visibility
+      - - gc-consolidated-vendor
+        - gain-consolidated-vendor
+      - - gc-compliance-assurance
+        - gain-compliance-assurance
+      - - gc-spend-analytics
+        - gain-spend-analytics
+      - - gc-quality-consistency
+        - gain-quality-consistency
+  - id: fit-freelancer-platform
+    for:
+      value_propositions:
+        - vp-freelancer-platform
+      customer_segments:
+        - cs-freelancers
+    mappings:
+      - - pr-client-acquisition
+        - pain-client-acquisition
+      - - pr-payment-delays
+        - pain-payment-delays
+      - - pr-race-to-bottom
+        - pain-race-to-bottom
+      - - pr-feast-or-famine
+        - pain-feast-or-famine
+      - - pr-platform-fees
+        - pain-platform-fees
+      - - gc-steady-work
+        - gain-steady-work
+      - - gc-guaranteed-payment
+        - gain-guaranteed-payment
+      - - gc-reputation-portability
+        - gain-reputation-portability
+      - - gc-premium-rates
+        - gain-premium-rates
+      - - gc-professional-growth
+        - gain-professional-growth
+  - id: fit-agency-tools
+    for:
+      value_propositions:
+        - vp-agency-tools
+      customer_segments:
+        - cs-agencies
+    mappings:
+      - - pr-reliable-subs
+        - pain-reliable-subs
+      - - pr-white-label
+        - pain-white-label
+      - - pr-markup-transparency
+        - pain-markup-transparency
+      - - gc-elastic-capacity
+        - gain-elastic-capacity
+      - - gc-trusted-network
+        - gain-trusted-network
+      - - gc-seamless-handoff
+        - gain-seamless-handoff
+channels:
+  - id: ch-website
+    name: Website & SEO
+    for:
+      customer_segments:
+        - cs-startups
+        - cs-freelancers
+  - id: ch-content
+    name: Content Marketing
+    for:
+      customer_segments:
+        - cs-startups
+        - cs-freelancers
+        - cs-agencies
+  - id: ch-enterprise-sales
+    name: Enterprise Sales Team
+    for:
+      customer_segments:
+        - cs-enterprise
+  - id: ch-app-stores
+    name: App Stores
+    for:
+      customer_segments:
+        - cs-freelancers
+  - id: ch-referrals
+    name: Referral Program
+    for:
+      customer_segments:
+        - cs-startups
+        - cs-freelancers
+        - cs-agencies
+  - id: ch-platform
+    name: Platform Experience
+    for:
+      customer_segments:
+        - cs-startups
+        - cs-enterprise
+        - cs-freelancers
+        - cs-agencies
+  - id: ch-partner-agencies
+    name: Partner Agencies
+    for:
+      customer_segments:
+        - cs-startups
+customer_relationships:
+  - id: cr-self-service-startups
+    name: Self-service with help center, chat support, and community forums
+    for:
+      customer_segments:
+        - cs-startups
+  - id: cr-dedicated-enterprise
+    name: Dedicated account manager, success team, and premium SLA
+    for:
+      customer_segments:
+        - cs-enterprise
+  - id: cr-community-freelancers
+    name: Community forums, webinars, and peer mentorship programs
+    for:
+      customer_segments:
+        - cs-freelancers
+  - id: cr-self-service-agencies
+    name: Self-service with partner resources and priority support
+    for:
+      customer_segments:
+        - cs-agencies
+revenue_streams:
+  - id: rs-client-fees
+    name: Client Service Fees
+    from:
+      customer_segments:
+        - cs-startups
+    for:
+      value_propositions:
+        - vp-client-platform
+  - id: rs-enterprise-subscription
+    name: Enterprise Subscription
+    from:
+      customer_segments:
+        - cs-enterprise
+    for:
+      value_propositions:
+        - vp-enterprise-platform
+  - id: rs-freelancer-fees
+    name: Freelancer Service Fees
+    from:
+      customer_segments:
+        - cs-freelancers
+    for:
+      value_propositions:
+        - vp-freelancer-platform
+  - id: rs-agency-fees
+    name: Agency Partner Fees
+    from:
+      customer_segments:
+        - cs-agencies
+    for:
+      value_propositions:
+        - vp-agency-tools
+  - id: rs-premium-features
+    name: Premium Freelancer Features
+    from:
+      customer_segments:
+        - cs-freelancers
+    for:
+      value_propositions:
+        - vp-freelancer-platform
+key_resources:
+  - id: kr-talent-network
+    name: Freelancer Network
+    for:
+      value_propositions:
+        - vp-client-platform
+        - vp-enterprise-platform
+        - vp-agency-tools
+  - id: kr-engineering
+    name: Engineering Team
+    for:
+      value_propositions:
+        - vp-client-platform
+        - vp-enterprise-platform
+        - vp-freelancer-platform
+        - vp-agency-tools
+  - id: kr-trust-team
+    name: Trust & Safety Team
+    for:
+      value_propositions:
+        - vp-client-platform
+        - vp-freelancer-platform
+  - id: kr-platform
+    name: Platform Technology
+    for:
+      value_propositions:
+        - vp-client-platform
+        - vp-enterprise-platform
+        - vp-freelancer-platform
+        - vp-agency-tools
+  - id: kr-payment-infrastructure
+    name: Payment Infrastructure
+    for:
+      value_propositions:
+        - vp-client-platform
+        - vp-freelancer-platform
+  - id: kr-brand
+    name: Brand & Reputation
+    for:
+      value_propositions:
+        - vp-client-platform
+        - vp-enterprise-platform
+        - vp-freelancer-platform
+  - id: kr-data
+    name: Marketplace Data
+    for:
+      value_propositions:
+        - vp-client-platform
+        - vp-enterprise-platform
+key_activities:
+  - id: ka-platform-dev
+    name: Platform Development
+    for:
+      value_propositions:
+        - vp-client-platform
+        - vp-enterprise-platform
+        - vp-freelancer-platform
+        - vp-agency-tools
+  - id: ka-trust-safety
+    name: Trust & Safety Operations
+    for:
+      value_propositions:
+        - vp-client-platform
+        - vp-freelancer-platform
+  - id: ka-growth
+    name: Growth Marketing
+    for:
+      value_propositions:
+        - vp-client-platform
+        - vp-freelancer-platform
+  - id: ka-enterprise-sales
+    name: Enterprise Sales
+    for:
+      value_propositions:
+        - vp-enterprise-platform
+  - id: ka-support
+    name: Customer Support
+    for:
+      value_propositions:
+        - vp-client-platform
+        - vp-freelancer-platform
+        - vp-agency-tools
+  - id: ka-community
+    name: Community Management
+    for:
+      value_propositions:
+        - vp-freelancer-platform
+key_partnerships:
+  - id: kp-payment-processors
+    name: Payment Processors
+    for:
+      key_resources:
+        - kr-payment-infrastructure
+  - id: kp-background-check
+    name: Background Check Providers
+    for:
+      key_activities:
+        - ka-trust-safety
+  - id: kp-skills-assessment
+    name: Skills Assessment Partners
+    for:
+      key_activities:
+        - ka-trust-safety
+  - id: kp-cloud-providers
+    name: Cloud Infrastructure
+    for:
+      key_resources:
+        - kr-platform
+  - id: kp-staffing-integrations
+    name: Enterprise HR Integrations
+    for:
+      key_activities:
+        - ka-enterprise-sales
+costs:
+  - id: cost-engineering-product
+    name: Engineering & Product
+    for:
+      key_resources:
+        - kr-engineering
+      key_activities:
+        - ka-platform-dev
+  - id: cost-trust-safety
+    name: Trust & Safety
+    for:
+      key_resources:
+        - kr-trust-team
+      key_activities:
+        - ka-trust-safety
+  - id: cost-sales-marketing
+    name: Sales & Marketing
+    for:
+      key_activities:
+        - ka-growth
+        - ka-enterprise-sales
+  - id: cost-payment-processing
+    name: Payment Processing
+    for:
+      key_resources:
+        - kr-payment-infrastructure
+  - id: cost-customer-support
+    name: Customer Support
+    for:
+      key_activities:
+        - ka-support
+
