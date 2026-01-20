@@ -3,8 +3,6 @@
  * TODO: Implement schema validation per specs/bmclang-mvp.md
  */
 
-import type { BMCDocument } from './types.js';
-
 export interface ValidationResult {
   valid: boolean;
   errors: { path: string; message: string }[];
