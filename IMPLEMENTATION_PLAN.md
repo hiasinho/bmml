@@ -4,19 +4,20 @@
 
 BMCLang (to be renamed **BMML** - Business Model Markup Language) is a YAML-based markup format for describing business models. This plan covers the v2 migration and enhancements.
 
-## Current State (v1 MVP - COMPLETE)
+## Current State (v2 - ACTIVE)
 
 | Component | Status | Location |
 |-----------|--------|----------|
-| Types | Complete | `src/types.ts` (~480 lines) |
-| Validator | Complete | `src/validator.ts` |
-| Linter | Complete | `src/linter.ts` (12 rules) |
-| Schema | Complete | `schemas/bmclang.schema.json` (702 lines) |
-| CLI | Complete | `src/cli.ts` |
-| Test fixtures | 5 fixtures (2 valid, 3 invalid) |
-| Examples | 5 comprehensive examples |
-| VS Code extension | Complete | `vscode-bmml/` |
-| Test coverage | 95 tests, all passing |
+| Types | Complete | `src/types.ts` (v2 types primary, v1 retained for migration) |
+| Validator | Complete | `src/validator.ts` (v2 only) |
+| Linter | Complete | `src/linter.ts` (v2 only, 12+ rules) |
+| Schema | Complete | `schemas/bmclang-v2.schema.json` |
+| CLI | Complete | `src/cli.ts` (validate/lint v2 only, migrate v1→v2) |
+| Migration | Complete | `src/migrate.ts` (v1→v2 conversion) |
+| Test fixtures | v2 fixtures in `test/fixtures/`, migration fixtures in `test/fixtures/migrate/` |
+| Examples | v2 examples in `examples/` |
+| VS Code extension | Complete | `vscode-bmml/` (v2 schema) |
+| Test coverage | 304 tests, all passing |
 
 ---
 
@@ -551,16 +552,24 @@ Quality-of-life improvements. Lower priority than core v2 migration.
 
 ## Medium Priority - v1 Deprecation
 
-v1 schema is not worth keeping. It will never be used and is not relevant going forward.
+v1 schema is deprecated. Only v2 is supported for validation and linting. Migration tool still accepts v1 input.
 
-- [ ] Remove `schemas/bmclang.schema.json` (v1 schema)
-- [ ] Remove v1 validation code paths from `src/validator.ts`
-- [ ] Remove v1 linting code paths from `src/linter.ts`
+- [x] Remove `schemas/bmclang.schema.json` (v1 schema)
+  - Done: Deleted v1 schema file. Validator now only loads v2 schema.
+- [x] Remove v1 validation code paths from `src/validator.ts`
+  - Done: validate(), validateDocument(), validateFile() no longer take version parameter. Auto-detect functions return error for v1 documents with migration hint.
+- [x] Remove v1 linting code paths from `src/linter.ts`
+  - Done: Removed collectAllIds (v1), buildIdMaps (v1), lintV1 functions. lint() now only accepts BMCDocumentV2.
 - [ ] Remove v1 types from `src/types.ts` (keep only v2 types)
-- [ ] Remove `test/fixtures/valid-*.bmml` and `invalid-*.bmml` (v1 fixtures)
-- [ ] Remove `examples/v1/` directory
-- [ ] Update tests to remove v1-specific test cases
-- [ ] Simplify CLI to only support v2 (remove version detection for v1)
+  - Note: v1 types retained because migration tool (src/migrate.ts) needs them to parse v1 input. Could be moved to internal-only exports in future.
+- [x] Remove `test/fixtures/valid-*.bmml` and `invalid-*.bmml` (v1 fixtures)
+  - Done: Removed valid-minimal.bmml, valid-complete.bmml, invalid-missing-meta.bmml, invalid-portfolio-stage.bmml, invalid-references.bmml. Migration fixtures in test/fixtures/migrate/ retained for migration tests.
+- [x] Remove `examples/v1/` directory
+  - Done: Deleted examples/v1/ directory with 5 archived v1 examples.
+- [x] Update tests to remove v1-specific test cases
+  - Done: Updated fixtures.test.ts, validator.test.ts, cli.test.ts, linter.test.ts, types.test.ts, migrate.test.ts. All 304 tests pass.
+- [x] Simplify CLI to only support v2 (remove version detection for v1)
+  - Done: validate and lint commands work only with v2. Auto-detect returns migration error for v1. migrate command still works with v1 input. Updated VS Code extension to use v2 schema.
 
 ---
 

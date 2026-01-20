@@ -1,16 +1,16 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://bmclang.dev/schemas/bmclang.schema.json",
-  "title": "BMCLang Business Model",
-  "description": "A YAML-based format for describing business models, based on Alexander Osterwalder's work",
+  "$id": "https://bmclang.dev/schemas/bmclang-v2.schema.json",
+  "title": "BMML Business Model v2",
+  "description": "A YAML-based format for describing business models, based on Alexander Osterwalder's work (v2 structure)",
   "type": "object",
   "required": ["version", "meta"],
   "additionalProperties": false,
   "properties": {
     "version": {
       "type": "string",
-      "description": "BMCLang format version",
-      "const": "1.0"
+      "description": "BMML format version",
+      "const": "2.0"
     },
     "meta": {
       "$ref": "#/$defs/Meta"
@@ -31,7 +31,7 @@
     },
     "fits": {
       "type": "array",
-      "description": "Connections between value propositions and customer segments",
+      "description": "Connections between value propositions and customer segments (VPC detail)",
       "items": {
         "$ref": "#/$defs/Fit"
       }
@@ -78,8 +78,12 @@
         "$ref": "#/$defs/KeyPartnership"
       }
     },
-    "cost_structure": {
-      "$ref": "#/$defs/CostStructure"
+    "costs": {
+      "type": "array",
+      "description": "Cost items (replaces v1 cost_structure)",
+      "items": {
+        "$ref": "#/$defs/Cost"
+      }
     }
   },
   "$defs": {
@@ -154,7 +158,7 @@
     },
     "CustomerSegment": {
       "type": "object",
-      "description": "A customer segment with its profile (jobs, pains, gains)",
+      "description": "A customer segment with optional profile (jobs, pains, gains)",
       "required": ["id", "name"],
       "additionalProperties": false,
       "properties": {
@@ -173,21 +177,21 @@
         },
         "jobs": {
           "type": "array",
-          "description": "Jobs to be done",
+          "description": "Jobs to be done (Customer Profile)",
           "items": {
             "$ref": "#/$defs/Job"
           }
         },
         "pains": {
           "type": "array",
-          "description": "Customer pains",
+          "description": "Customer pains (Customer Profile)",
           "items": {
             "$ref": "#/$defs/Pain"
           }
         },
         "gains": {
           "type": "array",
-          "description": "Customer gains",
+          "description": "Customer gains (Customer Profile)",
           "items": {
             "$ref": "#/$defs/Gain"
           }
@@ -197,7 +201,7 @@
     "Job": {
       "type": "object",
       "description": "A job the customer is trying to accomplish",
-      "required": ["id", "type", "description"],
+      "required": ["id", "description"],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -205,19 +209,9 @@
           "pattern": "^job-[a-z0-9-]+$",
           "description": "Unique identifier with job- prefix"
         },
-        "type": {
-          "type": "string",
-          "enum": ["functional", "emotional", "social"],
-          "description": "Type of job"
-        },
         "description": {
           "type": "string",
           "description": "What they're trying to accomplish"
-        },
-        "importance": {
-          "type": "string",
-          "enum": ["low", "medium", "high"],
-          "description": "Importance level"
         }
       }
     },
@@ -235,11 +229,6 @@
         "description": {
           "type": "string",
           "description": "What frustrates them or blocks them"
-        },
-        "severity": {
-          "type": "string",
-          "enum": ["low", "medium", "high"],
-          "description": "Severity level"
         }
       }
     },
@@ -257,17 +246,12 @@
         "description": {
           "type": "string",
           "description": "What they want to achieve or experience"
-        },
-        "importance": {
-          "type": "string",
-          "enum": ["low", "medium", "high"],
-          "description": "Importance level"
         }
       }
     },
     "ValueProposition": {
       "type": "object",
-      "description": "A value proposition with its products/services",
+      "description": "A value proposition with optional value map (products, pain relievers, gain creators)",
       "required": ["id", "name"],
       "additionalProperties": false,
       "properties": {
@@ -286,9 +270,23 @@
         },
         "products_services": {
           "type": "array",
-          "description": "Products and services that deliver this value",
+          "description": "Products and services that deliver this value (Value Map)",
           "items": {
             "$ref": "#/$defs/ProductService"
+          }
+        },
+        "pain_relievers": {
+          "type": "array",
+          "description": "How this VP relieves customer pains (Value Map)",
+          "items": {
+            "$ref": "#/$defs/PainReliever"
+          }
+        },
+        "gain_creators": {
+          "type": "array",
+          "description": "How this VP creates customer gains (Value Map)",
+          "items": {
+            "$ref": "#/$defs/GainCreator"
           }
         }
       }
@@ -296,7 +294,7 @@
     "ProductService": {
       "type": "object",
       "description": "A product or service offering",
-      "required": ["id", "type", "description"],
+      "required": ["id", "name"],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -304,21 +302,104 @@
           "pattern": "^ps-[a-z0-9-]+$",
           "description": "Unique identifier with ps- prefix"
         },
-        "type": {
+        "name": {
           "type": "string",
-          "enum": ["product", "service", "digital", "financial"],
-          "description": "Type of product/service"
+          "description": "Name of the product or service"
+        }
+      }
+    },
+    "PainReliever": {
+      "type": "object",
+      "description": "How a value proposition relieves a specific pain",
+      "required": ["id", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^pr-[a-z0-9-]+$",
+          "description": "Unique identifier with pr- prefix"
         },
-        "description": {
+        "name": {
           "type": "string",
-          "description": "What it is"
+          "description": "How it relieves pain"
+        }
+      }
+    },
+    "GainCreator": {
+      "type": "object",
+      "description": "How a value proposition creates a specific gain",
+      "required": ["id", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^gc-[a-z0-9-]+$",
+          "description": "Unique identifier with gc- prefix"
+        },
+        "name": {
+          "type": "string",
+          "description": "How it creates gain"
+        }
+      }
+    },
+    "ForRelation": {
+      "type": "object",
+      "description": "Relationship target - which entities this serves/supports",
+      "additionalProperties": false,
+      "properties": {
+        "value_propositions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^vp-[a-z0-9-]+$"
+          },
+          "description": "Value propositions this relates to"
+        },
+        "customer_segments": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^cs-[a-z0-9-]+$"
+          },
+          "description": "Customer segments this relates to"
+        },
+        "key_resources": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^kr-[a-z0-9-]+$"
+          },
+          "description": "Key resources this relates to"
+        },
+        "key_activities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^ka-[a-z0-9-]+$"
+          },
+          "description": "Key activities this relates to"
+        }
+      }
+    },
+    "FromRelation": {
+      "type": "object",
+      "description": "Relationship source - which entities this comes from",
+      "additionalProperties": false,
+      "properties": {
+        "customer_segments": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^cs-[a-z0-9-]+$"
+          },
+          "description": "Customer segments this comes from"
         }
       }
     },
     "Fit": {
       "type": "object",
-      "description": "A fit between a value proposition and customer segment",
-      "required": ["id", "value_proposition", "customer_segment"],
+      "description": "A fit between value propositions and customer segments (VPC detail)",
+      "required": ["id", "for"],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -326,121 +407,50 @@
           "pattern": "^fit-[a-z0-9-]+$",
           "description": "Unique identifier with fit- prefix"
         },
-        "value_proposition": {
-          "type": "string",
-          "pattern": "^vp-[a-z0-9-]+$",
-          "description": "Reference to a value proposition"
-        },
-        "customer_segment": {
-          "type": "string",
-          "pattern": "^cs-[a-z0-9-]+$",
-          "description": "Reference to a customer segment"
-        },
-        "pain_relievers": {
-          "type": "array",
-          "description": "How products/services relieve customer pains",
-          "items": {
-            "$ref": "#/$defs/PainReliever"
-          }
-        },
-        "gain_creators": {
-          "type": "array",
-          "description": "How products/services create customer gains",
-          "items": {
-            "$ref": "#/$defs/GainCreator"
-          }
-        },
-        "job_addressers": {
-          "type": "array",
-          "description": "How products/services address customer jobs",
-          "items": {
-            "$ref": "#/$defs/JobAddresser"
-          }
-        }
-      }
-    },
-    "PainReliever": {
-      "type": "object",
-      "description": "How a product/service relieves a specific pain",
-      "required": ["pain", "through"],
-      "additionalProperties": false,
-      "properties": {
-        "pain": {
-          "type": "string",
-          "pattern": "^pain-[a-z0-9-]+$",
-          "description": "Reference to a pain"
-        },
-        "through": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^ps-[a-z0-9-]+$"
+        "for": {
+          "type": "object",
+          "description": "Which VP(s) and CS(s) this fit connects",
+          "additionalProperties": false,
+          "properties": {
+            "value_propositions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^vp-[a-z0-9-]+$"
+              },
+              "minItems": 1,
+              "description": "Value propositions in this fit"
+            },
+            "customer_segments": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^cs-[a-z0-9-]+$"
+              },
+              "minItems": 1,
+              "description": "Customer segments in this fit"
+            }
           },
-          "minItems": 1,
-          "description": "Products/services that relieve this pain"
+          "required": ["value_propositions", "customer_segments"]
         },
-        "description": {
-          "type": "string",
-          "description": "How it relieves the pain"
-        }
-      }
-    },
-    "GainCreator": {
-      "type": "object",
-      "description": "How a product/service creates a specific gain",
-      "required": ["gain", "through"],
-      "additionalProperties": false,
-      "properties": {
-        "gain": {
-          "type": "string",
-          "pattern": "^gain-[a-z0-9-]+$",
-          "description": "Reference to a gain"
-        },
-        "through": {
+        "mappings": {
           "type": "array",
+          "description": "Tuple mappings: [reliever/creator, pain/gain]",
           "items": {
-            "type": "string",
-            "pattern": "^ps-[a-z0-9-]+$"
-          },
-          "minItems": 1,
-          "description": "Products/services that create this gain"
-        },
-        "description": {
-          "type": "string",
-          "description": "How it creates the gain"
-        }
-      }
-    },
-    "JobAddresser": {
-      "type": "object",
-      "description": "How a product/service addresses a specific job",
-      "required": ["job", "through"],
-      "additionalProperties": false,
-      "properties": {
-        "job": {
-          "type": "string",
-          "pattern": "^job-[a-z0-9-]+$",
-          "description": "Reference to a job"
-        },
-        "through": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^ps-[a-z0-9-]+$"
-          },
-          "minItems": 1,
-          "description": "Products/services that address this job"
-        },
-        "description": {
-          "type": "string",
-          "description": "How it addresses the job"
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 2,
+            "maxItems": 2
+          }
         }
       }
     },
     "Channel": {
       "type": "object",
-      "description": "A channel to reach customer segments",
-      "required": ["id", "name", "type"],
+      "description": "A channel to reach customer segments with value propositions",
+      "required": ["id", "name"],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -452,33 +462,35 @@
           "type": "string",
           "description": "Name of the channel"
         },
-        "type": {
-          "type": "string",
-          "enum": ["direct", "indirect", "owned", "partner"],
-          "description": "Type of channel"
-        },
-        "segments": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^cs-[a-z0-9-]+$"
-          },
-          "description": "Customer segments reached through this channel"
-        },
-        "phases": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enum": ["awareness", "evaluation", "purchase", "delivery", "after_sales"]
-          },
-          "description": "Channel phases covered"
+        "for": {
+          "type": "object",
+          "description": "Which VPs and CSs this channel serves",
+          "additionalProperties": false,
+          "properties": {
+            "value_propositions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^vp-[a-z0-9-]+$"
+              },
+              "description": "Value propositions delivered through this channel"
+            },
+            "customer_segments": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^cs-[a-z0-9-]+$"
+              },
+              "description": "Customer segments reached through this channel"
+            }
+          }
         }
       }
     },
     "CustomerRelationship": {
       "type": "object",
-      "description": "A type of relationship with a customer segment",
-      "required": ["id", "segment", "type"],
+      "description": "A type of relationship with customer segments",
+      "required": ["id", "name"],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -486,26 +498,31 @@
           "pattern": "^cr-[a-z0-9-]+$",
           "description": "Unique identifier with cr- prefix"
         },
-        "segment": {
+        "name": {
           "type": "string",
-          "pattern": "^cs-[a-z0-9-]+$",
-          "description": "Reference to a customer segment"
+          "description": "Name/type of relationship"
         },
-        "type": {
-          "type": "string",
-          "enum": ["personal_assistance", "dedicated", "self_service", "automated", "community", "co_creation"],
-          "description": "Type of relationship"
-        },
-        "description": {
-          "type": "string",
-          "description": "How you interact with this segment"
+        "for": {
+          "type": "object",
+          "description": "Which customer segments this relationship applies to",
+          "additionalProperties": false,
+          "properties": {
+            "customer_segments": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^cs-[a-z0-9-]+$"
+              },
+              "description": "Customer segments with this relationship type"
+            }
+          }
         }
       }
     },
     "RevenueStream": {
       "type": "object",
-      "description": "A revenue stream from customer segments",
-      "required": ["id", "name", "type"],
+      "description": "A revenue stream from customer segments for value propositions",
+      "required": ["id", "name"],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -517,35 +534,42 @@
           "type": "string",
           "description": "Name of the revenue stream"
         },
-        "type": {
-          "type": "string",
-          "enum": ["transaction", "recurring", "licensing", "subscription", "usage", "advertising"],
-          "description": "Type of revenue stream"
+        "from": {
+          "type": "object",
+          "description": "Who pays (source of revenue)",
+          "additionalProperties": false,
+          "properties": {
+            "customer_segments": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^cs-[a-z0-9-]+$"
+              },
+              "description": "Customer segments this revenue comes from"
+            }
+          }
         },
-        "from_segments": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^cs-[a-z0-9-]+$"
-          },
-          "description": "Customer segments this revenue comes from"
-        },
-        "for_value": {
-          "type": "string",
-          "pattern": "^vp-[a-z0-9-]+$",
-          "description": "Reference to value proposition"
-        },
-        "pricing": {
-          "type": "string",
-          "enum": ["fixed_menu", "dynamic", "negotiation", "auction", "market_dependent", "volume_dependent"],
-          "description": "Pricing mechanism"
+        "for": {
+          "type": "object",
+          "description": "What they pay for",
+          "additionalProperties": false,
+          "properties": {
+            "value_propositions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^vp-[a-z0-9-]+$"
+              },
+              "description": "Value propositions this revenue is for"
+            }
+          }
         }
       }
     },
     "KeyResource": {
       "type": "object",
       "description": "A key resource needed to deliver value",
-      "required": ["id", "name", "type"],
+      "required": ["id", "name"],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -557,29 +581,27 @@
           "type": "string",
           "description": "Name of the resource"
         },
-        "type": {
-          "type": "string",
-          "enum": ["physical", "intellectual", "human", "financial"],
-          "description": "Type of resource"
-        },
-        "description": {
-          "type": "string",
-          "description": "Details about the resource"
-        },
-        "for_value": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^vp-[a-z0-9-]+$"
-          },
-          "description": "Value propositions that need this resource"
+        "for": {
+          "type": "object",
+          "description": "Which value propositions need this resource",
+          "additionalProperties": false,
+          "properties": {
+            "value_propositions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^vp-[a-z0-9-]+$"
+              },
+              "description": "Value propositions that need this resource"
+            }
+          }
         }
       }
     },
     "KeyActivity": {
       "type": "object",
       "description": "A key activity needed to deliver value",
-      "required": ["id", "name", "type"],
+      "required": ["id", "name"],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -591,29 +613,27 @@
           "type": "string",
           "description": "Name of the activity"
         },
-        "type": {
-          "type": "string",
-          "enum": ["production", "problem_solving", "platform"],
-          "description": "Type of activity"
-        },
-        "description": {
-          "type": "string",
-          "description": "Details about the activity"
-        },
-        "for_value": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^vp-[a-z0-9-]+$"
-          },
-          "description": "Value propositions that require this activity"
+        "for": {
+          "type": "object",
+          "description": "Which value propositions require this activity",
+          "additionalProperties": false,
+          "properties": {
+            "value_propositions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^vp-[a-z0-9-]+$"
+              },
+              "description": "Value propositions that require this activity"
+            }
+          }
         }
       }
     },
     "KeyPartnership": {
       "type": "object",
       "description": "A key partnership that provides resources or activities",
-      "required": ["id", "name", "type", "motivation"],
+      "required": ["id", "name"],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -625,76 +645,68 @@
           "type": "string",
           "description": "Name of the partner"
         },
-        "type": {
-          "type": "string",
-          "enum": ["strategic_alliance", "coopetition", "joint_venture", "supplier"],
-          "description": "Type of partnership"
-        },
-        "motivation": {
-          "type": "string",
-          "enum": ["optimization", "risk_reduction", "resource_acquisition"],
-          "description": "Motivation for the partnership"
-        },
-        "provides": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^(kr|ka)-[a-z0-9-]+$"
-          },
-          "description": "Resources or activities this partner provides"
-        }
-      }
-    },
-    "CostStructure": {
-      "type": "object",
-      "description": "The cost structure of the business model",
-      "required": ["type"],
-      "additionalProperties": false,
-      "properties": {
-        "type": {
-          "type": "string",
-          "enum": ["cost_driven", "value_driven"],
-          "description": "Cost structure type"
-        },
-        "characteristics": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enum": ["fixed_costs_heavy", "variable_costs_heavy", "economies_of_scale", "economies_of_scope"]
-          },
-          "description": "Cost structure characteristics"
-        },
-        "major_costs": {
-          "type": "array",
-          "description": "Major cost items",
-          "items": {
-            "$ref": "#/$defs/MajorCost"
+        "for": {
+          "type": "object",
+          "description": "Which resources/activities this partner provides",
+          "additionalProperties": false,
+          "properties": {
+            "key_resources": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^kr-[a-z0-9-]+$"
+              },
+              "description": "Resources this partner provides"
+            },
+            "key_activities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^ka-[a-z0-9-]+$"
+              },
+              "description": "Activities this partner performs"
+            }
           }
         }
       }
     },
-    "MajorCost": {
+    "Cost": {
       "type": "object",
-      "description": "A major cost item",
-      "required": ["name", "type"],
+      "description": "A cost item linked to resources or activities",
+      "required": ["id", "name"],
       "additionalProperties": false,
       "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^cost-[a-z0-9-]+$",
+          "description": "Unique identifier with cost- prefix"
+        },
         "name": {
           "type": "string",
           "description": "Name of the cost"
         },
-        "type": {
-          "type": "string",
-          "enum": ["fixed", "variable"],
-          "description": "Type of cost"
-        },
-        "linked_to": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^(kr|ka)-[a-z0-9-]+$"
-          },
-          "description": "Resources or activities this cost is linked to"
+        "for": {
+          "type": "object",
+          "description": "Which resources/activities incur this cost",
+          "additionalProperties": false,
+          "properties": {
+            "key_resources": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^kr-[a-z0-9-]+$"
+              },
+              "description": "Resources that incur this cost"
+            },
+            "key_activities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^ka-[a-z0-9-]+$"
+              },
+              "description": "Activities that incur this cost"
+            }
+          }
         }
       }
     }

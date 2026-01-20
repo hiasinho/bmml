@@ -1,6 +1,7 @@
 /**
  * Validator tests
  * Test YAML parsing and JSON Schema validation
+ * Note: Only v2 documents are supported. v1 detection still works for migration purposes.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -30,11 +31,11 @@ describe('loadSchema', () => {
 
 describe('parseYaml', () => {
   it('parses valid YAML', () => {
-    const result = parseYaml('version: "1.0"\nmeta:\n  name: Test');
+    const result = parseYaml('version: "2.0"\nmeta:\n  name: Test');
     expect(result).toHaveProperty('data');
     if ('data' in result) {
       expect(result.data).toEqual({
-        version: '1.0',
+        version: '2.0',
         meta: { name: 'Test' },
       });
     }
@@ -50,17 +51,17 @@ describe('parseYaml', () => {
 });
 
 describe('validate', () => {
-  describe('valid fixtures', () => {
-    it('valid-minimal.bmml passes validation', () => {
-      const content = readFileSync(`${FIXTURES_DIR}/valid-minimal.bmml`, 'utf-8');
+  describe('valid v2 fixtures', () => {
+    it('valid-v2-minimal.bmml passes validation', () => {
+      const content = readFileSync(`${FIXTURES_DIR}/valid-v2-minimal.bmml`, 'utf-8');
       const result = validate(content);
 
       expect(result.valid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
 
-    it('valid-complete.bmml passes validation', () => {
-      const content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+    it('valid-v2-complete.bmml passes validation', () => {
+      const content = readFileSync(`${FIXTURES_DIR}/valid-v2-complete.bmml`, 'utf-8');
       const result = validate(content);
 
       expect(result.valid).toBe(true);
@@ -68,41 +69,22 @@ describe('validate', () => {
     });
   });
 
-  describe('invalid fixtures', () => {
-    it('invalid-missing-meta.bmml fails with correct error', () => {
-      const content = readFileSync(`${FIXTURES_DIR}/invalid-missing-meta.bmml`, 'utf-8');
+  describe('invalid v2 fixtures', () => {
+    // Note: invalid-v2-type-mismatch.bmml and invalid-v2-scope-refs.bmml are
+    // schema-valid but have linter errors (tested in linter.test.ts)
+
+    it('invalid-v2-tuple-format.bmml fails validation', () => {
+      const content = readFileSync(`${FIXTURES_DIR}/invalid-v2-tuple-format.bmml`, 'utf-8');
       const result = validate(content);
 
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
-
-      // Should have an error about missing 'meta'
-      const metaError = result.errors.find(
-        (e) => e.message.includes('meta') || e.path === '/'
-      );
-      expect(metaError).toBeDefined();
-    });
-
-    it('invalid-portfolio-stage.bmml fails with portfolio-stage constraint error', () => {
-      const content = readFileSync(`${FIXTURES_DIR}/invalid-portfolio-stage.bmml`, 'utf-8');
-      const result = validate(content);
-
-      expect(result.valid).toBe(false);
-      expect(result.errors.length).toBeGreaterThan(0);
-
-      // The error should be about the stage enum not matching for explore portfolio
-      // explore allows: ideation, discovery, validation, acceleration, transfer
-      // but the fixture has "sustain" which is only valid for exploit
-      const stageError = result.errors.find(
-        (e) => e.path.includes('stage') || e.message.includes('enum') || e.message.includes('one of')
-      );
-      expect(stageError).toBeDefined();
     });
   });
 
   describe('error messages', () => {
     it('reports missing required properties', () => {
-      const result = validate('version: "1.0"');
+      const result = validate('version: "2.0"');
 
       expect(result.valid).toBe(false);
       const metaError = result.errors.find((e) => e.message.includes("'meta'"));
@@ -111,7 +93,7 @@ describe('validate', () => {
 
     it('reports unknown properties', () => {
       const result = validate(`
-version: "1.0"
+version: "2.0"
 meta:
   name: Test
   portfolio: explore
@@ -128,7 +110,7 @@ unknown_field: value
 
     it('reports invalid enum values', () => {
       const result = validate(`
-version: "1.0"
+version: "2.0"
 meta:
   name: Test
   portfolio: invalid_portfolio
@@ -144,7 +126,7 @@ meta:
 
     it('reports invalid ID patterns', () => {
       const result = validate(`
-version: "1.0"
+version: "2.0"
 meta:
   name: Test
   portfolio: explore
@@ -164,9 +146,9 @@ customer_segments:
 });
 
 describe('validateDocument', () => {
-  it('validates a parsed document object', () => {
+  it('validates a parsed v2 document object', () => {
     const doc = {
-      version: '1.0',
+      version: '2.0',
       meta: {
         name: 'Test',
         portfolio: 'explore',
@@ -180,7 +162,7 @@ describe('validateDocument', () => {
 
   it('rejects invalid document object', () => {
     const doc = {
-      version: '1.0',
+      version: '2.0',
       // missing meta
     };
 
@@ -190,8 +172,8 @@ describe('validateDocument', () => {
 });
 
 describe('validateFile', () => {
-  it('validates a file from disk', () => {
-    const result = validateFile(`${FIXTURES_DIR}/valid-minimal.bmml`);
+  it('validates a v2 file from disk', () => {
+    const result = validateFile(`${FIXTURES_DIR}/valid-v2-minimal.bmml`);
     expect(result.valid).toBe(true);
   });
 
@@ -371,7 +353,7 @@ describe('detectVersion', () => {
 });
 
 describe('validateAuto', () => {
-  it('auto-detects and validates v1 document', () => {
+  it('auto-detects v1 document and returns migration error', () => {
     const v1Content = `
 version: "1.0"
 meta:
@@ -380,8 +362,10 @@ meta:
   stage: ideation
 `;
     const result = validateAuto(v1Content);
-    expect(result.valid).toBe(true);
+    expect(result.valid).toBe(false);
     expect(result.detectedVersion).toBe('v1');
+    expect(result.errors[0].message).toContain('v1 documents are not supported');
+    expect(result.errors[0].message).toContain('bmml migrate');
   });
 
   it('auto-detects and validates v2 document', () => {
@@ -414,7 +398,7 @@ fits:
     // May not be valid due to missing version field, but detection works
   });
 
-  it('auto-detects v1 from structure without explicit version', () => {
+  it('auto-detects v1 from structure without explicit version and returns migration error', () => {
     const v1Content = `
 meta:
   name: Test
@@ -427,25 +411,28 @@ fits:
 `;
     const result = validateAuto(v1Content);
     expect(result.detectedVersion).toBe('v1');
+    expect(result.valid).toBe(false);
+    expect(result.errors[0].message).toContain('v1 documents are not supported');
   });
 
-  it('returns v1 default for unparseable YAML', () => {
+  it('returns v2 default for unparseable YAML', () => {
     const result = validateAuto('invalid: yaml: :: syntax');
     expect(result.valid).toBe(false);
-    expect(result.detectedVersion).toBe('v1');
+    expect(result.detectedVersion).toBe('v2');
     expect(result.errors[0].message).toContain('YAML parse error');
   });
 });
 
 describe('validateDocumentAuto', () => {
-  it('auto-detects and validates v1 document object', () => {
+  it('auto-detects v1 document object and returns migration error', () => {
     const doc = {
       version: '1.0',
       meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
     };
     const result = validateDocumentAuto(doc);
-    expect(result.valid).toBe(true);
+    expect(result.valid).toBe(false);
     expect(result.detectedVersion).toBe('v1');
+    expect(result.errors[0].message).toContain('v1 documents are not supported');
   });
 
   it('auto-detects and validates v2 document object', () => {
@@ -460,16 +447,16 @@ describe('validateDocumentAuto', () => {
 });
 
 describe('validateFileAuto', () => {
-  it('auto-validates v1 fixture file', () => {
-    const result = validateFileAuto(`${FIXTURES_DIR}/valid-minimal.bmml`);
+  it('auto-validates v2 fixture file', () => {
+    const result = validateFileAuto(`${FIXTURES_DIR}/valid-v2-minimal.bmml`);
     expect(result.valid).toBe(true);
-    expect(result.detectedVersion).toBe('v1');
+    expect(result.detectedVersion).toBe('v2');
   });
 
   it('returns error for non-existent file', () => {
     const result = validateFileAuto('non-existent-file.bmml');
     expect(result.valid).toBe(false);
     expect(result.errors[0].message).toContain('File not found');
-    expect(result.detectedVersion).toBe('v1'); // Default
+    expect(result.detectedVersion).toBe('v2'); // Default
   });
 });

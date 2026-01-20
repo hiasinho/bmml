@@ -25,7 +25,6 @@ import {
   isPainRelieverId,
   isGainCreatorId,
   isCostId,
-  type BMCDocument,
   type BMCDocumentV2,
 } from '../src/types';
 
@@ -253,14 +252,14 @@ describe('ID Type Guards', () => {
 });
 
 describe('Type Compatibility', () => {
-  it('valid-complete.bmml conforms to BMCDocument type', () => {
-    const content = readFileSync('test/fixtures/valid-complete.bmml', 'utf-8');
-    const doc = loadYaml(content) as BMCDocument;
+  it('valid-v2-complete.bmml conforms to BMCDocumentV2 type', () => {
+    const content = readFileSync('test/fixtures/valid-v2-complete.bmml', 'utf-8');
+    const doc = loadYaml(content) as BMCDocumentV2;
 
     // Verify top-level structure
-    expect(doc.version).toBe('1.0');
+    expect(doc.version).toBe('2.0');
     expect(doc.meta).toBeDefined();
-    expect(doc.meta.name).toBe('Urban Brew');
+    expect(doc.meta.name).toBe('Meal Kit Co');
     expect(doc.meta.portfolio).toBe('explore');
     expect(doc.meta.stage).toBe('validation');
 
@@ -275,32 +274,32 @@ describe('Type Compatibility', () => {
     expect(doc.key_resources).toBeDefined();
     expect(doc.key_activities).toBeDefined();
     expect(doc.key_partnerships).toBeDefined();
-    expect(doc.cost_structure).toBeDefined();
+    expect(doc.costs).toBeDefined();
   });
 
-  it('valid-minimal.bmml conforms to BMCDocument type', () => {
-    const content = readFileSync('test/fixtures/valid-minimal.bmml', 'utf-8');
-    const doc = loadYaml(content) as BMCDocument;
+  it('valid-v2-minimal.bmml conforms to BMCDocumentV2 type', () => {
+    const content = readFileSync('test/fixtures/valid-v2-minimal.bmml', 'utf-8');
+    const doc = loadYaml(content) as BMCDocumentV2;
 
-    expect(doc.version).toBe('1.0');
+    expect(doc.version).toBe('2.0');
     expect(doc.meta).toBeDefined();
     expect(doc.meta.name).toBeDefined();
     expect(doc.meta.portfolio).toBeDefined();
     expect(doc.meta.stage).toBeDefined();
   });
 
-  it('customer segment IDs in fixtures are valid', () => {
-    const content = readFileSync('test/fixtures/valid-complete.bmml', 'utf-8');
-    const doc = loadYaml(content) as BMCDocument;
+  it('customer segment IDs in v2 fixtures are valid', () => {
+    const content = readFileSync('test/fixtures/valid-v2-complete.bmml', 'utf-8');
+    const doc = loadYaml(content) as BMCDocumentV2;
 
     for (const segment of doc.customer_segments || []) {
       expect(isCustomerSegmentId(segment.id)).toBe(true);
     }
   });
 
-  it('value proposition IDs in fixtures are valid', () => {
-    const content = readFileSync('test/fixtures/valid-complete.bmml', 'utf-8');
-    const doc = loadYaml(content) as BMCDocument;
+  it('value proposition IDs in v2 fixtures are valid', () => {
+    const content = readFileSync('test/fixtures/valid-v2-complete.bmml', 'utf-8');
+    const doc = loadYaml(content) as BMCDocumentV2;
 
     for (const vp of doc.value_propositions || []) {
       expect(isValuePropositionId(vp.id)).toBe(true);

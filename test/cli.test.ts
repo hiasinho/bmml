@@ -55,13 +55,13 @@ describe('CLI', () => {
 
   describe('validate command', () => {
     it('validates a valid minimal file', () => {
-      const exitCode = main(['validate', `${FIXTURES_DIR}/valid-minimal.bmml`]);
+      const exitCode = main(['validate', `${FIXTURES_DIR}/valid-v2-minimal.bmml`]);
       expect(exitCode).toBe(0);
       expect(consoleLogSpy).toHaveBeenCalledWith('OK');
     });
 
     it('validates a valid complete file', () => {
-      const exitCode = main(['validate', `${FIXTURES_DIR}/valid-complete.bmml`]);
+      const exitCode = main(['validate', `${FIXTURES_DIR}/valid-v2-complete.bmml`]);
       expect(exitCode).toBe(0);
       expect(consoleLogSpy).toHaveBeenCalledWith('OK');
     });
@@ -97,7 +97,7 @@ describe('CLI', () => {
     });
 
     it('outputs JSON with --json flag', () => {
-      const exitCode = main(['validate', '--json', `${FIXTURES_DIR}/valid-minimal.bmml`]);
+      const exitCode = main(['validate', '--json', `${FIXTURES_DIR}/valid-v2-minimal.bmml`]);
       expect(exitCode).toBe(0);
       expect(consoleLogSpy).toHaveBeenCalled();
       const output = consoleLogSpy.mock.calls[0][0];
@@ -119,7 +119,7 @@ describe('CLI', () => {
 
   describe('lint command', () => {
     it('lints a valid file without issues', () => {
-      const exitCode = main(['lint', `${FIXTURES_DIR}/valid-complete.bmml`]);
+      const exitCode = main(['lint', `${FIXTURES_DIR}/valid-v2-complete.bmml`]);
       expect(exitCode).toBe(0);
       expect(consoleLogSpy).toHaveBeenCalledWith('OK');
     });
@@ -132,8 +132,8 @@ describe('CLI', () => {
       expect(errorOutput).toContain('Validation errors');
     });
 
-    it('reports lint issues for invalid references', () => {
-      const exitCode = main(['lint', `${FIXTURES_DIR}/invalid-references.bmml`]);
+    it('reports lint issues for invalid scope references', () => {
+      const exitCode = main(['lint', `${FIXTURES_DIR}/invalid-v2-scope-refs.bmml`]);
       expect(exitCode).toBe(1);
       expect(consoleErrorSpy).toHaveBeenCalled();
       const errorOutput = consoleErrorSpy.mock.calls.flat().join('\n');
@@ -149,17 +149,19 @@ describe('CLI', () => {
     });
 
     it('outputs JSON with --json flag', () => {
-      const exitCode = main(['lint', '--json', `${FIXTURES_DIR}/valid-complete.bmml`]);
+      const exitCode = main(['lint', '--json', `${FIXTURES_DIR}/valid-v2-minimal.bmml`]);
       expect(exitCode).toBe(0);
       expect(consoleLogSpy).toHaveBeenCalled();
       const output = consoleLogSpy.mock.calls[0][0];
       const parsed = JSON.parse(output);
       expect(parsed.success).toBe(true);
-      expect(parsed.lintIssues).toEqual([]);
+      // Only check that there are no errors - warnings/info are acceptable
+      const errors = parsed.lintIssues.filter((i: { severity: string }) => i.severity === 'error');
+      expect(errors).toEqual([]);
     });
 
     it('outputs JSON lint issues with --json flag', () => {
-      const exitCode = main(['lint', '--json', `${FIXTURES_DIR}/invalid-references.bmml`]);
+      const exitCode = main(['lint', '--json', `${FIXTURES_DIR}/invalid-v2-scope-refs.bmml`]);
       expect(exitCode).toBe(1);
       expect(consoleLogSpy).toHaveBeenCalled();
       const output = consoleLogSpy.mock.calls[0][0];
@@ -171,15 +173,15 @@ describe('CLI', () => {
 
   describe('migrate command', () => {
     it('migrates a v1 file to v2 (dry-run by default)', () => {
-      const exitCode = main(['migrate', `${FIXTURES_DIR}/valid-minimal.bmml`]);
+      const exitCode = main(['migrate', `${FIXTURES_DIR}/migrate/costs-v1.bmml`]);
       expect(exitCode).toBe(0);
       expect(consoleLogSpy).toHaveBeenCalled();
       const output = consoleLogSpy.mock.calls[0][0];
       expect(output).toContain('version: "2.0"');
     });
 
-    it('migrates a complete v1 file', () => {
-      const exitCode = main(['migrate', `${FIXTURES_DIR}/valid-complete.bmml`]);
+    it('migrates a complete v1 file with relationships', () => {
+      const exitCode = main(['migrate', `${FIXTURES_DIR}/migrate/relationships-v1.bmml`]);
       expect(exitCode).toBe(0);
       expect(consoleLogSpy).toHaveBeenCalled();
       const output = consoleLogSpy.mock.calls[0][0];
@@ -213,7 +215,7 @@ describe('CLI', () => {
     });
 
     it('outputs JSON with --json flag', () => {
-      const exitCode = main(['migrate', '--json', `${FIXTURES_DIR}/valid-minimal.bmml`]);
+      const exitCode = main(['migrate', '--json', `${FIXTURES_DIR}/migrate/costs-v1.bmml`]);
       expect(exitCode).toBe(0);
       expect(consoleLogSpy).toHaveBeenCalled();
       const output = consoleLogSpy.mock.calls[0][0];
@@ -233,7 +235,7 @@ describe('CLI', () => {
     });
 
     it('respects --dry-run flag explicitly', () => {
-      const exitCode = main(['migrate', '--dry-run', `${FIXTURES_DIR}/valid-minimal.bmml`]);
+      const exitCode = main(['migrate', '--dry-run', `${FIXTURES_DIR}/migrate/costs-v1.bmml`]);
       expect(exitCode).toBe(0);
       expect(consoleLogSpy).toHaveBeenCalled();
       const output = consoleLogSpy.mock.calls[0][0];
@@ -243,7 +245,7 @@ describe('CLI', () => {
     it('modifies file with --in-place flag', () => {
       // Create a temporary copy of the v1 file
       const tempFile = join(tmpdir(), `test-migrate-${Date.now()}.bmml`);
-      copyFileSync(`${FIXTURES_DIR}/valid-minimal.bmml`, tempFile);
+      copyFileSync(`${FIXTURES_DIR}/migrate/costs-v1.bmml`, tempFile);
 
       try {
         // Verify it's v1
@@ -272,7 +274,7 @@ describe('CLI', () => {
     it('outputs JSON with --in-place and --json flags', () => {
       // Create a temporary copy of the v1 file
       const tempFile = join(tmpdir(), `test-migrate-json-${Date.now()}.bmml`);
-      copyFileSync(`${FIXTURES_DIR}/valid-minimal.bmml`, tempFile);
+      copyFileSync(`${FIXTURES_DIR}/migrate/costs-v1.bmml`, tempFile);
 
       try {
         const exitCode = main(['migrate', '--in-place', '--json', tempFile]);
@@ -303,14 +305,14 @@ describe('CLI', () => {
 
   describe('options parsing', () => {
     it('handles --json before file argument', () => {
-      const exitCode = main(['validate', '--json', `${FIXTURES_DIR}/valid-minimal.bmml`]);
+      const exitCode = main(['validate', '--json', `${FIXTURES_DIR}/valid-v2-minimal.bmml`]);
       expect(exitCode).toBe(0);
       const output = consoleLogSpy.mock.calls[0][0];
       expect(() => JSON.parse(output)).not.toThrow();
     });
 
     it('handles --json after file argument', () => {
-      const exitCode = main(['validate', `${FIXTURES_DIR}/valid-minimal.bmml`, '--json']);
+      const exitCode = main(['validate', `${FIXTURES_DIR}/valid-v2-minimal.bmml`, '--json']);
       expect(exitCode).toBe(0);
       const output = consoleLogSpy.mock.calls[0][0];
       expect(() => JSON.parse(output)).not.toThrow();

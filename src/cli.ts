@@ -7,7 +7,7 @@
 import { validateFileAuto, parseYaml, validateDocument } from './validator.js';
 import { lint } from './linter.js';
 import { migrateV1toV2 } from './migrate.js';
-import type { BMCDocument } from './types.js';
+import type { BMCDocumentV2 } from './types.js';
 import { readFileSync, writeFileSync } from 'fs';
 
 interface CliOptions {
@@ -156,7 +156,7 @@ function runLint(file: string, options: CliOptions): number {
     return 1;
   }
 
-  const lintResult = lint(parseResult.data as BMCDocument);
+  const lintResult = lint(parseResult.data as BMCDocumentV2);
   const errors = lintResult.issues.filter((i) => i.severity === 'error');
 
   const result: CliResult = {
@@ -231,7 +231,7 @@ function runMigrate(file: string, options: CliOptions): number {
   }
 
   // Validate against v2 schema
-  const validationResult = validateDocument(parseResult.data, 'v2');
+  const validationResult = validateDocument(parseResult.data);
   if (!validationResult.valid) {
     const result: MigrateResult = {
       success: false,

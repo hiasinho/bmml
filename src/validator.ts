@@ -148,12 +148,11 @@ export function detectVersion(doc: unknown): SchemaVersion {
 }
 
 /**
- * Load the BMCLang JSON Schema from the schemas directory
- * @param version - Schema version to load ('v1' or 'v2'), defaults to 'v1'
+ * Load the BMML JSON Schema from the schemas directory.
+ * Only v2 schema is available.
  */
-export function loadSchema(version: SchemaVersion = 'v1'): object {
-  const schemaFile = version === 'v2' ? 'bmclang-v2.schema.json' : 'bmclang.schema.json';
-  const schemaPath = join(__dirname, '..', 'schemas', schemaFile);
+export function loadSchema(): object {
+  const schemaPath = join(__dirname, '..', 'schemas', 'bmclang-v2.schema.json');
   const schemaContent = readFileSync(schemaPath, 'utf-8');
   return JSON.parse(schemaContent);
 }
@@ -220,13 +219,12 @@ export function parseYaml(content: string): { data: unknown } | { error: Validat
 }
 
 /**
- * Validate a BMCLang document (as parsed object) against the schema
+ * Validate a BMML document (as parsed object) against the v2 schema.
  * @param doc - The parsed document object
- * @param version - Schema version to validate against ('v1' or 'v2'), defaults to 'v1'
  */
-export function validateDocument(doc: unknown, version: SchemaVersion = 'v1'): ValidationResult {
+export function validateDocument(doc: unknown): ValidationResult {
   const ajv = createValidator();
-  const schema = loadSchema(version);
+  const schema = loadSchema();
   const validateFn = ajv.compile(schema);
 
   const valid = validateFn(doc);
@@ -242,12 +240,11 @@ export function validateDocument(doc: unknown, version: SchemaVersion = 'v1'): V
 }
 
 /**
- * Validate a BMCLang YAML string
- * Parses YAML and validates against the JSON Schema
+ * Validate a BMML YAML string.
+ * Parses YAML and validates against the v2 JSON Schema.
  * @param content - YAML string to validate
- * @param version - Schema version to validate against ('v1' or 'v2'), defaults to 'v1'
  */
-export function validate(content: string, version: SchemaVersion = 'v1'): ValidationResult {
+export function validate(content: string): ValidationResult {
   // First parse the YAML
   const parseResult = parseYaml(content);
   if ('error' in parseResult) {
@@ -258,18 +255,17 @@ export function validate(content: string, version: SchemaVersion = 'v1'): Valida
   }
 
   // Then validate against schema
-  return validateDocument(parseResult.data, version);
+  return validateDocument(parseResult.data);
 }
 
 /**
- * Validate a BMCLang file from disk
+ * Validate a BMML file from disk against the v2 schema.
  * @param filePath - Path to the YAML file
- * @param version - Schema version to validate against ('v1' or 'v2'), defaults to 'v1'
  */
-export function validateFile(filePath: string, version: SchemaVersion = 'v1'): ValidationResult {
+export function validateFile(filePath: string): ValidationResult {
   try {
     const content = readFileSync(filePath, 'utf-8');
-    return validate(content, version);
+    return validate(content);
   } catch (err) {
     if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
       return {
@@ -289,13 +285,24 @@ export interface AutoValidationResult extends ValidationResult {
 }
 
 /**
- * Validate a BMCLang document with automatic version detection.
- * Detects whether the document is v1 or v2 and validates against the appropriate schema.
+ * Validate a BMML document with automatic version detection.
+ * Detects version and validates against the v2 schema.
+ * v1 documents will be detected but must be migrated before validation passes.
  * @param doc - The parsed document object
  */
 export function validateDocumentAuto(doc: unknown): AutoValidationResult {
   const detectedVersion = detectVersion(doc);
-  const result = validateDocument(doc, detectedVersion);
+
+  // v1 documents cannot be validated - they must be migrated first
+  if (detectedVersion === 'v1') {
+    return {
+      valid: false,
+      errors: [{ path: '/', message: 'v1 documents are not supported. Use `bmml migrate` to convert to v2 format.' }],
+      detectedVersion,
+    };
+  }
+
+  const result = validateDocument(doc);
   return {
     ...result,
     detectedVersion,
@@ -303,8 +310,9 @@ export function validateDocumentAuto(doc: unknown): AutoValidationResult {
 }
 
 /**
- * Validate a BMCLang YAML string with automatic version detection.
- * Detects whether the document is v1 or v2 and validates against the appropriate schema.
+ * Validate a BMML YAML string with automatic version detection.
+ * Detects version and validates against the v2 schema.
+ * v1 documents will be detected but must be migrated before validation passes.
  * @param content - YAML string to validate
  */
 export function validateAuto(content: string): AutoValidationResult {
@@ -314,7 +322,7 @@ export function validateAuto(content: string): AutoValidationResult {
     return {
       valid: false,
       errors: [parseResult.error],
-      detectedVersion: 'v1', // Default when can't parse
+      detectedVersion: 'v2', // Default when can't parse
     };
   }
 
@@ -323,7 +331,8 @@ export function validateAuto(content: string): AutoValidationResult {
 }
 
 /**
- * Validate a BMCLang file from disk with automatic version detection.
+ * Validate a BMML file from disk with automatic version detection.
+ * v1 documents will be detected but must be migrated before validation passes.
  * @param filePath - Path to the YAML file
  */
 export function validateFileAuto(filePath: string): AutoValidationResult {
@@ -335,7 +344,7 @@ export function validateFileAuto(filePath: string): AutoValidationResult {
       return {
         valid: false,
         errors: [{ path: '/', message: `File not found: ${filePath}` }],
-        detectedVersion: 'v1',
+        detectedVersion: 'v2',
       };
     }
     throw err;

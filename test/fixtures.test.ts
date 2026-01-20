@@ -8,13 +8,13 @@ import { readFileSync, readdirSync } from 'fs';
 import { load as loadYaml } from 'js-yaml';
 import { validateFileAuto, detectVersion } from '../src/validator';
 import { lint, lintIsValid } from '../src/linter';
-import type { BMCDocument, BMCDocumentV2 } from '../src/types';
+import type { BMCDocumentV2 } from '../src/types';
 
 const FIXTURES_DIR = 'test/fixtures';
 
-function loadFixture(filename: string): BMCDocument | BMCDocumentV2 {
+function loadFixture(filename: string): BMCDocumentV2 {
   const content = readFileSync(`${FIXTURES_DIR}/${filename}`, 'utf-8');
-  return loadYaml(content) as BMCDocument | BMCDocumentV2;
+  return loadYaml(content) as BMCDocumentV2;
 }
 
 describe('Test Fixtures', () => {
@@ -34,60 +34,6 @@ describe('Test Fixtures', () => {
   }
 });
 
-describe('v1 Fixtures', () => {
-  describe('valid-minimal.bmml', () => {
-    it('validates against v1 schema', () => {
-      const result = validateFileAuto(`${FIXTURES_DIR}/valid-minimal.bmml`);
-      expect(result.valid).toBe(true);
-      expect(result.detectedVersion).toBe('v1');
-    });
-
-    it('passes linting', () => {
-      const doc = loadFixture('valid-minimal.bmml');
-      expect(lintIsValid(doc)).toBe(true);
-    });
-  });
-
-  describe('valid-complete.bmml', () => {
-    it('validates against v1 schema', () => {
-      const result = validateFileAuto(`${FIXTURES_DIR}/valid-complete.bmml`);
-      expect(result.valid).toBe(true);
-      expect(result.detectedVersion).toBe('v1');
-    });
-
-    it('passes linting', () => {
-      const doc = loadFixture('valid-complete.bmml');
-      expect(lintIsValid(doc)).toBe(true);
-    });
-  });
-
-  describe('invalid-missing-meta.bmml', () => {
-    it('fails schema validation', () => {
-      const result = validateFileAuto(`${FIXTURES_DIR}/invalid-missing-meta.bmml`);
-      expect(result.valid).toBe(false);
-    });
-  });
-
-  describe('invalid-portfolio-stage.bmml', () => {
-    it('fails schema validation', () => {
-      const result = validateFileAuto(`${FIXTURES_DIR}/invalid-portfolio-stage.bmml`);
-      expect(result.valid).toBe(false);
-    });
-  });
-
-  describe('invalid-references.bmml', () => {
-    it('validates against schema but fails linting', () => {
-      const result = validateFileAuto(`${FIXTURES_DIR}/invalid-references.bmml`);
-      // Schema validation passes (structure is valid)
-      expect(result.valid).toBe(true);
-
-      // Linting fails (references are invalid)
-      const doc = loadFixture('invalid-references.bmml');
-      expect(lintIsValid(doc)).toBe(false);
-    });
-  });
-});
-
 describe('v2 Fixtures', () => {
   describe('valid-v2-minimal.bmml', () => {
     it('validates against v2 schema', () => {
@@ -102,7 +48,7 @@ describe('v2 Fixtures', () => {
     });
 
     it('has all 9 BMC blocks with for:/from: patterns', () => {
-      const doc = loadFixture('valid-v2-minimal.bmml') as BMCDocumentV2;
+      const doc = loadFixture('valid-v2-minimal.bmml');
       expect(doc.customer_segments).toBeDefined();
       expect(doc.value_propositions).toBeDefined();
       expect(doc.channels).toBeDefined();
@@ -120,7 +66,7 @@ describe('v2 Fixtures', () => {
     });
 
     it('has no VPC detail (no jobs, pains, gains, fits)', () => {
-      const doc = loadFixture('valid-v2-minimal.bmml') as BMCDocumentV2;
+      const doc = loadFixture('valid-v2-minimal.bmml');
       // Segments have no profile detail
       expect(doc.customer_segments![0].jobs).toBeUndefined();
       expect(doc.customer_segments![0].pains).toBeUndefined();
@@ -144,7 +90,7 @@ describe('v2 Fixtures', () => {
     });
 
     it('has full VPC detail (profiles, value maps, fits)', () => {
-      const doc = loadFixture('valid-v2-complete.bmml') as BMCDocumentV2;
+      const doc = loadFixture('valid-v2-complete.bmml');
 
       // Customer profiles
       const segment = doc.customer_segments![0];
@@ -167,7 +113,7 @@ describe('v2 Fixtures', () => {
     });
 
     it('has correct tuple mapping format', () => {
-      const doc = loadFixture('valid-v2-complete.bmml') as BMCDocumentV2;
+      const doc = loadFixture('valid-v2-complete.bmml');
       const fit = doc.fits![0];
 
       // Mappings should be array of tuples
@@ -251,11 +197,6 @@ describe('v2 Fixtures', () => {
 });
 
 describe('Version Detection', () => {
-  it('detects v1 fixtures correctly', () => {
-    const doc = loadFixture('valid-minimal.bmml');
-    expect(detectVersion(doc)).toBe('v1');
-  });
-
   it('detects v2 fixtures correctly', () => {
     const doc = loadFixture('valid-v2-minimal.bmml');
     expect(detectVersion(doc)).toBe('v2');

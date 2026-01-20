@@ -37,7 +37,7 @@
     "yamlValidation": [
       {
         "fileMatch": "*.bmml",
-        "url": "./schemas/bmclang.schema.json"
+        "url": "./schemas/bmclang-v2.schema.json"
       }
     ]
   },

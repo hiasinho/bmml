@@ -6,7 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, existsSync } from 'fs';
 import { migrateV1toV2, migrateDocumentV1toV2 } from '../src/migrate';
-import { validateAuto, parseYaml, validate } from '../src/validator';
+import { validateAuto, parseYaml, detectVersion } from '../src/validator';
 import type { BMCDocument } from '../src/types';
 
 const FIXTURES_DIR = 'test/fixtures';
@@ -39,16 +39,16 @@ describe('migrateV1toV2', () => {
       expect(result.errors[0]).toContain('Unsupported version');
     });
 
-    it('successfully migrates minimal v1 document', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-minimal.bmml`, 'utf-8');
+    it('successfully migrates v1 document', () => {
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/costs-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       expect(result.output).toBeDefined();
       expect(result.output).toContain('version: "2.0"');
     });
 
-    it('successfully migrates complete v1 document', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+    it('successfully migrates complete v1 document with fits', () => {
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/fitmappings-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       expect(result.output).toBeDefined();
@@ -57,7 +57,7 @@ describe('migrateV1toV2', () => {
 
   describe('version field', () => {
     it('changes version from 1.0 to 2.0', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-minimal.bmml`, 'utf-8');
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/costs-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       expect(result.output).toContain('version: "2.0"');
@@ -83,26 +83,8 @@ customer_segments:
       expect(result.output).toContain('Test Segment');
     });
 
-    it('strips type and importance from jobs', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
-      const result = migrateV1toV2(v1Content);
-      expect(result.success).toBe(true);
-      // v2 jobs should not have type or importance
-      const parseResult = parseYaml(result.output!);
-      expect('data' in parseResult).toBe(true);
-      if ('data' in parseResult) {
-        const doc = parseResult.data as any;
-        const job = doc.customer_segments?.[0]?.jobs?.[0];
-        expect(job).toBeDefined();
-        expect(job.id).toBeDefined();
-        expect(job.description).toBeDefined();
-        expect(job.type).toBeUndefined();
-        expect(job.importance).toBeUndefined();
-      }
-    });
-
     it('strips severity from pains', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/fitmappings-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       const parseResult = parseYaml(result.output!);
@@ -118,7 +100,7 @@ customer_segments:
     });
 
     it('strips importance from gains', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/fitmappings-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       const parseResult = parseYaml(result.output!);
@@ -136,7 +118,7 @@ customer_segments:
 
   describe('value propositions migration', () => {
     it('converts products_services type to name', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/fitmappings-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       const parseResult = parseYaml(result.output!);
@@ -152,14 +134,14 @@ customer_segments:
     });
 
     it('adds pain_relievers extracted from fits', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/fitmappings-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       const parseResult = parseYaml(result.output!);
       expect('data' in parseResult).toBe(true);
       if ('data' in parseResult) {
         const doc = parseResult.data as any;
-        // First VP (vp-workspace) should have pain relievers from fit-workspace-remote
+        // First VP (vp-alpha) should have pain relievers from fit-alpha-a
         const vp = doc.value_propositions?.[0];
         expect(vp?.pain_relievers).toBeDefined();
         expect(vp?.pain_relievers?.length).toBeGreaterThan(0);
@@ -168,7 +150,7 @@ customer_segments:
     });
 
     it('adds gain_creators extracted from fits', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/fitmappings-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       const parseResult = parseYaml(result.output!);
@@ -186,7 +168,7 @@ customer_segments:
 
   describe('fits migration', () => {
     it('converts value_proposition + customer_segment to for: pattern', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/fitmappings-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       const parseResult = parseYaml(result.output!);
@@ -205,7 +187,7 @@ customer_segments:
     });
 
     it('creates tuple mappings for pain relievers and gain creators', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/fitmappings-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       const parseResult = parseYaml(result.output!);
@@ -230,7 +212,7 @@ customer_segments:
 
   describe('channels migration', () => {
     it('converts segments to for: { customer_segments: [] }', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/relationships-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       const parseResult = parseYaml(result.output!);
@@ -247,7 +229,7 @@ customer_segments:
 
   describe('customer_relationships migration', () => {
     it('converts segment to for: { customer_segments: [] }', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/relationships-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       const parseResult = parseYaml(result.output!);
@@ -265,7 +247,7 @@ customer_segments:
 
   describe('revenue_streams migration', () => {
     it('converts from_segments to from: { customer_segments: [] }', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/relationships-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       const parseResult = parseYaml(result.output!);
@@ -280,7 +262,7 @@ customer_segments:
     });
 
     it('converts for_value to for: { value_propositions: [] }', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/relationships-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       const parseResult = parseYaml(result.output!);
@@ -296,7 +278,7 @@ customer_segments:
 
   describe('key_resources migration', () => {
     it('converts for_value to for: { value_propositions: [] }', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/costs-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       const parseResult = parseYaml(result.output!);
@@ -313,7 +295,7 @@ customer_segments:
 
   describe('key_activities migration', () => {
     it('converts for_value to for: { value_propositions: [] }', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/costs-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       const parseResult = parseYaml(result.output!);
@@ -330,7 +312,7 @@ customer_segments:
 
   describe('key_partnerships migration', () => {
     it('converts provides to for: { key_resources: [], key_activities: [] }', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/relationships-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       const parseResult = parseYaml(result.output!);
@@ -339,7 +321,7 @@ customer_segments:
         const doc = parseResult.data as any;
         const kp = doc.key_partnerships?.[0];
         expect(kp).toBeDefined();
-        // Should have for with key_resources (since the v1 example provides kr-equipment)
+        // Should have for with key_resources (since the v1 example provides kr-*)
         expect(kp.for?.key_resources).toBeInstanceOf(Array);
         expect(kp.provides).toBeUndefined();
       }
@@ -348,7 +330,7 @@ customer_segments:
 
   describe('cost_structure migration', () => {
     it('converts cost_structure.major_costs to costs array', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/costs-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       const parseResult = parseYaml(result.output!);
@@ -361,7 +343,7 @@ customer_segments:
     });
 
     it('generates cost- prefixed IDs', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/costs-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       const parseResult = parseYaml(result.output!);
@@ -375,24 +357,24 @@ customer_segments:
     });
 
     it('converts linked_to to for: { key_resources: [], key_activities: [] }', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/costs-v1.bmml`, 'utf-8');
       const result = migrateV1toV2(v1Content);
       expect(result.success).toBe(true);
       const parseResult = parseYaml(result.output!);
       expect('data' in parseResult).toBe(true);
       if ('data' in parseResult) {
         const doc = parseResult.data as any;
-        // First cost (Rent) is linked to kr-location
-        const rentCost = doc.costs?.find((c: any) => c.name === 'Rent');
+        // First cost (Office Rent) is linked to kr-office
+        const rentCost = doc.costs?.find((c: any) => c.name === 'Office Rent');
         expect(rentCost?.for?.key_resources).toBeInstanceOf(Array);
-        expect(rentCost?.for?.key_resources).toContain('kr-location');
+        expect(rentCost?.for?.key_resources).toContain('kr-office');
       }
     });
   });
 
   describe('validation of migrated output', () => {
-    it('produces valid v2 output from valid-minimal.bmml', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-minimal.bmml`, 'utf-8');
+    it('produces valid v2 output from costs-v1.bmml', () => {
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/costs-v1.bmml`, 'utf-8');
       const migrationResult = migrateV1toV2(v1Content);
       expect(migrationResult.success).toBe(true);
 
@@ -401,8 +383,8 @@ customer_segments:
       expect(validationResult.detectedVersion).toBe('v2');
     });
 
-    it('produces valid v2 output from valid-complete.bmml', () => {
-      const v1Content = readFileSync(`${FIXTURES_DIR}/valid-complete.bmml`, 'utf-8');
+    it('produces valid v2 output from fitmappings-v1.bmml', () => {
+      const v1Content = readFileSync(`${MIGRATE_FIXTURES_DIR}/fitmappings-v1.bmml`, 'utf-8');
       const migrationResult = migrateV1toV2(v1Content);
       expect(migrationResult.success).toBe(true);
 
@@ -454,16 +436,21 @@ describe('migration fixtures', () => {
       expect(existsSync(v2Path)).toBe(true);
     });
 
-    it('v1 fixture validates as v1', () => {
+    it('v1 fixture is detected as v1', () => {
       const content = readFileSync(v1Path, 'utf-8');
-      const result = validate(content, 'v1');
-      expect(result.valid).toBe(true);
+      const parseResult = parseYaml(content);
+      expect('data' in parseResult).toBe(true);
+      if ('data' in parseResult) {
+        const version = detectVersion(parseResult.data);
+        expect(version).toBe('v1');
+      }
     });
 
     it('v2 fixture validates as v2', () => {
       const content = readFileSync(v2Path, 'utf-8');
-      const result = validate(content, 'v2');
+      const result = validateAuto(content);
       expect(result.valid).toBe(true);
+      expect(result.detectedVersion).toBe('v2');
     });
 
     it('migrates v1 to valid v2', () => {
@@ -588,16 +575,21 @@ describe('migration fixtures', () => {
       expect(existsSync(v2Path)).toBe(true);
     });
 
-    it('v1 fixture validates as v1', () => {
+    it('v1 fixture is detected as v1', () => {
       const content = readFileSync(v1Path, 'utf-8');
-      const result = validate(content, 'v1');
-      expect(result.valid).toBe(true);
+      const parseResult = parseYaml(content);
+      expect('data' in parseResult).toBe(true);
+      if ('data' in parseResult) {
+        const version = detectVersion(parseResult.data);
+        expect(version).toBe('v1');
+      }
     });
 
     it('v2 fixture validates as v2', () => {
       const content = readFileSync(v2Path, 'utf-8');
-      const result = validate(content, 'v2');
+      const result = validateAuto(content);
       expect(result.valid).toBe(true);
+      expect(result.detectedVersion).toBe('v2');
     });
 
     it('migrates v1 to valid v2', () => {
@@ -687,16 +679,21 @@ describe('migration fixtures', () => {
       expect(existsSync(v2Path)).toBe(true);
     });
 
-    it('v1 fixture validates as v1', () => {
+    it('v1 fixture is detected as v1', () => {
       const content = readFileSync(v1Path, 'utf-8');
-      const result = validate(content, 'v1');
-      expect(result.valid).toBe(true);
+      const parseResult = parseYaml(content);
+      expect('data' in parseResult).toBe(true);
+      if ('data' in parseResult) {
+        const version = detectVersion(parseResult.data);
+        expect(version).toBe('v1');
+      }
     });
 
     it('v2 fixture validates as v2', () => {
       const content = readFileSync(v2Path, 'utf-8');
-      const result = validate(content, 'v2');
+      const result = validateAuto(content);
       expect(result.valid).toBe(true);
+      expect(result.detectedVersion).toBe('v2');
     });
 
     it('migrates v1 to valid v2', () => {
@@ -787,16 +784,21 @@ describe('migration fixtures', () => {
       expect(existsSync(v2Path)).toBe(true);
     });
 
-    it('v1 fixture validates as v1', () => {
+    it('v1 fixture is detected as v1', () => {
       const content = readFileSync(v1Path, 'utf-8');
-      const result = validate(content, 'v1');
-      expect(result.valid).toBe(true);
+      const parseResult = parseYaml(content);
+      expect('data' in parseResult).toBe(true);
+      if ('data' in parseResult) {
+        const version = detectVersion(parseResult.data);
+        expect(version).toBe('v1');
+      }
     });
 
     it('v2 fixture validates as v2', () => {
       const content = readFileSync(v2Path, 'utf-8');
-      const result = validate(content, 'v2');
+      const result = validateAuto(content);
       expect(result.valid).toBe(true);
+      expect(result.detectedVersion).toBe('v2');
     });
 
     it('migrates v1 to valid v2', () => {

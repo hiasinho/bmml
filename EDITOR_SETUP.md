@@ -35,7 +35,7 @@ For a lightweight setup using only the YAML extension:
     "*.bmml": "yaml"
   },
   "yaml.schemas": {
-    "./schemas/bmclang.schema.json": "*.bmml"
+    "./schemas/bmclang-v2.schema.json": "*.bmml"
   }
 }
 ```
@@ -48,7 +48,7 @@ Or for user-wide settings with the published schema:
     "*.bmml": "yaml"
   },
   "yaml.schemas": {
-    "https://raw.githubusercontent.com/bmclang/bmclang/main/schemas/bmclang.schema.json": "*.bmml"
+    "https://raw.githubusercontent.com/bmclang/bmclang/main/schemas/bmclang-v2.schema.json": "*.bmml"
   }
 }
 ```
@@ -65,7 +65,7 @@ This provides:
 2. Click **+** to add a new mapping
 3. Set:
    - Name: `BMML`
-   - Schema file or URL: `schemas/bmclang.schema.json` (or the raw GitHub URL)
+   - Schema file or URL: `schemas/bmclang-v2.schema.json` (or the raw GitHub URL)
    - File path pattern: `*.bmml`
 
 ## Vim/Neovim
@@ -77,7 +77,7 @@ Add to your `coc-settings.json`:
 ```json
 {
   "yaml.schemas": {
-    "./schemas/bmclang.schema.json": "*.bmml"
+    "./schemas/bmclang-v2.schema.json": "*.bmml"
   }
 }
 ```
@@ -91,7 +91,7 @@ require('lspconfig').yamlls.setup {
   settings = {
     yaml = {
       schemas = {
-        ["./schemas/bmclang.schema.json"] = "*.bmml"
+        ["./schemas/bmclang-v2.schema.json"] = "*.bmml"
       }
     }
   }
@@ -107,7 +107,7 @@ require('lspconfig').yamlls.setup {
 {
   "settings": {
     "yaml.schemas": {
-      "./schemas/bmclang.schema.json": "*.bmml"
+      "./schemas/bmclang-v2.schema.json": "*.bmml"
     }
   }
 }
@@ -116,8 +116,8 @@ require('lspconfig').yamlls.setup {
 ## Schema URL
 
 The JSON Schema is available at:
-- Local: `schemas/bmclang.schema.json`
-- GitHub (once published): `https://raw.githubusercontent.com/bmclang/bmclang/main/schemas/bmclang.schema.json`
+- Local: `schemas/bmclang-v2.schema.json`
+- GitHub (once published): `https://raw.githubusercontent.com/bmclang/bmclang/main/schemas/bmclang-v2.schema.json`
 
 ## Validation Without Editor Integration
 
