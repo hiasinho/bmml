@@ -462,6 +462,40 @@ Depends on: v2 Schema + Migration Tooling
 
 ---
 
+## High Priority - Website Redesign
+
+It's important to have this website very soon
+
+### Design & Layout
+
+- [ ] Study `ghuntley/cursed-website` for design patterns (via GitHub MCP)
+- [ ] Create new `docs/index.html` with bold gradient design
+- [ ] Fixed navigation header
+- [ ] Mobile responsive layout
+
+### Content Sections
+
+- [ ] Hero section: BMML name, tagline, CTA buttons (GitHub, Get Started)
+- [ ] AirBnB example: Create an example business model for AirBnB. Study AirBnB's business model before doing that.
+- [ ] Code example: v2 syntax highlighted (minimal + full) with example of AirBnB
+- [ ] What is BMC/VPC: Visual block representation
+- [ ] Examples gallery: Links to example files
+- [ ] Installation: CLI commands, VS Code extension link
+- [ ] Roadmap/WIP status: Clear progress indicator
+- [ ] FAQ accordion with all required questions
+- [ ] Footer: GitHub, spec link, license, Made by Hiasinho
+
+### Required FAQ Content
+
+- What is BMML?
+- Who made this? (Hiasinho, https://hia.sh)
+- Is this official/approved by Osterwalder? (No - independent project)
+- What's the goal?
+- How can I contribute?
+- Is this a commercial project? (No - open source)
+
+---
+
 ## Medium Priority - Enhanced Linter Rules
 
 Quality-of-life improvements. Lower priority than core v2 migration.
@@ -496,39 +530,6 @@ Quality-of-life improvements. Lower priority than core v2 migration.
 
 - [ ] Warning: Duplicate ID detected (same ID used twice across sections)
   - AC: `cs-busy` used twice produces warning
-
----
-
-## High Priority - Website Redesign
-
-Can be done in parallel with other work.
-
-### Design & Layout
-
-- [ ] Study `ghuntley/cursed-website` for design patterns (via GitHub MCP)
-- [ ] Create new `docs/index.html` with bold gradient design
-- [ ] Fixed navigation header
-- [ ] Mobile responsive layout
-
-### Content Sections
-
-- [ ] Hero section: BMML name, tagline, CTA buttons (GitHub, Get Started)
-- [ ] Code example: v2 syntax highlighted (minimal + full)
-- [ ] What is BMC/VPC: Visual block representation
-- [ ] Examples gallery: Links to example files
-- [ ] Installation: CLI commands, VS Code extension link
-- [ ] Roadmap/WIP status: Clear progress indicator
-- [ ] FAQ accordion with all required questions
-- [ ] Footer: GitHub, spec link, license, Made by Hiasinho
-
-### Required FAQ Content
-
-- What is BMML?
-- Who made this? (Hiasinho, https://hia.sh)
-- Is this official/approved by Osterwalder? (No - independent project)
-- What's the goal?
-- How can I contribute?
-- Is this a commercial project? (No - open source)
 
 ---
 
