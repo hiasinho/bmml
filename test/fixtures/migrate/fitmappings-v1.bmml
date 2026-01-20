@@ -1,0 +1,85 @@
+version: "1.0"
+
+meta:
+  name: "Fit Mapping Migration Test"
+  portfolio: explore
+  stage: ideation
+
+customer_segments:
+  - id: cs-segment-a
+    name: Segment A
+    pains:
+      - id: pain-a1
+        description: Pain A1
+        severity: high
+      - id: pain-a2
+        description: Pain A2
+        severity: medium
+    gains:
+      - id: gain-a1
+        description: Gain A1
+        importance: high
+      - id: gain-a2
+        description: Gain A2
+        importance: medium
+
+  - id: cs-segment-b
+    name: Segment B
+    pains:
+      - id: pain-b1
+        description: Pain B1
+        severity: high
+    gains:
+      - id: gain-b1
+        description: Gain B1
+        importance: high
+
+value_propositions:
+  - id: vp-alpha
+    name: Alpha Product
+    products_services:
+      - id: ps-feature-1
+        type: product
+        description: Feature 1
+      - id: ps-feature-2
+        type: service
+        description: Feature 2
+
+  - id: vp-beta
+    name: Beta Product
+    products_services:
+      - id: ps-feature-3
+        type: product
+        description: Feature 3
+
+# v1 fits with detailed pain_relievers and gain_creators
+fits:
+  - id: fit-alpha-a
+    value_proposition: vp-alpha
+    customer_segment: cs-segment-a
+    pain_relievers:
+      - pain: pain-a1
+        through: [ps-feature-1]
+        description: Relieves pain A1
+      - pain: pain-a2
+        through: [ps-feature-1, ps-feature-2]
+        description: Relieves pain A2
+    gain_creators:
+      - gain: gain-a1
+        through: [ps-feature-2]
+        description: Creates gain A1
+      - gain: gain-a2
+        through: [ps-feature-1]
+        description: Creates gain A2
+
+  - id: fit-beta-b
+    value_proposition: vp-beta
+    customer_segment: cs-segment-b
+    pain_relievers:
+      - pain: pain-b1
+        through: [ps-feature-3]
+        description: Relieves pain B1
+    gain_creators:
+      - gain: gain-b1
+        through: [ps-feature-3]
+        description: Creates gain B1

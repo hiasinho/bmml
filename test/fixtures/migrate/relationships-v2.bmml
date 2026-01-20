@@ -1,0 +1,90 @@
+version: "2.0"
+
+meta:
+  name: "Relationship Patterns Test"
+  portfolio: explore
+  stage: ideation
+
+customer_segments:
+  - id: cs-alpha
+    name: Alpha Segment
+  - id: cs-beta
+    name: Beta Segment
+
+value_propositions:
+  - id: vp-main
+    name: Main Value Prop
+  - id: vp-secondary
+    name: Secondary Value Prop
+
+# v2 channels use for: { customer_segments: [] }
+channels:
+  - id: ch-direct
+    name: Direct Sales
+    for:
+      customer_segments: [cs-alpha, cs-beta]
+  - id: ch-web
+    name: Website
+    for:
+      customer_segments: [cs-alpha]
+
+# v2 customer_relationships use for: { customer_segments: [] }
+customer_relationships:
+  - id: cr-premium
+    name: Premium support
+    for:
+      customer_segments: [cs-alpha]
+  - id: cr-standard
+    name: Self-service support
+    for:
+      customer_segments: [cs-beta]
+
+# v2 revenue_streams use from: and for: patterns
+revenue_streams:
+  - id: rs-subscription
+    name: Subscription
+    from:
+      customer_segments: [cs-alpha]
+    for:
+      value_propositions: [vp-main]
+  - id: rs-one-time
+    name: One-time Purchase
+    from:
+      customer_segments: [cs-alpha, cs-beta]
+    for:
+      value_propositions: [vp-secondary]
+
+# v2 key_resources use for: { value_propositions: [] }
+key_resources:
+  - id: kr-platform
+    name: Technology Platform
+    for:
+      value_propositions: [vp-main, vp-secondary]
+  - id: kr-team
+    name: Development Team
+    for:
+      value_propositions: [vp-main]
+
+# v2 key_activities use for: { value_propositions: [] }
+key_activities:
+  - id: ka-development
+    name: Product Development
+    for:
+      value_propositions: [vp-main]
+  - id: ka-support
+    name: Customer Support
+    for:
+      value_propositions: [vp-main, vp-secondary]
+
+# v2 key_partnerships use for: { key_resources: [], key_activities: [] }
+key_partnerships:
+  - id: kp-vendor
+    name: Tech Vendor
+    for:
+      key_resources: [kr-platform]
+  - id: kp-agency
+    name: Support Agency
+    for:
+      key_resources: [kr-team]
+
+costs: []

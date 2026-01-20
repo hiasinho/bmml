@@ -1,0 +1,62 @@
+version: "1.0"
+
+meta:
+  name: "Cost Structure Migration Test"
+  portfolio: exploit
+  stage: grow
+
+value_propositions:
+  - id: vp-product
+    name: Main Product
+
+key_resources:
+  - id: kr-office
+    name: Office Space
+    type: physical
+    for_value: [vp-product]
+  - id: kr-servers
+    name: Server Infrastructure
+    type: physical
+    for_value: [vp-product]
+  - id: kr-team
+    name: Engineering Team
+    type: human
+    for_value: [vp-product]
+
+key_activities:
+  - id: ka-development
+    name: Product Development
+    type: production
+    for_value: [vp-product]
+  - id: ka-marketing
+    name: Marketing
+    type: production
+    for_value: [vp-product]
+  - id: ka-operations
+    name: Operations
+    type: production
+    for_value: [vp-product]
+
+# v1 cost_structure with major_costs array
+cost_structure:
+  type: value_driven
+  characteristics: [fixed_costs_heavy, economies_of_scale]
+  major_costs:
+    - name: Office Rent
+      type: fixed
+      linked_to: [kr-office]
+    - name: Server Hosting
+      type: fixed
+      linked_to: [kr-servers]
+    - name: Salaries
+      type: fixed
+      linked_to: [kr-team]
+    - name: Development Tools
+      type: variable
+      linked_to: [ka-development]
+    - name: Ad Spend
+      type: variable
+      linked_to: [ka-marketing]
+    - name: Operational Costs
+      type: variable
+      linked_to: [kr-office, ka-operations]

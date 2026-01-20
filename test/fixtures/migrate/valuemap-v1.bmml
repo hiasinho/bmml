@@ -1,0 +1,64 @@
+version: "1.0"
+
+meta:
+  name: "Value Map Migration Test"
+  portfolio: explore
+  stage: validation
+
+customer_segments:
+  - id: cs-users
+    name: End Users
+    jobs:
+      - id: job-productivity
+        type: functional
+        description: Be more productive
+        importance: high
+    pains:
+      - id: pain-slow
+        description: Current process is too slow
+        severity: high
+      - id: pain-complex
+        description: Too many steps to complete
+        severity: medium
+    gains:
+      - id: gain-speed
+        description: Complete tasks faster
+        importance: high
+      - id: gain-simplicity
+        description: Fewer steps to remember
+        importance: medium
+
+value_propositions:
+  - id: vp-automation
+    name: Process Automation
+    description: Automate repetitive tasks
+    products_services:
+      - id: ps-workflow
+        type: product
+        description: Automated workflow engine
+      - id: ps-templates
+        type: service
+        description: Pre-built templates
+
+# v1 fits contain pain_relievers and gain_creators inline
+fits:
+  - id: fit-automation-users
+    value_proposition: vp-automation
+    customer_segment: cs-users
+    pain_relievers:
+      - pain: pain-slow
+        through: [ps-workflow]
+        description: Automates the slow parts
+      - pain: pain-complex
+        through: [ps-templates]
+        description: Templates reduce steps
+    gain_creators:
+      - gain: gain-speed
+        through: [ps-workflow]
+        description: 10x faster execution
+      - gain: gain-simplicity
+        through: [ps-templates]
+        description: One-click operations
+    job_addressers:
+      - job: job-productivity
+        through: [ps-workflow, ps-templates]

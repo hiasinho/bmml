@@ -1,0 +1,66 @@
+version: "2.0"
+
+meta:
+  name: "Cost Structure Migration Test"
+  portfolio: exploit
+  stage: grow
+
+value_propositions:
+  - id: vp-product
+    name: Main Product
+
+key_resources:
+  - id: kr-office
+    name: Office Space
+    for:
+      value_propositions: [vp-product]
+  - id: kr-servers
+    name: Server Infrastructure
+    for:
+      value_propositions: [vp-product]
+  - id: kr-team
+    name: Engineering Team
+    for:
+      value_propositions: [vp-product]
+
+key_activities:
+  - id: ka-development
+    name: Product Development
+    for:
+      value_propositions: [vp-product]
+  - id: ka-marketing
+    name: Marketing
+    for:
+      value_propositions: [vp-product]
+  - id: ka-operations
+    name: Operations
+    for:
+      value_propositions: [vp-product]
+
+# v2 costs array with for: pattern
+costs:
+  - id: cost-office-rent
+    name: Office Rent
+    for:
+      key_resources: [kr-office]
+  - id: cost-server-hosting
+    name: Server Hosting
+    for:
+      key_resources: [kr-servers]
+  - id: cost-salaries
+    name: Salaries
+    for:
+      key_resources: [kr-team]
+  - id: cost-development-tools
+    name: Development Tools
+    for:
+      key_activities: [ka-development]
+  - id: cost-ad-spend
+    name: Ad Spend
+    for:
+      key_activities: [ka-marketing]
+  - id: cost-operational-costs
+    name: Operational Costs
+    for:
+      key_resources: [kr-office]
+      key_activities: [ka-operations]

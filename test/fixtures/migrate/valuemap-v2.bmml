@@ -1,0 +1,58 @@
+version: "2.0"
+
+meta:
+  name: "Value Map Migration Test"
+  portfolio: explore
+  stage: validation
+
+customer_segments:
+  - id: cs-users
+    name: End Users
+    jobs:
+      - id: job-productivity
+        description: Be more productive
+    pains:
+      - id: pain-slow
+        description: Current process is too slow
+      - id: pain-complex
+        description: Too many steps to complete
+    gains:
+      - id: gain-speed
+        description: Complete tasks faster
+      - id: gain-simplicity
+        description: Fewer steps to remember
+
+# v2 value propositions include pain_relievers and gain_creators in value map
+value_propositions:
+  - id: vp-automation
+    name: Process Automation
+    description: Automate repetitive tasks
+    products_services:
+      - id: ps-workflow
+        name: Automated workflow engine
+      - id: ps-templates
+        name: Pre-built templates
+    pain_relievers:
+      - id: pr-slow-automation
+        name: Automates the slow parts
+      - id: pr-complexity-reduction
+        name: Templates reduce steps
+    gain_creators:
+      - id: gc-speed-boost
+        name: 10x faster execution
+      - id: gc-one-click
+        name: One-click operations
+
+# v2 fits use for: pattern and tuple mappings
+fits:
+  - id: fit-automation-users
+    for:
+      value_propositions: [vp-automation]
+      customer_segments: [cs-users]
+    mappings:
+      - [pr-slow-automation, pain-slow]
+      - [pr-complexity-reduction, pain-complex]
+      - [gc-speed-boost, gain-speed]
+      - [gc-one-click, gain-simplicity]
+
+costs: []

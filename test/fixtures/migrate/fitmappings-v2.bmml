@@ -1,0 +1,82 @@
+version: "2.0"
+
+meta:
+  name: "Fit Mapping Migration Test"
+  portfolio: explore
+  stage: ideation
+
+customer_segments:
+  - id: cs-segment-a
+    name: Segment A
+    pains:
+      - id: pain-a1
+        description: Pain A1
+      - id: pain-a2
+        description: Pain A2
+    gains:
+      - id: gain-a1
+        description: Gain A1
+      - id: gain-a2
+        description: Gain A2
+
+  - id: cs-segment-b
+    name: Segment B
+    pains:
+      - id: pain-b1
+        description: Pain B1
+    gains:
+      - id: gain-b1
+        description: Gain B1
+
+value_propositions:
+  - id: vp-alpha
+    name: Alpha Product
+    products_services:
+      - id: ps-feature-1
+        name: Feature 1
+      - id: ps-feature-2
+        name: Feature 2
+    pain_relievers:
+      - id: pr-a1-relief
+        name: Relieves pain A1
+      - id: pr-a2-relief
+        name: Relieves pain A2
+    gain_creators:
+      - id: gc-a1-creation
+        name: Creates gain A1
+      - id: gc-a2-creation
+        name: Creates gain A2
+
+  - id: vp-beta
+    name: Beta Product
+    products_services:
+      - id: ps-feature-3
+        name: Feature 3
+    pain_relievers:
+      - id: pr-b1-relief
+        name: Relieves pain B1
+    gain_creators:
+      - id: gc-b1-creation
+        name: Creates gain B1
+
+# v2 fits with tuple mappings
+fits:
+  - id: fit-alpha-a
+    for:
+      value_propositions: [vp-alpha]
+      customer_segments: [cs-segment-a]
+    mappings:
+      - [pr-a1-relief, pain-a1]
+      - [pr-a2-relief, pain-a2]
+      - [gc-a1-creation, gain-a1]
+      - [gc-a2-creation, gain-a2]
+
+  - id: fit-beta-b
+    for:
+      value_propositions: [vp-beta]
+      customer_segments: [cs-segment-b]
+    mappings:
+      - [pr-b1-relief, pain-b1]
+      - [gc-b1-creation, gain-b1]
+
+costs: []

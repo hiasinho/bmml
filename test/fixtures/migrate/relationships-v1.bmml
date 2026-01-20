@@ -1,0 +1,88 @@
+version: "1.0"
+
+meta:
+  name: "Relationship Patterns Test"
+  portfolio: explore
+  stage: ideation
+
+customer_segments:
+  - id: cs-alpha
+    name: Alpha Segment
+  - id: cs-beta
+    name: Beta Segment
+
+value_propositions:
+  - id: vp-main
+    name: Main Value Prop
+  - id: vp-secondary
+    name: Secondary Value Prop
+
+# v1 channels use segments array
+channels:
+  - id: ch-direct
+    name: Direct Sales
+    type: direct
+    segments: [cs-alpha, cs-beta]
+  - id: ch-web
+    name: Website
+    type: owned
+    segments: [cs-alpha]
+
+# v1 customer_relationships use segment (singular)
+customer_relationships:
+  - id: cr-premium
+    segment: cs-alpha
+    type: dedicated
+    description: Premium support
+  - id: cr-standard
+    segment: cs-beta
+    type: self_service
+    description: Self-service support
+
+# v1 revenue_streams use from_segments and for_value
+revenue_streams:
+  - id: rs-subscription
+    name: Subscription
+    type: recurring
+    from_segments: [cs-alpha]
+    for_value: vp-main
+  - id: rs-one-time
+    name: One-time Purchase
+    type: transaction
+    from_segments: [cs-alpha, cs-beta]
+    for_value: vp-secondary
+
+# v1 key_resources use for_value
+key_resources:
+  - id: kr-platform
+    name: Technology Platform
+    type: intellectual
+    for_value: [vp-main, vp-secondary]
+  - id: kr-team
+    name: Development Team
+    type: human
+    for_value: [vp-main]
+
+# v1 key_activities use for_value
+key_activities:
+  - id: ka-development
+    name: Product Development
+    type: production
+    for_value: [vp-main]
+  - id: ka-support
+    name: Customer Support
+    type: problem_solving
+    for_value: [vp-main, vp-secondary]
+
+# v1 key_partnerships use provides
+key_partnerships:
+  - id: kp-vendor
+    name: Tech Vendor
+    type: supplier
+    motivation: resource_acquisition
+    provides: [kr-platform]
+  - id: kp-agency
+    name: Support Agency
+    type: strategic_alliance
+    motivation: optimization
+    provides: [kr-team]
