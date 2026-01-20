@@ -8,10 +8,10 @@ BMCLang is a YAML-based markup format for describing business models. This plan 
 
 - **Types**: Complete TypeScript types matching JSON Schema (src/types.ts, ~480 lines)
 - **Validator**: Complete - parses YAML and validates against JSON Schema (src/validator.ts)
-- **Linter**: Stub that throws "Not implemented"
+- **Linter**: Complete - validates reference integrity rules (src/linter.ts)
 - **Schema**: Complete JSON Schema at `schemas/bmclang.schema.json` (702 lines)
 - **CLI**: Referenced in package.json but not implemented
-- **Test fixtures**: 4 fixtures exist (2 valid, 2 invalid) - all validate correctly against schema
+- **Test fixtures**: 5 fixtures exist (2 valid, 3 invalid) - all validate correctly
 
 ---
 
@@ -81,21 +81,23 @@ Schema validation using the JSON Schema.
 
 The linter checks semantic rules that JSON Schema cannot express.
 
-- [ ] Implement `lint()` function skeleton (src/linter.ts)
-- [ ] Rule: All ID references must exist (e.g., `fit.customer_segment` references valid `cs-*`)
-- [ ] Rule: `fits[].pain` must reference pain in the referenced customer_segment
-- [ ] Rule: `fits[].gain` must reference gain in the referenced customer_segment
-- [ ] Rule: `fits[].job` must reference job in the referenced customer_segment
-- [ ] Rule: `fits[].through[]` must reference products_services in the referenced value_proposition
-- [ ] Rule: `channels[].segments` must reference existing customer_segments
-- [ ] Rule: `customer_relationships[].segment` must reference existing customer_segment
-- [ ] Rule: `revenue_streams[].from_segments` must reference existing customer_segments
-- [ ] Rule: `revenue_streams[].for_value` must reference existing value_proposition
-- [ ] Rule: `key_resources[].for_value` must reference existing value_propositions
-- [ ] Rule: `key_activities[].for_value` must reference existing value_propositions
-- [ ] Rule: `key_partnerships[].provides` must reference existing resources or activities
-- [ ] Rule: `cost_structure.major_costs[].linked_to` must reference existing resources or activities
-- [ ] Add test fixtures for reference integrity violations
+- [x] Implement `lint()` function skeleton (src/linter.ts)
+- [x] Rule: All ID references must exist (e.g., `fit.customer_segment` references valid `cs-*`)
+- [x] Rule: `fits[].pain` must reference pain in the referenced customer_segment
+- [x] Rule: `fits[].gain` must reference gain in the referenced customer_segment
+- [x] Rule: `fits[].job` must reference job in the referenced customer_segment
+- [x] Rule: `fits[].through[]` must reference products_services in the referenced value_proposition
+- [x] Rule: `channels[].segments` must reference existing customer_segments
+- [x] Rule: `customer_relationships[].segment` must reference existing customer_segment
+- [x] Rule: `revenue_streams[].from_segments` must reference existing customer_segments
+- [x] Rule: `revenue_streams[].for_value` must reference existing value_proposition
+- [x] Rule: `key_resources[].for_value` must reference existing value_propositions
+- [x] Rule: `key_activities[].for_value` must reference existing value_propositions
+- [x] Rule: `key_partnerships[].provides` must reference existing resources or activities
+- [x] Rule: `cost_structure.major_costs[].linked_to` must reference existing resources or activities
+- [x] Add test fixtures for reference integrity violations
+
+**Completed**: Linter validates all cross-references between entities. Builds ID maps to track customer segments (with nested jobs/pains/gains), value propositions (with products_services), key resources, and key activities. Returns structured errors with rule name, severity, JSON path, and message. Test fixture `invalid-references.bmml` exercises all rules. 21 tests in `test/linter.test.ts`.
 
 ---
 
