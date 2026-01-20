@@ -536,7 +536,8 @@ Quality-of-life improvements. Lower priority than core v2 migration.
 
 ### Portfolio Hints
 
-- [ ] Info: Explore portfolio should have fits to validate desirability
+- [x] Info: Explore portfolio should have fits to validate desirability
+  - Done: Added 'explore-no-fits' info rule to both v1 and v2 linters. Triggers when meta.portfolio='explore' and no fits are defined. 10 tests added covering v1 and v2, all explore stages, exploit portfolio suppression, and validation pass-through.
 - [ ] Info: Exploit portfolio should have revenue streams defined
 
 ### Data Quality
