@@ -447,9 +447,10 @@ Depends on: v2 Schema + Migration Tooling
   - Same business as minimal, more detail
   - AC: Validates as v2, demonstrates all features
   - Done: FreshBox with 2 customer segments (jobs/pains/gains), 2 VPs (products/pain_relievers/gain_creators), 4 fits with tuple mappings, cross-fits demonstrating VP flexibility
-- [ ] Create `examples/v2/marketplace.bmml`
+- [x] Create `examples/v2/marketplace.bmml`
   - Two-sided marketplace demonstrating multi-segment channels
   - AC: Shows ternary relationship pattern
+  - Done: FoodRunner marketplace with consumers and restaurants, different VPs per side, ternary channels, dual revenue streams, full VPC detail with fits
 - [ ] Migrate existing v1 examples to v2
   - Option: Move v1 to `examples/v1/`, create fresh v2 in `examples/`
   - AC: Clear distinction between v1 and v2 examples
