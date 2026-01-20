@@ -1,0 +1,48 @@
+{
+  "name": "bmclang",
+  "displayName": "BMCLang",
+  "description": "Language support for BMCLang business model files (.bmml)",
+  "version": "0.1.0",
+  "publisher": "bmclang",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bmclang/bmclang"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "bmclang",
+        "aliases": ["BMCLang", "bmclang"],
+        "extensions": [".bmml"],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/bmclang.svg",
+          "dark": "./icons/bmclang.svg"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "bmclang",
+        "scopeName": "source.bmclang",
+        "path": "./syntaxes/bmclang.tmLanguage.json"
+      }
+    ],
+    "yamlValidation": [
+      {
+        "fileMatch": "*.bmml",
+        "url": "./schemas/bmclang.schema.json"
+      }
+    ]
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/vscode": "^1.75.0"
+  }
+}
