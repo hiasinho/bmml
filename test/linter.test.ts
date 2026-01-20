@@ -27,7 +27,9 @@ describe('lint', () => {
       const doc = loadFixture('valid-minimal.bmml');
       const result = lint(doc);
 
-      expect(result.issues).toHaveLength(0);
+      // Filter out info-level issues (hints) - only errors/warnings count as failures
+      const errorsAndWarnings = result.issues.filter((i) => i.severity !== 'info');
+      expect(errorsAndWarnings).toHaveLength(0);
       expect(lintIsValid(doc)).toBe(true);
     });
 
@@ -35,7 +37,9 @@ describe('lint', () => {
       const doc = loadFixture('valid-complete.bmml');
       const result = lint(doc);
 
-      expect(result.issues).toHaveLength(0);
+      // Filter out info-level issues (hints) - only errors/warnings count as failures
+      const errorsAndWarnings = result.issues.filter((i) => i.severity !== 'info');
+      expect(errorsAndWarnings).toHaveLength(0);
       expect(lintIsValid(doc)).toBe(true);
     });
   });
@@ -1525,6 +1529,101 @@ describe('lint', () => {
             products_services: [{ id: 'ps-unused', type: 'product', description: 'Unused product' }],
           },
         ],
+      };
+
+      const result = lint(doc);
+      const errors = result.issues.filter((i) => i.severity === 'error');
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  // ============================================================================
+  // Portfolio hints (informational)
+  // ============================================================================
+
+  describe('explore-no-fits info rule', () => {
+    it('shows info when explore portfolio has no fits', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+      };
+
+      const result = lint(doc);
+      const info = result.issues.find((i) => i.rule === 'explore-no-fits');
+      expect(info).toBeDefined();
+      expect(info?.severity).toBe('info');
+      expect(info?.message).toContain('Explore portfolio');
+      expect(info?.message).toContain('fits');
+      expect(info?.message).toContain('desirability');
+      expect(info?.path).toBe('/meta/portfolio');
+    });
+
+    it('does not show info when explore portfolio has fits', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'validation' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            value_proposition: 'vp-test',
+            customer_segment: 'cs-test',
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const info = result.issues.find((i) => i.rule === 'explore-no-fits');
+      expect(info).toBeUndefined();
+    });
+
+    it('does not show info for exploit portfolio without fits', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'exploit', stage: 'grow' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+      };
+
+      const result = lint(doc);
+      const info = result.issues.find((i) => i.rule === 'explore-no-fits');
+      expect(info).toBeUndefined();
+    });
+
+    it('shows info for all explore stages without fits', () => {
+      const stages = ['ideation', 'discovery', 'validation', 'acceleration'] as const;
+
+      for (const stage of stages) {
+        const doc: BMCDocument = {
+          version: '1.0',
+          meta: { name: 'Test', portfolio: 'explore', stage },
+        };
+
+        const result = lint(doc);
+        const info = result.issues.find((i) => i.rule === 'explore-no-fits');
+        expect(info).toBeDefined();
+      }
+    });
+
+    it('validation still passes with explore-no-fits info', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
       };
 
       const result = lint(doc);
@@ -3183,6 +3282,103 @@ describe('lint v2', () => {
       // Should NOT have product-service-never-used warnings in v2
       const warnings = result.issues.filter((i) => i.rule === 'product-service-never-used');
       expect(warnings).toHaveLength(0);
+    });
+  });
+
+  // ============================================================================
+  // Portfolio hints (informational) - v2
+  // ============================================================================
+
+  describe('explore-no-fits info rule (v2)', () => {
+    it('shows info when explore portfolio has no fits', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+      };
+
+      const result = lint(doc);
+      const info = result.issues.find((i) => i.rule === 'explore-no-fits');
+      expect(info).toBeDefined();
+      expect(info?.severity).toBe('info');
+      expect(info?.message).toContain('Explore portfolio');
+      expect(info?.message).toContain('fits');
+      expect(info?.message).toContain('desirability');
+      expect(info?.path).toBe('/meta/portfolio');
+    });
+
+    it('does not show info when explore portfolio has fits (v2 for: pattern)', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'validation' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            for: {
+              value_propositions: ['vp-test'],
+              customer_segments: ['cs-test'],
+            },
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const info = result.issues.find((i) => i.rule === 'explore-no-fits');
+      expect(info).toBeUndefined();
+    });
+
+    it('does not show info for exploit portfolio without fits', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'exploit', stage: 'grow' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+      };
+
+      const result = lint(doc);
+      const info = result.issues.find((i) => i.rule === 'explore-no-fits');
+      expect(info).toBeUndefined();
+    });
+
+    it('shows info for all explore stages without fits', () => {
+      const stages = ['ideation', 'discovery', 'validation', 'acceleration'] as const;
+
+      for (const stage of stages) {
+        const doc: BMCDocumentV2 = {
+          version: '2.0',
+          meta: { name: 'Test', portfolio: 'explore', stage },
+        };
+
+        const result = lint(doc);
+        const info = result.issues.find((i) => i.rule === 'explore-no-fits');
+        expect(info).toBeDefined();
+      }
+    });
+
+    it('validation still passes with explore-no-fits info', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+      };
+
+      const result = lint(doc);
+      const errors = result.issues.filter((i) => i.severity === 'error');
+      expect(errors).toHaveLength(0);
     });
   });
 });

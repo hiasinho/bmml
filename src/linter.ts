@@ -200,6 +200,11 @@ function lintV1(doc: BMCDocument): LintResult {
     issues.push({ rule, severity: 'warning', path, message });
   };
 
+  // Helper to add info
+  const addInfo = (rule: string, path: string, message: string) => {
+    issues.push({ rule, severity: 'info', path, message });
+  };
+
   // Helper to check if a resource or activity exists
   const isValidResourceOrActivity = (id: ResourceOrActivityId): boolean => {
     return ids.keyResources.has(id) || ids.keyActivities.has(id);
@@ -574,6 +579,21 @@ function lintV1(doc: BMCDocument): LintResult {
     }
   }
 
+  // ============================================================================
+  // Portfolio hints (informational)
+  // ============================================================================
+
+  // Info: Explore portfolio should have fits to validate desirability
+  // Business models in the explore portfolio are focused on searching for product-market fit.
+  // Fits are essential for validating that value propositions address customer needs.
+  if (doc.meta?.portfolio === 'explore' && (doc.fits ?? []).length === 0) {
+    addInfo(
+      'explore-no-fits',
+      '/meta/portfolio',
+      `Explore portfolio business models should have fits defined to validate desirability`
+    );
+  }
+
   return { issues, version: 'v1' };
 }
 
@@ -592,6 +612,11 @@ function lintV2(doc: BMCDocumentV2): LintResult {
   // Helper to add a warning
   const addWarning = (rule: string, path: string, message: string) => {
     issues.push({ rule, severity: 'warning', path, message });
+  };
+
+  // Helper to add info
+  const addInfo = (rule: string, path: string, message: string) => {
+    issues.push({ rule, severity: 'info', path, message });
   };
 
   // ============================================================================
@@ -1060,6 +1085,21 @@ function lintV2(doc: BMCDocumentV2): LintResult {
   // but fit mappings only connect pr-* to pain-* and gc-* to gain-* (not ps-*).
   // Products/services describe WHAT is offered, while pain_relievers/gain_creators describe HOW
   // the offering addresses customer needs. They are not directly used in fit mappings by design.
+
+  // ============================================================================
+  // Portfolio hints (informational)
+  // ============================================================================
+
+  // Info: Explore portfolio should have fits to validate desirability
+  // Business models in the explore portfolio are focused on searching for product-market fit.
+  // Fits are essential for validating that value propositions address customer needs.
+  if (doc.meta?.portfolio === 'explore' && (doc.fits ?? []).length === 0) {
+    addInfo(
+      'explore-no-fits',
+      '/meta/portfolio',
+      `Explore portfolio business models should have fits defined to validate desirability`
+    );
+  }
 
   return { issues, version: 'v2' };
 }
