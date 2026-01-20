@@ -579,7 +579,8 @@ VS Code plugin is not needed. Neovim/Vim plugin would be useful but is low prior
 
 - [x] Remove `vscode-bmml/` extension directory
   - Done: Removed vscode-bmml/ directory, updated EDITOR_SETUP.md to promote YAML extension with JSON Schema, updated docs/index.html to link to editor setup guide
-- [ ] Create Neovim TreeSitter grammar for BMML v2
+- [x] Create Neovim TreeSitter grammar for BMML v2
+  - Done: Created tree-sitter-bmml/ package with highlight queries that extend tree-sitter-yaml. Includes queries for BMC sections, VPC elements, ID prefixes, relationship patterns, and portfolio/stage values. Updated EDITOR_SETUP.md with TreeSitter setup instructions for Neovim.
 - [x] Add Vim syntax highlighting file (simpler alternative to TreeSitter)
   - Done: Created vim/syntax/bmml.vim with YAML base + BMML-specific highlighting for sections, ID prefixes, relationship patterns, and portfolio/stage values. Added vim/ftdetect/bmml.vim for automatic filetype detection. Updated EDITOR_SETUP.md with installation instructions for vim-plug, lazy.nvim, and manual installation.
 
