@@ -27,7 +27,7 @@ describe('CLI', () => {
       expect(exitCode).toBe(0);
       expect(consoleLogSpy).toHaveBeenCalled();
       const output = consoleLogSpy.mock.calls[0][0];
-      expect(output).toContain('bmclang');
+      expect(output).toContain('bmml');
       expect(output).toContain('USAGE');
     });
 

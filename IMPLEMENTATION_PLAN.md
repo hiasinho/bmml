@@ -27,8 +27,9 @@ Per v2 spec: rename the project from BMCLang to BMML.
 - [x] Update `package.json` name field to "bmml"
   - AC: `npm pack` produces `bmml-x.x.x.tgz`
   - Done: package.json name changed from "bmclang" to "bmml", verified with pnpm pack
-- [ ] Update CLI binary name from `bmclang` to `bmml`
+- [x] Update CLI binary name from `bmclang` to `bmml`
   - AC: `npx bmml validate file.bmml` works
+  - Done: Updated package.json bin field, CLI usage/help messages, and test assertions
 - [ ] Update all README and documentation references
   - AC: No references to "BMCLang" remain (except historical notes)
 - [ ] Update VS Code extension name and ID

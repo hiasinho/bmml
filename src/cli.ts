@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * BMCLang CLI
- * Command-line interface for validating and linting BMCLang files
+ * BMML CLI
+ * Command-line interface for validating and linting BMML files
  */
 
 import { validateFile, parseYaml } from './validator.js';
@@ -21,10 +21,10 @@ interface CliResult {
 }
 
 const USAGE = `
-bmclang - Business Model Canvas Language validator and linter
+bmml - Business Model Markup Language validator and linter
 
 USAGE:
-  bmclang <command> [options] <file>
+  bmml <command> [options] <file>
 
 COMMANDS:
   validate <file>    Validate a .bmml file against the schema
@@ -36,9 +36,9 @@ OPTIONS:
   --help, -h         Show help for a command
 
 EXAMPLES:
-  bmclang validate model.bmml
-  bmclang lint model.bmml --json
-  bmclang validate --json model.bmml
+  bmml validate model.bmml
+  bmml lint model.bmml --json
+  bmml validate --json model.bmml
 `.trim();
 
 function parseArgs(args: string[]): { command: string; file: string | null; options: CliOptions } {
@@ -172,7 +172,7 @@ export function main(args: string[] = process.argv.slice(2)): number {
   if (command === 'validate') {
     if (!file) {
       console.error('Error: validate command requires a file argument');
-      console.error('Usage: bmclang validate <file>');
+      console.error('Usage: bmml validate <file>');
       return 1;
     }
     return runValidate(file, options);
@@ -181,14 +181,14 @@ export function main(args: string[] = process.argv.slice(2)): number {
   if (command === 'lint') {
     if (!file) {
       console.error('Error: lint command requires a file argument');
-      console.error('Usage: bmclang lint <file>');
+      console.error('Usage: bmml lint <file>');
       return 1;
     }
     return runLint(file, options);
   }
 
   console.error(`Unknown command: ${command}`);
-  console.error('Run "bmclang help" for usage information');
+  console.error('Run "bmml help" for usage information');
   return 1;
 }
 
