@@ -1,5 +1,5 @@
 {
-  "name": "bmclang",
+  "name": "bmml",
   "version": "0.1.0",
   "description": "A markup format for describing business models, based on Alexander Osterwalder's work",
   "type": "module",
