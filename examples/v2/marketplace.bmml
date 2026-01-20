@@ -1,0 +1,367 @@
+version: "2.0"
+
+meta:
+  name: "FoodRunner"
+  tagline: "Connecting hungry customers with local restaurants"
+  created: "2024-03-15"
+  updated: "2024-06-20"
+  portfolio: explore
+  stage: validation
+
+# === CUSTOMER SEGMENTS ===
+# Two-sided marketplace: consumers who order food, restaurants who fulfill orders
+
+customer_segments:
+  - id: cs-consumers
+    name: Food Consumers
+    description: People who want convenient access to restaurant food at home
+    jobs:
+      - id: job-eat-restaurant-food
+        description: Enjoy restaurant-quality food without leaving home
+      - id: job-discover-restaurants
+        description: Find new restaurants and cuisines to try
+      - id: job-quick-meals
+        description: Get meals quickly when short on time
+    pains:
+      - id: pain-limited-options
+        description: Nearby restaurants don't deliver directly
+      - id: pain-slow-delivery
+        description: Long wait times ruin the food experience
+      - id: pain-uncertain-arrival
+        description: Not knowing when food will arrive
+      - id: pain-discovery-paralysis
+        description: Too many options, hard to decide what to order
+    gains:
+      - id: gain-convenience
+        description: Enjoy restaurant meals without cooking or going out
+      - id: gain-variety
+        description: Access to many cuisines and restaurants in one place
+      - id: gain-tracking
+        description: Real-time visibility into order status
+
+  - id: cs-restaurants
+    name: Restaurant Partners
+    description: Local restaurants looking to expand their customer base without delivery infrastructure
+    jobs:
+      - id: job-reach-customers
+        description: Reach customers beyond walk-in and phone orders
+      - id: job-increase-revenue
+        description: Grow revenue without major capital investment
+      - id: job-focus-on-food
+        description: Focus on cooking, not logistics
+    pains:
+      - id: pain-delivery-complexity
+        description: Building delivery infrastructure is expensive and complex
+      - id: pain-limited-reach
+        description: Only serving customers who can visit or call
+      - id: pain-marketing-cost
+        description: High cost to acquire new customers independently
+      - id: pain-unpredictable-demand
+        description: Difficulty forecasting and managing order volume
+    gains:
+      - id: gain-expanded-reach
+        description: Serve customers across the entire delivery zone
+      - id: gain-new-revenue
+        description: Incremental orders without incremental overhead
+      - id: gain-demand-insights
+        description: Data on customer preferences and peak times
+
+# === VALUE PROPOSITIONS ===
+# Different VPs for each side of the marketplace
+
+value_propositions:
+  - id: vp-consumer-convenience
+    name: One-Tap Food Delivery
+    description: Order from any restaurant, track in real-time, enjoy at home
+    products_services:
+      - id: ps-mobile-app
+        name: Mobile ordering app with restaurant discovery
+      - id: ps-live-tracking
+        name: Real-time GPS tracking of delivery
+      - id: ps-ratings-reviews
+        name: Ratings and reviews from other customers
+      - id: ps-scheduled-orders
+        name: Schedule orders for future delivery
+    pain_relievers:
+      - id: pr-delivery-access
+        name: Unlock delivery from restaurants that don't deliver themselves
+      - id: pr-fast-delivery
+        name: Optimized routing ensures fastest possible delivery
+      - id: pr-eta-accuracy
+        name: Precise ETA with live tracking eliminates uncertainty
+      - id: pr-curated-recommendations
+        name: Personalized recommendations reduce decision fatigue
+    gain_creators:
+      - id: gc-one-stop-ordering
+        name: Access to 500+ restaurants in one app
+      - id: gc-cuisine-discovery
+        name: Explore new cuisines through curated collections
+      - id: gc-real-time-updates
+        name: Live order tracking from kitchen to doorstep
+
+  - id: vp-restaurant-growth
+    name: Delivery Without the Hassle
+    description: Reach more customers, we handle the logistics
+    products_services:
+      - id: ps-order-tablet
+        name: Dedicated tablet for receiving orders
+      - id: ps-driver-network
+        name: On-demand driver network for pickup and delivery
+      - id: ps-analytics-dashboard
+        name: Sales and customer analytics dashboard
+      - id: ps-marketing-tools
+        name: Promotional tools and featured placement
+    pain_relievers:
+      - id: pr-no-delivery-fleet
+        name: No need to hire drivers or manage delivery vehicles
+      - id: pr-instant-exposure
+        name: Immediate visibility to thousands of nearby customers
+      - id: pr-low-marketing-spend
+        name: Acquire customers through platform, not paid ads
+      - id: pr-demand-smoothing
+        name: Promotions help fill slow periods
+    gain_creators:
+      - id: gc-reach-expansion
+        name: Serve customers in 5-mile radius without extra staff
+      - id: gc-incremental-orders
+        name: Average 30% increase in order volume
+      - id: gc-customer-insights
+        name: Detailed analytics on what's selling and when
+
+# === FITS ===
+# How each VP addresses each segment's needs
+
+fits:
+  - id: fit-consumer-convenience
+    for:
+      value_propositions: [vp-consumer-convenience]
+      customer_segments: [cs-consumers]
+    mappings:
+      - [pr-delivery-access, pain-limited-options]
+      - [pr-fast-delivery, pain-slow-delivery]
+      - [pr-eta-accuracy, pain-uncertain-arrival]
+      - [pr-curated-recommendations, pain-discovery-paralysis]
+      - [gc-one-stop-ordering, gain-variety]
+      - [gc-cuisine-discovery, gain-variety]
+      - [gc-real-time-updates, gain-tracking]
+
+  - id: fit-restaurant-growth
+    for:
+      value_propositions: [vp-restaurant-growth]
+      customer_segments: [cs-restaurants]
+    mappings:
+      - [pr-no-delivery-fleet, pain-delivery-complexity]
+      - [pr-instant-exposure, pain-limited-reach]
+      - [pr-low-marketing-spend, pain-marketing-cost]
+      - [pr-demand-smoothing, pain-unpredictable-demand]
+      - [gc-reach-expansion, gain-expanded-reach]
+      - [gc-incremental-orders, gain-new-revenue]
+      - [gc-customer-insights, gain-demand-insights]
+
+# === CHANNELS ===
+# Ternary pattern: channels connect VPs to specific customer segments
+# Note how the mobile app serves both sides but delivers different VPs
+
+channels:
+  - id: ch-consumer-app
+    name: Consumer Mobile App
+    for:
+      value_propositions: [vp-consumer-convenience]
+      customer_segments: [cs-consumers]
+
+  - id: ch-restaurant-tablet
+    name: Restaurant Order Tablet
+    for:
+      value_propositions: [vp-restaurant-growth]
+      customer_segments: [cs-restaurants]
+
+  - id: ch-restaurant-portal
+    name: Restaurant Partner Portal
+    for:
+      value_propositions: [vp-restaurant-growth]
+      customer_segments: [cs-restaurants]
+
+  - id: ch-sales-team
+    name: Restaurant Sales Team
+    for:
+      value_propositions: [vp-restaurant-growth]
+      customer_segments: [cs-restaurants]
+
+  - id: ch-digital-marketing
+    name: Digital Marketing (Social, Search)
+    for:
+      value_propositions: [vp-consumer-convenience]
+      customer_segments: [cs-consumers]
+
+  - id: ch-referral-program
+    name: Customer Referral Program
+    for:
+      value_propositions: [vp-consumer-convenience]
+      customer_segments: [cs-consumers]
+
+# === CUSTOMER RELATIONSHIPS ===
+# Different relationship types for each side
+
+customer_relationships:
+  - id: cr-consumer-automated
+    name: Automated Self-Service
+    for:
+      customer_segments: [cs-consumers]
+
+  - id: cr-consumer-support
+    name: In-App Customer Support
+    for:
+      customer_segments: [cs-consumers]
+
+  - id: cr-restaurant-dedicated
+    name: Dedicated Account Manager
+    for:
+      customer_segments: [cs-restaurants]
+
+  - id: cr-restaurant-community
+    name: Restaurant Partner Community
+    for:
+      customer_segments: [cs-restaurants]
+
+# === REVENUE STREAMS ===
+# Money flows differently from each side
+
+revenue_streams:
+  - id: rs-delivery-fees
+    name: Delivery Fees
+    from:
+      customer_segments: [cs-consumers]
+    for:
+      value_propositions: [vp-consumer-convenience]
+
+  - id: rs-service-fees
+    name: Service Fees (per order)
+    from:
+      customer_segments: [cs-consumers]
+    for:
+      value_propositions: [vp-consumer-convenience]
+
+  - id: rs-commission
+    name: Restaurant Commission (15-30%)
+    from:
+      customer_segments: [cs-restaurants]
+    for:
+      value_propositions: [vp-restaurant-growth]
+
+  - id: rs-featured-placement
+    name: Featured Placement Fees
+    from:
+      customer_segments: [cs-restaurants]
+    for:
+      value_propositions: [vp-restaurant-growth]
+
+  - id: rs-subscription
+    name: Consumer Subscription (Free Delivery)
+    from:
+      customer_segments: [cs-consumers]
+    for:
+      value_propositions: [vp-consumer-convenience]
+
+# === KEY RESOURCES ===
+# Resources needed to serve both sides
+
+key_resources:
+  - id: kr-driver-network
+    name: Driver Network
+    for:
+      value_propositions: [vp-consumer-convenience, vp-restaurant-growth]
+
+  - id: kr-tech-platform
+    name: Technology Platform
+    for:
+      value_propositions: [vp-consumer-convenience, vp-restaurant-growth]
+
+  - id: kr-restaurant-relationships
+    name: Restaurant Partner Network
+    for:
+      value_propositions: [vp-consumer-convenience]
+
+  - id: kr-customer-data
+    name: Customer Order Data
+    for:
+      value_propositions: [vp-consumer-convenience, vp-restaurant-growth]
+
+# === KEY ACTIVITIES ===
+# Core activities to make the marketplace work
+
+key_activities:
+  - id: ka-driver-ops
+    name: Driver Recruitment & Operations
+    for:
+      value_propositions: [vp-consumer-convenience, vp-restaurant-growth]
+
+  - id: ka-restaurant-acquisition
+    name: Restaurant Partner Acquisition
+    for:
+      value_propositions: [vp-consumer-convenience]
+
+  - id: ka-order-matching
+    name: Order-Driver Matching Algorithm
+    for:
+      value_propositions: [vp-consumer-convenience]
+
+  - id: ka-consumer-acquisition
+    name: Consumer Marketing & Acquisition
+    for:
+      value_propositions: [vp-consumer-convenience]
+
+  - id: ka-platform-dev
+    name: Platform Development
+    for:
+      value_propositions: [vp-consumer-convenience, vp-restaurant-growth]
+
+# === KEY PARTNERSHIPS ===
+# Partners supporting the marketplace
+
+key_partnerships:
+  - id: kp-payment-processor
+    name: Payment Processor
+    for:
+      key_activities: [ka-order-matching]
+      key_resources: [kr-tech-platform]
+
+  - id: kp-mapping-provider
+    name: Mapping & Navigation Provider
+    for:
+      key_activities: [ka-driver-ops]
+      key_resources: [kr-tech-platform]
+
+  - id: kp-insurance
+    name: Insurance Partner
+    for:
+      key_resources: [kr-driver-network]
+
+# === COSTS ===
+# Major cost drivers
+
+costs:
+  - id: cost-driver-payouts
+    name: Driver Payouts
+    for:
+      key_resources: [kr-driver-network]
+
+  - id: cost-platform-development
+    name: Platform Development & Maintenance
+    for:
+      key_resources: [kr-tech-platform]
+      key_activities: [ka-platform-dev]
+
+  - id: cost-consumer-acquisition
+    name: Consumer Acquisition Costs
+    for:
+      key_activities: [ka-consumer-acquisition]
+
+  - id: cost-restaurant-acquisition
+    name: Restaurant Sales & Onboarding
+    for:
+      key_activities: [ka-restaurant-acquisition]
+
+  - id: cost-support
+    name: Customer & Restaurant Support
+    for:
+      key_activities: [ka-driver-ops]
