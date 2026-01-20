@@ -594,6 +594,17 @@ function lintV1(doc: BMCDocument): LintResult {
     );
   }
 
+  // Info: Exploit portfolio should have revenue streams defined
+  // Business models in the exploit portfolio are focused on executing and scaling.
+  // Revenue streams are essential for demonstrating a viable business model.
+  if (doc.meta?.portfolio === 'exploit' && (doc.revenue_streams ?? []).length === 0) {
+    addInfo(
+      'exploit-no-revenue',
+      '/meta/portfolio',
+      `Exploit portfolio business models should have revenue streams defined`
+    );
+  }
+
   return { issues, version: 'v1' };
 }
 
@@ -1098,6 +1109,17 @@ function lintV2(doc: BMCDocumentV2): LintResult {
       'explore-no-fits',
       '/meta/portfolio',
       `Explore portfolio business models should have fits defined to validate desirability`
+    );
+  }
+
+  // Info: Exploit portfolio should have revenue streams defined
+  // Business models in the exploit portfolio are focused on executing and scaling.
+  // Revenue streams are essential for demonstrating a viable business model.
+  if (doc.meta?.portfolio === 'exploit' && (doc.revenue_streams ?? []).length === 0) {
+    addInfo(
+      'exploit-no-revenue',
+      '/meta/portfolio',
+      `Exploit portfolio business models should have revenue streams defined`
     );
   }
 

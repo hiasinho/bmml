@@ -1631,6 +1631,97 @@ describe('lint', () => {
       expect(errors).toHaveLength(0);
     });
   });
+
+  describe('exploit-no-revenue info rule', () => {
+    it('shows info when exploit portfolio has no revenue streams', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'exploit', stage: 'grow' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+      };
+
+      const result = lint(doc);
+      const info = result.issues.find((i) => i.rule === 'exploit-no-revenue');
+      expect(info).toBeDefined();
+      expect(info?.severity).toBe('info');
+      expect(info?.message).toContain('Exploit portfolio');
+      expect(info?.message).toContain('revenue streams');
+      expect(info?.path).toBe('/meta/portfolio');
+    });
+
+    it('does not show info when exploit portfolio has revenue streams', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'exploit', stage: 'grow' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+        revenue_streams: [
+          {
+            id: 'rs-test',
+            name: 'Test Revenue',
+            from_segments: ['cs-test'],
+            for_value: 'vp-test',
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const info = result.issues.find((i) => i.rule === 'exploit-no-revenue');
+      expect(info).toBeUndefined();
+    });
+
+    it('does not show info for explore portfolio without revenue streams', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+      };
+
+      const result = lint(doc);
+      const info = result.issues.find((i) => i.rule === 'exploit-no-revenue');
+      expect(info).toBeUndefined();
+    });
+
+    it('shows info for all exploit stages without revenue streams', () => {
+      const stages = ['improve', 'grow', 'sustain', 'retire', 'transfer'] as const;
+
+      for (const stage of stages) {
+        const doc: BMCDocument = {
+          version: '1.0',
+          meta: { name: 'Test', portfolio: 'exploit', stage },
+        };
+
+        const result = lint(doc);
+        const info = result.issues.find((i) => i.rule === 'exploit-no-revenue');
+        expect(info).toBeDefined();
+      }
+    });
+
+    it('validation still passes with exploit-no-revenue info', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'exploit', stage: 'grow' },
+      };
+
+      const result = lint(doc);
+      const errors = result.issues.filter((i) => i.severity === 'error');
+      expect(errors).toHaveLength(0);
+    });
+  });
 });
 
 // ============================================================================
@@ -3374,6 +3465,97 @@ describe('lint v2', () => {
       const doc: BMCDocumentV2 = {
         version: '2.0',
         meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+      };
+
+      const result = lint(doc);
+      const errors = result.issues.filter((i) => i.severity === 'error');
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('exploit-no-revenue info rule (v2)', () => {
+    it('shows info when exploit portfolio has no revenue streams', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'exploit', stage: 'grow' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+      };
+
+      const result = lint(doc);
+      const info = result.issues.find((i) => i.rule === 'exploit-no-revenue');
+      expect(info).toBeDefined();
+      expect(info?.severity).toBe('info');
+      expect(info?.message).toContain('Exploit portfolio');
+      expect(info?.message).toContain('revenue streams');
+      expect(info?.path).toBe('/meta/portfolio');
+    });
+
+    it('does not show info when exploit portfolio has revenue streams (v2 for:/from: pattern)', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'exploit', stage: 'grow' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+        revenue_streams: [
+          {
+            id: 'rs-test',
+            name: 'Test Revenue',
+            from: { customer_segments: ['cs-test'] },
+            for: { value_propositions: ['vp-test'] },
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const info = result.issues.find((i) => i.rule === 'exploit-no-revenue');
+      expect(info).toBeUndefined();
+    });
+
+    it('does not show info for explore portfolio without revenue streams', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          { id: 'cs-test', name: 'Test Segment' },
+        ],
+        value_propositions: [
+          { id: 'vp-test', name: 'Test VP' },
+        ],
+      };
+
+      const result = lint(doc);
+      const info = result.issues.find((i) => i.rule === 'exploit-no-revenue');
+      expect(info).toBeUndefined();
+    });
+
+    it('shows info for all exploit stages without revenue streams', () => {
+      const stages = ['improve', 'grow', 'sustain', 'retire', 'transfer'] as const;
+
+      for (const stage of stages) {
+        const doc: BMCDocumentV2 = {
+          version: '2.0',
+          meta: { name: 'Test', portfolio: 'exploit', stage },
+        };
+
+        const result = lint(doc);
+        const info = result.issues.find((i) => i.rule === 'exploit-no-revenue');
+        expect(info).toBeDefined();
+      }
+    });
+
+    it('validation still passes with exploit-no-revenue info', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'exploit', stage: 'grow' },
       };
 
       const result = lint(doc);
