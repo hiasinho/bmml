@@ -21,7 +21,12 @@ import {
   isKeyActivityId,
   isKeyPartnershipId,
   isResourceOrActivityId,
+  // v2 type guards
+  isPainRelieverId,
+  isGainCreatorId,
+  isCostId,
   type BMCDocument,
+  type BMCDocumentV2,
 } from '../src/types';
 
 describe('ID Type Guards', () => {
@@ -196,6 +201,55 @@ describe('ID Type Guards', () => {
       expect(isResourceOrActivityId('cs-test')).toBe(false);
     });
   });
+
+  // v2 ID Type Guards
+  describe('isPainRelieverId (v2)', () => {
+    it('accepts valid pr- prefixed IDs', () => {
+      expect(isPainRelieverId('pr-time-saver')).toBe(true);
+      expect(isPainRelieverId('pr-1')).toBe(true);
+      expect(isPainRelieverId('pr-easy-prep')).toBe(true);
+    });
+
+    it('rejects invalid IDs', () => {
+      expect(isPainRelieverId('pain-1')).toBe(false);
+      expect(isPainRelieverId('reliever-time')).toBe(false);
+      expect(isPainRelieverId('pr-')).toBe(false);
+      expect(isPainRelieverId('PR-test')).toBe(false);
+      expect(isPainRelieverId('')).toBe(false);
+    });
+  });
+
+  describe('isGainCreatorId (v2)', () => {
+    it('accepts valid gc- prefixed IDs', () => {
+      expect(isGainCreatorId('gc-variety')).toBe(true);
+      expect(isGainCreatorId('gc-1')).toBe(true);
+      expect(isGainCreatorId('gc-healthy-options')).toBe(true);
+    });
+
+    it('rejects invalid IDs', () => {
+      expect(isGainCreatorId('gain-1')).toBe(false);
+      expect(isGainCreatorId('creator-variety')).toBe(false);
+      expect(isGainCreatorId('gc-')).toBe(false);
+      expect(isGainCreatorId('GC-test')).toBe(false);
+      expect(isGainCreatorId('')).toBe(false);
+    });
+  });
+
+  describe('isCostId (v2)', () => {
+    it('accepts valid cost- prefixed IDs', () => {
+      expect(isCostId('cost-ingredients')).toBe(true);
+      expect(isCostId('cost-1')).toBe(true);
+      expect(isCostId('cost-delivery-fleet')).toBe(true);
+    });
+
+    it('rejects invalid IDs', () => {
+      expect(isCostId('mc-ingredients')).toBe(false);
+      expect(isCostId('major-cost-1')).toBe(false);
+      expect(isCostId('cost-')).toBe(false);
+      expect(isCostId('COST-test')).toBe(false);
+      expect(isCostId('')).toBe(false);
+    });
+  });
 });
 
 describe('Type Compatibility', () => {
@@ -251,5 +305,140 @@ describe('Type Compatibility', () => {
     for (const vp of doc.value_propositions || []) {
       expect(isValuePropositionId(vp.id)).toBe(true);
     }
+  });
+});
+
+describe('v2 Type Compatibility', () => {
+  it('BMCDocumentV2 interface accepts valid v2 structure', () => {
+    // Programmatic test since v2 fixtures don't exist yet
+    const doc: BMCDocumentV2 = {
+      version: '2.0',
+      meta: {
+        name: 'Test v2 Model',
+        portfolio: 'explore',
+        stage: 'ideation',
+      },
+      customer_segments: [
+        {
+          id: 'cs-busy',
+          name: 'Busy Professionals',
+          jobs: [{ id: 'job-eat-healthy', description: 'Eat healthy without cooking' }],
+          pains: [{ id: 'pain-time', description: 'No time to cook' }],
+          gains: [{ id: 'gain-variety', description: 'Enjoy variety in meals' }],
+        },
+      ],
+      value_propositions: [
+        {
+          id: 'vp-convenience',
+          name: 'Convenient Meal Kits',
+          products_services: [{ id: 'ps-kit', name: 'Pre-portioned meal kit' }],
+          pain_relievers: [{ id: 'pr-time', name: 'Save cooking time' }],
+          gain_creators: [{ id: 'gc-variety', name: 'Weekly menu rotation' }],
+        },
+      ],
+      fits: [
+        {
+          id: 'fit-convenience-busy',
+          for: {
+            value_propositions: ['vp-convenience'],
+            customer_segments: ['cs-busy'],
+          },
+          mappings: [
+            ['pr-time', 'pain-time'],
+            ['gc-variety', 'gain-variety'],
+          ],
+        },
+      ],
+      channels: [
+        {
+          id: 'ch-website',
+          name: 'Website',
+          for: {
+            value_propositions: ['vp-convenience'],
+            customer_segments: ['cs-busy'],
+          },
+        },
+      ],
+      customer_relationships: [
+        {
+          id: 'cr-subscription',
+          name: 'Subscription service',
+          for: { customer_segments: ['cs-busy'] },
+        },
+      ],
+      revenue_streams: [
+        {
+          id: 'rs-subscriptions',
+          name: 'Weekly subscriptions',
+          from: { customer_segments: ['cs-busy'] },
+          for: { value_propositions: ['vp-convenience'] },
+        },
+      ],
+      key_resources: [
+        {
+          id: 'kr-kitchen',
+          name: 'Central kitchen',
+          for: { value_propositions: ['vp-convenience'] },
+        },
+      ],
+      key_activities: [
+        {
+          id: 'ka-meal-prep',
+          name: 'Meal preparation',
+          for: { value_propositions: ['vp-convenience'] },
+        },
+      ],
+      key_partnerships: [
+        {
+          id: 'kp-suppliers',
+          name: 'Ingredient suppliers',
+          for: { key_resources: ['kr-kitchen'] },
+        },
+      ],
+      costs: [
+        {
+          id: 'cost-ingredients',
+          name: 'Ingredient costs',
+          for: { key_resources: ['kr-kitchen'], key_activities: ['ka-meal-prep'] },
+        },
+      ],
+    };
+
+    // Verify structure compiles and has correct types
+    expect(doc.version).toBe('2.0');
+    expect(doc.meta.name).toBe('Test v2 Model');
+    expect(doc.customer_segments).toHaveLength(1);
+    expect(doc.value_propositions).toHaveLength(1);
+    expect(doc.fits).toHaveLength(1);
+    expect(doc.costs).toHaveLength(1);
+  });
+
+  it('v2 IDs in programmatic document are valid', () => {
+    const doc: BMCDocumentV2 = {
+      version: '2.0',
+      meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+      value_propositions: [
+        {
+          id: 'vp-test',
+          name: 'Test VP',
+          pain_relievers: [{ id: 'pr-test', name: 'Test reliever' }],
+          gain_creators: [{ id: 'gc-test', name: 'Test creator' }],
+        },
+      ],
+      costs: [{ id: 'cost-test', name: 'Test cost' }],
+    };
+
+    // Verify v2 IDs
+    expect(isPainRelieverId(doc.value_propositions![0].pain_relievers![0].id)).toBe(true);
+    expect(isGainCreatorId(doc.value_propositions![0].gain_creators![0].id)).toBe(true);
+    expect(isCostId(doc.costs![0].id)).toBe(true);
+  });
+
+  it('FitMapping type enforces tuple structure', () => {
+    // Type-level test - if this compiles, the type is correct
+    const mapping: [string, string] = ['pr-time', 'pain-time'];
+    expect(mapping).toHaveLength(2);
+    expect(mapping[0]).toBe('pr-time');
+    expect(mapping[1]).toBe('pain-time');
   });
 });

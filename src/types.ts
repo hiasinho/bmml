@@ -134,6 +134,19 @@ export type KeyPartnershipId = string;
 export type ResourceOrActivityId = KeyResourceId | KeyActivityId;
 
 // ============================================================================
+// v2 ID Types
+// ============================================================================
+
+/** Pain reliever ID (pr-*) - v2 */
+export type PainRelieverId = string;
+
+/** Gain creator ID (gc-*) - v2 */
+export type GainCreatorId = string;
+
+/** Cost ID (cost-*) - v2 */
+export type CostId = string;
+
+// ============================================================================
 // ID Type Guards
 // ============================================================================
 
@@ -205,6 +218,25 @@ export function isKeyPartnershipId(id: string): id is KeyPartnershipId {
 /** Check if string is a valid resource or activity ID */
 export function isResourceOrActivityId(id: string): id is ResourceOrActivityId {
   return /^(kr|ka)-[a-z0-9-]+$/.test(id);
+}
+
+// ============================================================================
+// v2 ID Type Guards
+// ============================================================================
+
+/** Check if string is a valid pain reliever ID (v2) */
+export function isPainRelieverId(id: string): id is PainRelieverId {
+  return /^pr-[a-z0-9-]+$/.test(id);
+}
+
+/** Check if string is a valid gain creator ID (v2) */
+export function isGainCreatorId(id: string): id is GainCreatorId {
+  return /^gc-[a-z0-9-]+$/.test(id);
+}
+
+/** Check if string is a valid cost ID (v2) */
+export function isCostId(id: string): id is CostId {
+  return /^cost-[a-z0-9-]+$/.test(id);
 }
 
 // ============================================================================
@@ -450,10 +482,217 @@ export interface CostStructure {
 }
 
 // ============================================================================
+// v2 Interfaces
+// ============================================================================
+
+/** Pain reliever in v2 Value Map - how a VP relieves pain */
+export interface PainRelieverV2 {
+  /** Unique identifier with pr- prefix */
+  id: PainRelieverId;
+  /** How it relieves pain */
+  name: string;
+}
+
+/** Gain creator in v2 Value Map - how a VP creates gain */
+export interface GainCreatorV2 {
+  /** Unique identifier with gc- prefix */
+  id: GainCreatorId;
+  /** How it creates gain */
+  name: string;
+}
+
+/** v2 relationship target - which entities something serves/supports */
+export interface ForRelation {
+  /** Value propositions this relates to */
+  value_propositions?: ValuePropositionId[];
+  /** Customer segments this relates to */
+  customer_segments?: CustomerSegmentId[];
+  /** Key resources this relates to */
+  key_resources?: KeyResourceId[];
+  /** Key activities this relates to */
+  key_activities?: KeyActivityId[];
+}
+
+/** v2 relationship source - which entities something comes from */
+export interface FromRelation {
+  /** Customer segments this comes from */
+  customer_segments?: CustomerSegmentId[];
+}
+
+/** v2 Product/Service - simpler structure without type field */
+export interface ProductServiceV2 {
+  /** Unique identifier with ps- prefix */
+  id: ProductServiceId;
+  /** Name of the product or service */
+  name: string;
+}
+
+/** v2 Job - simpler structure without type/importance */
+export interface JobV2 {
+  /** Unique identifier with job- prefix */
+  id: JobId;
+  /** What they're trying to accomplish */
+  description: string;
+}
+
+/** v2 Pain - simpler structure without severity */
+export interface PainV2 {
+  /** Unique identifier with pain- prefix */
+  id: PainId;
+  /** What frustrates them or blocks them */
+  description: string;
+}
+
+/** v2 Gain - simpler structure without importance */
+export interface GainV2 {
+  /** Unique identifier with gain- prefix */
+  id: GainId;
+  /** What they want to achieve or experience */
+  description: string;
+}
+
+/** v2 Customer Segment with optional profile */
+export interface CustomerSegmentV2 {
+  /** Unique identifier with cs- prefix */
+  id: CustomerSegmentId;
+  /** Name of the customer segment */
+  name: string;
+  /** Who they are */
+  description?: string;
+  /** Jobs to be done (Customer Profile) */
+  jobs?: JobV2[];
+  /** Customer pains (Customer Profile) */
+  pains?: PainV2[];
+  /** Customer gains (Customer Profile) */
+  gains?: GainV2[];
+}
+
+/** v2 Value Proposition with optional Value Map */
+export interface ValuePropositionV2 {
+  /** Unique identifier with vp- prefix */
+  id: ValuePropositionId;
+  /** Name of the value proposition */
+  name: string;
+  /** What you offer */
+  description?: string;
+  /** Products and services that deliver this value (Value Map) */
+  products_services?: ProductServiceV2[];
+  /** How this VP relieves customer pains (Value Map) */
+  pain_relievers?: PainRelieverV2[];
+  /** How this VP creates customer gains (Value Map) */
+  gain_creators?: GainCreatorV2[];
+}
+
+/** Tuple mapping in a fit: [reliever/creator, pain/gain] */
+export type FitMapping = [string, string];
+
+/** v2 Fit between value propositions and customer segments */
+export interface FitV2 {
+  /** Unique identifier with fit- prefix */
+  id: FitId;
+  /** Which VP(s) and CS(s) this fit connects */
+  for: {
+    value_propositions: ValuePropositionId[];
+    customer_segments: CustomerSegmentId[];
+  };
+  /** Tuple mappings: [reliever/creator, pain/gain] */
+  mappings?: FitMapping[];
+}
+
+/** v2 Channel with for: pattern */
+export interface ChannelV2 {
+  /** Unique identifier with ch- prefix */
+  id: ChannelId;
+  /** Name of the channel */
+  name: string;
+  /** Which VPs and CSs this channel serves */
+  for?: {
+    value_propositions?: ValuePropositionId[];
+    customer_segments?: CustomerSegmentId[];
+  };
+}
+
+/** v2 Customer Relationship with for: pattern */
+export interface CustomerRelationshipV2 {
+  /** Unique identifier with cr- prefix */
+  id: CustomerRelationshipId;
+  /** Name/type of relationship */
+  name: string;
+  /** Which customer segments this relationship applies to */
+  for?: {
+    customer_segments?: CustomerSegmentId[];
+  };
+}
+
+/** v2 Revenue Stream with for:/from: pattern */
+export interface RevenueStreamV2 {
+  /** Unique identifier with rs- prefix */
+  id: RevenueStreamId;
+  /** Name of the revenue stream */
+  name: string;
+  /** Who pays (source of revenue) */
+  from?: FromRelation;
+  /** What they pay for */
+  for?: {
+    value_propositions?: ValuePropositionId[];
+  };
+}
+
+/** v2 Key Resource with for: pattern */
+export interface KeyResourceV2 {
+  /** Unique identifier with kr- prefix */
+  id: KeyResourceId;
+  /** Name of the resource */
+  name: string;
+  /** Which value propositions need this resource */
+  for?: {
+    value_propositions?: ValuePropositionId[];
+  };
+}
+
+/** v2 Key Activity with for: pattern */
+export interface KeyActivityV2 {
+  /** Unique identifier with ka- prefix */
+  id: KeyActivityId;
+  /** Name of the activity */
+  name: string;
+  /** Which value propositions require this activity */
+  for?: {
+    value_propositions?: ValuePropositionId[];
+  };
+}
+
+/** v2 Key Partnership with for: pattern */
+export interface KeyPartnershipV2 {
+  /** Unique identifier with kp- prefix */
+  id: KeyPartnershipId;
+  /** Name of the partner */
+  name: string;
+  /** Which resources/activities this partner provides */
+  for?: {
+    key_resources?: KeyResourceId[];
+    key_activities?: KeyActivityId[];
+  };
+}
+
+/** v2 Cost item (replaces MajorCost in cost_structure) */
+export interface Cost {
+  /** Unique identifier with cost- prefix */
+  id: CostId;
+  /** Name of the cost */
+  name: string;
+  /** Which resources/activities incur this cost */
+  for?: {
+    key_resources?: KeyResourceId[];
+    key_activities?: KeyActivityId[];
+  };
+}
+
+// ============================================================================
 // Root Document Interface
 // ============================================================================
 
-/** Complete BMCLang document */
+/** Complete BMCLang v1 document */
 export interface BMCDocument {
   /** BMCLang format version */
   version: '1.0';
@@ -479,4 +718,32 @@ export interface BMCDocument {
   key_partnerships?: KeyPartnership[];
   /** The cost structure of the business model */
   cost_structure?: CostStructure;
+}
+
+/** Complete BMML v2 document */
+export interface BMCDocumentV2 {
+  /** BMML format version */
+  version: '2.0';
+  /** Business model metadata */
+  meta: Meta;
+  /** Customer segments the business targets (with optional Customer Profile) */
+  customer_segments?: CustomerSegmentV2[];
+  /** Value propositions offered (with optional Value Map) */
+  value_propositions?: ValuePropositionV2[];
+  /** Connections between value propositions and customer segments (VPC detail) */
+  fits?: FitV2[];
+  /** Channels to reach customer segments with value propositions */
+  channels?: ChannelV2[];
+  /** Types of relationships with customer segments */
+  customer_relationships?: CustomerRelationshipV2[];
+  /** Revenue streams from customer segments for value propositions */
+  revenue_streams?: RevenueStreamV2[];
+  /** Key resources needed to deliver value propositions */
+  key_resources?: KeyResourceV2[];
+  /** Key activities needed to deliver value propositions */
+  key_activities?: KeyActivityV2[];
+  /** Key partnerships that provide resources or activities */
+  key_partnerships?: KeyPartnershipV2[];
+  /** Cost items (replaces v1 cost_structure) */
+  costs?: Cost[];
 }

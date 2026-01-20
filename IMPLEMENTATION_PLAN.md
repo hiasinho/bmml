@@ -142,13 +142,15 @@ Depends on: v2 Schema Phases 1-8 complete
 
 ### New Type Definitions
 
-- [ ] Add `PainReliever` interface (v2)
+- [x] Add `PainReliever` interface (v2)
   - `{ id: PainRelieverId; name: string; }`
   - AC: Interface exported from `src/types.ts`
-- [ ] Add `GainCreator` interface (v2)
+  - Done: Added as `PainRelieverV2` interface to avoid conflict with v1 interface
+- [x] Add `GainCreator` interface (v2)
   - `{ id: GainCreatorId; name: string; }`
   - AC: Interface exported from `src/types.ts`
-- [ ] Add `ForRelation` generic interface
+  - Done: Added as `GainCreatorV2` interface to avoid conflict with v1 interface
+- [x] Add `ForRelation` generic interface
   ```typescript
   interface ForRelation {
     value_propositions?: ValuePropositionId[];
@@ -158,62 +160,78 @@ Depends on: v2 Schema Phases 1-8 complete
   }
   ```
   - AC: Compiles, used by updated entity interfaces
-- [ ] Add `FromRelation` interface
+  - Done: Added to src/types.ts
+- [x] Add `FromRelation` interface
   ```typescript
   interface FromRelation {
     customer_segments?: CustomerSegmentId[];
   }
   ```
   - AC: Compiles, used by RevenueStream interface
-- [ ] Add `Cost` interface (v2, replaces MajorCost)
+  - Done: Added to src/types.ts
+- [x] Add `Cost` interface (v2, replaces MajorCost)
   - `{ id: CostId; name: string; for: ForRelation; }`
   - AC: Interface exported, MajorCost marked deprecated
+  - Done: Added `Cost` interface. v1 `MajorCost` retained for backwards compatibility.
 
 ### Type ID Aliases and Guards
 
-- [ ] Add `PainRelieverId` type alias with `pr-` pattern
+- [x] Add `PainRelieverId` type alias with `pr-` pattern
   - AC: `isPainRelieverId('pr-time')` returns true
-- [ ] Add `GainCreatorId` type alias with `gc-` pattern
+  - Done: Added type alias and type guard function with tests
+- [x] Add `GainCreatorId` type alias with `gc-` pattern
   - AC: `isGainCreatorId('gc-variety')` returns true
-- [ ] Add `CostId` type alias with `cost-` pattern
+  - Done: Added type alias and type guard function with tests
+- [x] Add `CostId` type alias with `cost-` pattern
   - AC: `isCostId('cost-ingredients')` returns true
+  - Done: Added type alias and type guard function with tests
 
 ### Updated Entity Interfaces
 
-- [ ] Update `ValueProposition` interface
+- [x] Update `ValueProposition` interface
   - Add optional `pain_relievers: PainReliever[]`
   - Add optional `gain_creators: GainCreator[]`
   - AC: VP with value map compiles correctly
-- [ ] Update `Fit` interface for v2 pattern
+  - Done: Added `ValuePropositionV2` with pain_relievers and gain_creators
+- [x] Update `Fit` interface for v2 pattern
   - Replace `value_proposition` + `customer_segment` with `for: ForRelation`
   - Add `mappings: [string, string][]` tuple array
   - AC: v2 fit structure type-checks correctly
-- [ ] Update `Channel` interface for v2 pattern
+  - Done: Added `FitV2` with `for` pattern and `FitMapping` tuple type
+- [x] Update `Channel` interface for v2 pattern
   - Replace `segments` with `for: ForRelation`
   - AC: Channel with dual refs compiles
-- [ ] Update `CustomerRelationship` interface
+  - Done: Added `ChannelV2` with `for` pattern
+- [x] Update `CustomerRelationship` interface
   - Replace `segment` with `for: ForRelation`
   - AC: Consistent with v2 pattern
-- [ ] Update `RevenueStream` interface
+  - Done: Added `CustomerRelationshipV2` with `for` pattern
+- [x] Update `RevenueStream` interface
   - Replace `from_segments` with `from: FromRelation`
   - Replace `for_value` with `for: ForRelation`
   - AC: Bidirectional refs compile
-- [ ] Update `KeyResource` interface
+  - Done: Added `RevenueStreamV2` with both `for` and `from` patterns
+- [x] Update `KeyResource` interface
   - Replace `for_value` with `for: ForRelation`
   - AC: Consistent pattern
-- [ ] Update `KeyActivity` interface
+  - Done: Added `KeyResourceV2` with `for` pattern
+- [x] Update `KeyActivity` interface
   - Replace `for_value` with `for: ForRelation`
   - AC: Consistent pattern
-- [ ] Update `KeyPartnership` interface
+  - Done: Added `KeyActivityV2` with `for` pattern
+- [x] Update `KeyPartnership` interface
   - Replace `provides` with `for: ForRelation`
   - AC: Partners ref resources/activities via `for`
+  - Done: Added `KeyPartnershipV2` with `for` pattern
 
 ### Type Cleanup
 
-- [ ] Remove or deprecate v1-only type enums (if type fields removed)
+- [x] Remove or deprecate v1-only type enums (if type fields removed)
   - AC: No compilation errors, deprecated enums marked
-- [ ] Export all v2 types from `src/index.ts`
+  - Done: v1 types retained for backwards compatibility; v2 types added alongside (JobV2, PainV2, GainV2, ProductServiceV2, etc. without type/level fields)
+- [x] Export all v2 types from `src/index.ts`
   - AC: All new types importable from package
+  - Done: All v2 types auto-exported via `export * from './types.js'`
 
 ---
 
