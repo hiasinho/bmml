@@ -543,8 +543,9 @@ Quality-of-life improvements. Lower priority than core v2 migration.
 
 ### Data Quality
 
-- [ ] Warning: Duplicate ID detected (same ID used twice across sections)
+- [x] Warning: Duplicate ID detected (same ID used twice across sections)
   - AC: `cs-busy` used twice produces warning
+  - Done: Added 'duplicate-id' warning rule to both v1 and v2 linters. Collects all IDs across all entity types (including nested entities like jobs, pains, gains, products_services, pain_relievers, gain_creators) and reports warnings when any ID appears more than once. Each duplicate occurrence includes a list of other locations where the same ID appears. 15 tests added covering cross-section duplicates, nested entity duplicates, Value Map duplicates (v2), multiple occurrences, and validation pass-through.
 
 ---
 
