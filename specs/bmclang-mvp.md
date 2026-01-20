@@ -288,7 +288,8 @@ All elements use prefixed IDs for clarity:
 
 - Environment Map (market forces, trends, macro factors)
 - Hypotheses and Evidence tracking
-- Patterns (Freemium, Platform, etc.)
+- Patterns (Freemium, Platform, Marketplace, etc.)
+- Market type classification (B2B, B2C, C2C, B2G, etc.)
 - Confidence scores
 - Rich pivot history (beyond `derived_from` lineage)
 - Multi-canvas support (multi-sided platforms)
