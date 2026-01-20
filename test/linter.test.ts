@@ -756,6 +756,164 @@ describe('lint', () => {
       expect(errors).toHaveLength(0);
     });
   });
+
+  describe('pain-never-relieved warning rule', () => {
+    it('warns when pain is defined but never relieved', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            pains: [{ id: 'pain-lonely', description: 'A lonely pain' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'pain-never-relieved');
+      expect(warning).toBeDefined();
+      expect(warning?.severity).toBe('warning');
+      expect(warning?.message).toContain('pain-lonely');
+      expect(warning?.message).toContain('never relieved');
+      expect(warning?.path).toBe('/customer_segments/0/pains/0');
+    });
+
+    it('does not warn when pain is relieved in a fit', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            pains: [{ id: 'pain-relieved', description: 'A relieved pain' }],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            products_services: [{ id: 'ps-test', type: 'product', description: 'Test' }],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            value_proposition: 'vp-test',
+            customer_segment: 'cs-test',
+            pain_relievers: [{ pain: 'pain-relieved', through: ['ps-test'] }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'pain-never-relieved');
+      expect(warning).toBeUndefined();
+    });
+
+    it('warns for each pain that is never relieved', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            pains: [
+              { id: 'pain-lonely1', description: 'Lonely 1' },
+              { id: 'pain-lonely2', description: 'Lonely 2' },
+            ],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'pain-never-relieved');
+      expect(warnings).toHaveLength(2);
+    });
+
+    it('only warns for pains that are never relieved (mixed scenario)', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            pains: [
+              { id: 'pain-relieved', description: 'Relieved' },
+              { id: 'pain-lonely', description: 'Lonely' },
+            ],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            products_services: [{ id: 'ps-test', type: 'product', description: 'Test' }],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            value_proposition: 'vp-test',
+            customer_segment: 'cs-test',
+            pain_relievers: [{ pain: 'pain-relieved', through: ['ps-test'] }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'pain-never-relieved');
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain('pain-lonely');
+    });
+
+    it('checks pains across multiple customer segments', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-one',
+            name: 'Segment One',
+            pains: [{ id: 'pain-one', description: 'Pain One' }],
+          },
+          {
+            id: 'cs-two',
+            name: 'Segment Two',
+            pains: [{ id: 'pain-two', description: 'Pain Two' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'pain-never-relieved');
+      expect(warnings).toHaveLength(2);
+      expect(warnings[0].path).toBe('/customer_segments/0/pains/0');
+      expect(warnings[1].path).toBe('/customer_segments/1/pains/0');
+    });
+
+    it('validation still passes with pain-never-relieved warning', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            pains: [{ id: 'pain-lonely', description: 'Lonely' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const errors = result.issues.filter((i) => i.severity === 'error');
+      expect(errors).toHaveLength(0);
+    });
+  });
 });
 
 // ============================================================================
@@ -1720,6 +1878,216 @@ describe('lint v2', () => {
         meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
         value_propositions: [
           { id: 'vp-lonely', name: 'Lonely VP' },
+        ],
+      };
+
+      const result = lint(doc);
+      const errors = result.issues.filter((i) => i.severity === 'error');
+      expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('pain-never-relieved warning rule (v2)', () => {
+    it('warns when pain is defined but never relieved in tuple mappings', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            pains: [{ id: 'pain-lonely', name: 'A lonely pain' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'pain-never-relieved');
+      expect(warning).toBeDefined();
+      expect(warning?.severity).toBe('warning');
+      expect(warning?.message).toContain('pain-lonely');
+      expect(warning?.message).toContain('never relieved');
+      expect(warning?.path).toBe('/customer_segments/0/pains/0');
+    });
+
+    it('does not warn when pain is relieved via tuple mapping [pr-*, pain-*]', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            pains: [{ id: 'pain-relieved', name: 'A relieved pain' }],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            pain_relievers: [{ id: 'pr-reliever', name: 'Pain Reliever' }],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            for: {
+              value_propositions: ['vp-test'],
+              customer_segments: ['cs-test'],
+            },
+            mappings: [['pr-reliever', 'pain-relieved']],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'pain-never-relieved');
+      expect(warning).toBeUndefined();
+    });
+
+    it('warns for each pain that is never relieved', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            pains: [
+              { id: 'pain-lonely1', name: 'Lonely 1' },
+              { id: 'pain-lonely2', name: 'Lonely 2' },
+            ],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'pain-never-relieved');
+      expect(warnings).toHaveLength(2);
+    });
+
+    it('only warns for pains that are never relieved (mixed scenario)', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            pains: [
+              { id: 'pain-relieved', name: 'Relieved' },
+              { id: 'pain-lonely', name: 'Lonely' },
+            ],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            pain_relievers: [{ id: 'pr-reliever', name: 'Pain Reliever' }],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            for: {
+              value_propositions: ['vp-test'],
+              customer_segments: ['cs-test'],
+            },
+            mappings: [['pr-reliever', 'pain-relieved']],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'pain-never-relieved');
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain('pain-lonely');
+    });
+
+    it('checks pains across multiple customer segments', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-one',
+            name: 'Segment One',
+            pains: [{ id: 'pain-one', name: 'Pain One' }],
+          },
+          {
+            id: 'cs-two',
+            name: 'Segment Two',
+            pains: [{ id: 'pain-two', name: 'Pain Two' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'pain-never-relieved');
+      expect(warnings).toHaveLength(2);
+      expect(warnings[0].path).toBe('/customer_segments/0/pains/0');
+      expect(warnings[1].path).toBe('/customer_segments/1/pains/0');
+    });
+
+    it('pain is considered relieved from any fit mapping', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            pains: [{ id: 'pain-relieved', name: 'Relieved' }],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-one',
+            name: 'VP One',
+            pain_relievers: [{ id: 'pr-one', name: 'Reliever One' }],
+          },
+          {
+            id: 'vp-two',
+            name: 'VP Two',
+            pain_relievers: [{ id: 'pr-two', name: 'Reliever Two' }],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-one',
+            for: {
+              value_propositions: ['vp-one'],
+              customer_segments: ['cs-test'],
+            },
+            // No mapping here
+          },
+          {
+            id: 'fit-two',
+            for: {
+              value_propositions: ['vp-two'],
+              customer_segments: ['cs-test'],
+            },
+            mappings: [['pr-two', 'pain-relieved']],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'pain-never-relieved');
+      expect(warning).toBeUndefined();
+    });
+
+    it('validation still passes with pain-never-relieved warning', () => {
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            pains: [{ id: 'pain-lonely', name: 'Lonely' }],
+          },
         ],
       };
 

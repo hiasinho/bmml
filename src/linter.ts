@@ -473,6 +473,28 @@ function lintV1(doc: BMCDocument): LintResult {
     }
   }
 
+  // Warning: Pain defined but never relieved (no fit mapping references it)
+  const relievedPains = new Set<PainId>();
+  for (const fit of doc.fits ?? []) {
+    for (const pr of fit.pain_relievers ?? []) {
+      relievedPains.add(pr.pain);
+    }
+  }
+
+  for (let csIdx = 0; csIdx < (doc.customer_segments ?? []).length; csIdx++) {
+    const cs = doc.customer_segments![csIdx];
+    for (let painIdx = 0; painIdx < (cs.pains ?? []).length; painIdx++) {
+      const pain = cs.pains![painIdx];
+      if (!relievedPains.has(pain.id)) {
+        addWarning(
+          'pain-never-relieved',
+          `/customer_segments/${csIdx}/pains/${painIdx}`,
+          `Pain '${pain.id}' is defined but never relieved in any fit mapping`
+        );
+      }
+    }
+  }
+
   return { issues, version: 'v1' };
 }
 
@@ -866,6 +888,34 @@ function lintV2(doc: BMCDocumentV2): LintResult {
         `/value_propositions/${vpIdx}`,
         `Value proposition '${vp.id}' has no fits defined`
       );
+    }
+  }
+
+  // Warning: Pain defined but never relieved (no fit mapping references it)
+  // In v2, pains are relieved via tuple mappings: [pr-*, pain-*]
+  const relievedPains = new Set<PainId>();
+  for (const fit of doc.fits ?? []) {
+    for (const mapping of fit.mappings ?? []) {
+      if (Array.isArray(mapping) && mapping.length === 2) {
+        const [, right] = mapping;
+        if (typeof right === 'string' && right.startsWith('pain-')) {
+          relievedPains.add(right as PainId);
+        }
+      }
+    }
+  }
+
+  for (let csIdx = 0; csIdx < (doc.customer_segments ?? []).length; csIdx++) {
+    const cs = doc.customer_segments![csIdx];
+    for (let painIdx = 0; painIdx < (cs.pains ?? []).length; painIdx++) {
+      const pain = cs.pains![painIdx];
+      if (!relievedPains.has(pain.id)) {
+        addWarning(
+          'pain-never-relieved',
+          `/customer_segments/${csIdx}/pains/${painIdx}`,
+          `Pain '${pain.id}' is defined but never relieved in any fit mapping`
+        );
+      }
     }
   }
 
