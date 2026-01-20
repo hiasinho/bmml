@@ -442,10 +442,11 @@ Depends on: v2 Schema + Migration Tooling
   - Demonstrates progressive detail (start simple)
   - AC: Validates as v2, serves as minimal example
   - Done: Created FreshBox minimal example with all 9 BMC blocks using v2 patterns. Also fixed CLI to auto-detect v1/v2 schemas.
-- [ ] Create `examples/v2/meal-kit-full.bmml`
+- [x] Create `examples/v2/meal-kit-full.bmml`
   - Full BMC + VPC with fits and tuple mappings
   - Same business as minimal, more detail
   - AC: Validates as v2, demonstrates all features
+  - Done: FreshBox with 2 customer segments (jobs/pains/gains), 2 VPs (products/pain_relievers/gain_creators), 4 fits with tuple mappings, cross-fits demonstrating VP flexibility
 - [ ] Create `examples/v2/marketplace.bmml`
   - Two-sided marketplace demonstrating multi-segment channels
   - AC: Shows ternary relationship pattern
