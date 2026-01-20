@@ -1269,6 +1269,269 @@ describe('lint', () => {
       expect(errors).toHaveLength(0);
     });
   });
+
+  describe('product-service-never-used warning rule', () => {
+    it('warns when product/service is defined but never used in fit mapping', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            products_services: [{ id: 'ps-unused', type: 'product', description: 'Unused product' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'product-service-never-used');
+      expect(warning).toBeDefined();
+      expect(warning?.severity).toBe('warning');
+      expect(warning?.message).toContain('ps-unused');
+      expect(warning?.message).toContain('never used');
+      expect(warning?.path).toBe('/value_propositions/0/products_services/0');
+    });
+
+    it('does not warn when product/service is used in pain_relievers.through', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            pains: [{ id: 'pain-test', description: 'Test pain' }],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            products_services: [{ id: 'ps-used', type: 'product', description: 'Used product' }],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            value_proposition: 'vp-test',
+            customer_segment: 'cs-test',
+            pain_relievers: [{ pain: 'pain-test', through: ['ps-used'] }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'product-service-never-used');
+      expect(warning).toBeUndefined();
+    });
+
+    it('does not warn when product/service is used in gain_creators.through', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            gains: [{ id: 'gain-test', description: 'Test gain' }],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            products_services: [{ id: 'ps-used', type: 'product', description: 'Used product' }],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            value_proposition: 'vp-test',
+            customer_segment: 'cs-test',
+            gain_creators: [{ gain: 'gain-test', through: ['ps-used'] }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'product-service-never-used');
+      expect(warning).toBeUndefined();
+    });
+
+    it('does not warn when product/service is used in job_addressers.through', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            jobs: [{ id: 'job-test', description: 'Test job' }],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            products_services: [{ id: 'ps-used', type: 'product', description: 'Used product' }],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            value_proposition: 'vp-test',
+            customer_segment: 'cs-test',
+            job_addressers: [{ job: 'job-test', through: ['ps-used'] }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warning = result.issues.find((i) => i.rule === 'product-service-never-used');
+      expect(warning).toBeUndefined();
+    });
+
+    it('warns for each product/service that is never used', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            products_services: [
+              { id: 'ps-unused1', type: 'product', description: 'Unused 1' },
+              { id: 'ps-unused2', type: 'service', description: 'Unused 2' },
+            ],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'product-service-never-used');
+      expect(warnings).toHaveLength(2);
+    });
+
+    it('only warns for products/services that are never used (mixed scenario)', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            pains: [{ id: 'pain-test', description: 'Test pain' }],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            products_services: [
+              { id: 'ps-used', type: 'product', description: 'Used product' },
+              { id: 'ps-unused', type: 'service', description: 'Unused service' },
+            ],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            value_proposition: 'vp-test',
+            customer_segment: 'cs-test',
+            pain_relievers: [{ pain: 'pain-test', through: ['ps-used'] }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'product-service-never-used');
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].message).toContain('ps-unused');
+    });
+
+    it('checks products/services across multiple value propositions', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        value_propositions: [
+          {
+            id: 'vp-1',
+            name: 'VP 1',
+            products_services: [{ id: 'ps-unused-1', type: 'product', description: 'Unused 1' }],
+          },
+          {
+            id: 'vp-2',
+            name: 'VP 2',
+            products_services: [{ id: 'ps-unused-2', type: 'service', description: 'Unused 2' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'product-service-never-used');
+      expect(warnings).toHaveLength(2);
+      expect(warnings[0].path).toBe('/value_propositions/0/products_services/0');
+      expect(warnings[1].path).toBe('/value_propositions/1/products_services/0');
+    });
+
+    it('does not warn when product/service is used in a different fit', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        customer_segments: [
+          {
+            id: 'cs-1',
+            name: 'Segment 1',
+            pains: [{ id: 'pain-1', description: 'Pain 1' }],
+          },
+          {
+            id: 'cs-2',
+            name: 'Segment 2',
+            pains: [{ id: 'pain-2', description: 'Pain 2' }],
+          },
+        ],
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            products_services: [{ id: 'ps-shared', type: 'product', description: 'Shared product' }],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-1',
+            value_proposition: 'vp-test',
+            customer_segment: 'cs-1',
+            pain_relievers: [{ pain: 'pain-1', through: ['ps-shared'] }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const warnings = result.issues.filter((i) => i.rule === 'product-service-never-used');
+      // ps-shared is used in fit-1, so it should not warn
+      expect(warnings).toHaveLength(0);
+    });
+
+    it('validation still passes with product-service-never-used warning', () => {
+      const doc: BMCDocument = {
+        version: '1.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            products_services: [{ id: 'ps-unused', type: 'product', description: 'Unused product' }],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      const errors = result.issues.filter((i) => i.severity === 'error');
+      expect(errors).toHaveLength(0);
+    });
+  });
 });
 
 // ============================================================================
@@ -2870,6 +3133,56 @@ describe('lint v2', () => {
       const result = lint(doc);
       const errors = result.issues.filter((i) => i.severity === 'error');
       expect(errors).toHaveLength(0);
+    });
+  });
+
+  describe('product-service-never-used rule (v2 - not applicable)', () => {
+    it('does not warn about unused products/services in v2 (not applicable by design)', () => {
+      // In v2, products/services are NOT directly used in fit mappings.
+      // Fit mappings only connect pr-* to pain-* and gc-* to gain-*.
+      // Products/services describe WHAT is offered, while pain_relievers/gain_creators
+      // describe HOW the offering addresses customer needs.
+      const doc: BMCDocumentV2 = {
+        version: '2.0',
+        meta: { name: 'Test', portfolio: 'explore', stage: 'ideation' },
+        value_propositions: [
+          {
+            id: 'vp-test',
+            name: 'Test VP',
+            products_services: [
+              { id: 'ps-widget', name: 'Widget product' },
+              { id: 'ps-service', name: 'Service offering' },
+            ],
+            pain_relievers: [
+              { id: 'pr-fast', name: 'Fast delivery' },
+            ],
+          },
+        ],
+        customer_segments: [
+          {
+            id: 'cs-test',
+            name: 'Test Segment',
+            pains: [{ id: 'pain-slow', name: 'Slow delivery' }],
+          },
+        ],
+        fits: [
+          {
+            id: 'fit-test',
+            for: {
+              value_propositions: ['vp-test'],
+              customer_segments: ['cs-test'],
+            },
+            mappings: [
+              ['pr-fast', 'pain-slow'],
+            ],
+          },
+        ],
+      };
+
+      const result = lint(doc);
+      // Should NOT have product-service-never-used warnings in v2
+      const warnings = result.issues.filter((i) => i.rule === 'product-service-never-used');
+      expect(warnings).toHaveLength(0);
     });
   });
 });

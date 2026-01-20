@@ -539,6 +539,41 @@ function lintV1(doc: BMCDocument): LintResult {
     }
   }
 
+  // Warning: Product/service defined but never used in fit mapping
+  // In v1, products/services are used via the "through" field in pain_relievers, gain_creators, job_addressers
+  const usedProductServices = new Set<ProductServiceId>();
+  for (const fit of doc.fits ?? []) {
+    for (const pr of fit.pain_relievers ?? []) {
+      for (const psId of pr.through) {
+        usedProductServices.add(psId);
+      }
+    }
+    for (const gc of fit.gain_creators ?? []) {
+      for (const psId of gc.through) {
+        usedProductServices.add(psId);
+      }
+    }
+    for (const ja of fit.job_addressers ?? []) {
+      for (const psId of ja.through) {
+        usedProductServices.add(psId);
+      }
+    }
+  }
+
+  for (let vpIdx = 0; vpIdx < (doc.value_propositions ?? []).length; vpIdx++) {
+    const vp = doc.value_propositions![vpIdx];
+    for (let psIdx = 0; psIdx < (vp.products_services ?? []).length; psIdx++) {
+      const ps = vp.products_services![psIdx];
+      if (!usedProductServices.has(ps.id)) {
+        addWarning(
+          'product-service-never-used',
+          `/value_propositions/${vpIdx}/products_services/${psIdx}`,
+          `Product/service '${ps.id}' is defined but never used in any fit mapping`
+        );
+      }
+    }
+  }
+
   return { issues, version: 'v1' };
 }
 
@@ -1019,6 +1054,12 @@ function lintV2(doc: BMCDocumentV2): LintResult {
       }
     }
   }
+
+  // Note: product-service-never-used warning is NOT applicable to v2
+  // In v2, products/services are defined in the value map alongside pain_relievers and gain_creators,
+  // but fit mappings only connect pr-* to pain-* and gc-* to gain-* (not ps-*).
+  // Products/services describe WHAT is offered, while pain_relievers/gain_creators describe HOW
+  // the offering addresses customer needs. They are not directly used in fit mappings by design.
 
   return { issues, version: 'v2' };
 }

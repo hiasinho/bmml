@@ -483,7 +483,9 @@ Quality-of-life improvements. Lower priority than core v2 migration.
 - [x] Warning: Job defined but never addressed (no mapping references it)
   - AC: Warning produced, validation still passes
   - Done: Added 'job-never-addressed' rule to both v1 and v2 linters. v1 checks fits[].job_addressers[].job, v2 checks tuple mappings where second element starts with 'job-' (forward-compatible with planned ja-* prefix). 14 tests added covering warning generation, suppression when addressed, multiple jobs, multiple segments, mixed scenarios, different fits, and validation pass-through.
-- [ ] Warning: Product/service defined but never used in fit mapping
+- [x] Warning: Product/service defined but never used in fit mapping
+  - AC: Warning produced, validation still passes
+  - Done: Added 'product-service-never-used' rule to v1 linter only. In v1, products/services are used via the `through` field in pain_relievers, gain_creators, and job_addressers within fits. In v2, products/services are NOT directly used in fit mappings by design (mappings only connect pr-* to pain-* and gc-* to gain-*). 10 tests added for v1 covering warning generation, suppression when used via pain_relievers/gain_creators/job_addressers through field, multiple products, mixed scenarios, different fits, multiple VPs, and validation pass-through. 1 test added for v2 documenting the intentional omission.
 
 ### Portfolio Hints
 
@@ -497,7 +499,7 @@ Quality-of-life improvements. Lower priority than core v2 migration.
 
 ---
 
-## Medium Priority - Website Redesign
+## High Priority - Website Redesign
 
 Can be done in parallel with other work.
 
