@@ -4,26 +4,7 @@ This guide explains how to set up editor support for `.bmml` files.
 
 ## VS Code
 
-### Option 1: BMML Extension (Recommended)
-
-The `vscode-bmml` extension provides:
-- Full syntax highlighting with BMML-specific tokens
-- ID reference highlighting
-- Enum value highlighting
-- JSON Schema validation
-
-To install locally:
-
-```bash
-cd vscode-bmml
-npm install
-npx vsce package
-# Install the .vsix file via VS Code Extensions panel
-```
-
-### Option 2: YAML Extension with Schema
-
-For a lightweight setup using only the YAML extension:
+Use the [Red Hat YAML extension](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) with JSON Schema:
 
 1. Install the [Red Hat YAML extension](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml)
 

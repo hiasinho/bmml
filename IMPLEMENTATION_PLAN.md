@@ -16,7 +16,7 @@ BMCLang (to be renamed **BMML** - Business Model Markup Language) is a YAML-base
 | Migration | Complete | `src/migrate.ts` (v1→v2 conversion) |
 | Test fixtures | v2 fixtures in `test/fixtures/`, migration fixtures in `test/fixtures/migrate/` |
 | Examples | v2 examples in `examples/` |
-| VS Code extension | Complete | `vscode-bmml/` (v2 schema) |
+| VS Code extension | Removed | Use YAML extension with JSON Schema (see EDITOR_SETUP.md) |
 | Test coverage | 304 tests, all passing |
 
 ---
@@ -577,7 +577,8 @@ v1 schema is deprecated. Only v2 is supported for validation and linting. Migrat
 
 VS Code plugin is not needed. Neovim/Vim plugin would be useful but is low priority.
 
-- [ ] Remove `vscode-bmml/` extension directory
+- [x] Remove `vscode-bmml/` extension directory
+  - Done: Removed vscode-bmml/ directory, updated EDITOR_SETUP.md to promote YAML extension with JSON Schema, updated docs/index.html to link to editor setup guide
 - [ ] Create Neovim TreeSitter grammar for BMML v2
 - [ ] Add Vim syntax highlighting file (simpler alternative to TreeSitter)
 
