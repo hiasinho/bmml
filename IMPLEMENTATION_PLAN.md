@@ -588,8 +588,10 @@ VS Code plugin is not needed. Neovim/Vim plugin would be useful but is low prior
 
 ## Low Priority - Documentation
 
-- [ ] Create CONTRIBUTING.md with development setup
-- [ ] Document v1→v2 migration process
+- [x] Create CONTRIBUTING.md with development setup
+  - Done: Added comprehensive guide covering prerequisites (Node 22+, pnpm 10+, mise), project structure, development commands, CLI usage during development, testing patterns with Vitest, commit format, code style, and ID prefix reference.
+- [x] Document v1→v2 migration process
+  - Done: Created MIGRATION.md with comprehensive migration guide covering quick start CLI commands, all relationship pattern changes, type field removals, cost structure refactoring, pain reliever/gain creator extraction, fit mapping tuples, entity-by-entity reference, CLI usage, and troubleshooting. Updated README.md to reference the guide.
 - [ ] Add inline comments to v2 schema explaining design decisions
 - [ ] Create v1 vs v2 comparison table
 
