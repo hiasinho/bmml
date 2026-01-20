@@ -468,31 +468,44 @@ It's important to have this website very soon
 
 ### Design & Layout
 
-- [ ] Study `ghuntley/cursed-website` for design patterns (via GitHub MCP)
-- [ ] Create new `docs/index.html` with bold gradient design
-- [ ] Fixed navigation header
-- [ ] Mobile responsive layout
+- [x] Study `ghuntley/cursed-website` for design patterns (via GitHub MCP)
+  - Done: Studied the full index.html, extracted design patterns for gradient backgrounds, fixed headers, FAQ accordion, mobile responsive layout, code preview animations
+- [x] Create new `docs/index.html` with bold gradient design
+  - Done: Blue gradient theme (#1e3a5f to #3a7ca5), floating code preview with glow animation
+- [x] Fixed navigation header
+  - Done: Sticky header with blur backdrop, mobile hamburger menu
+- [x] Mobile responsive layout
+  - Done: Breakpoints at 900px, 768px, 480px with stacking and hidden elements
 
 ### Content Sections
 
-- [ ] Hero section: BMML name, tagline, CTA buttons (GitHub, Get Started)
+- [x] Hero section: BMML name, tagline, CTA buttons (GitHub, Get Started)
+  - Done: "Work in Progress" badge, gradient text title, dual CTA buttons
 - [ ] AirBnB example: Create an example business model for AirBnB. Study AirBnB's business model before doing that.
-- [ ] Code example: v2 syntax highlighted (minimal + full) with example of AirBnB
-- [ ] What is BMC/VPC: Visual block representation
-- [ ] Examples gallery: Links to example files
-- [ ] Installation: CLI commands, VS Code extension link
-- [ ] Roadmap/WIP status: Clear progress indicator
-- [ ] FAQ accordion with all required questions
-- [ ] Footer: GitHub, spec link, license, Made by Hiasinho
+- [x] Code example: v2 syntax highlighted (minimal + full)
+  - Done: Tabbed examples showing FreshBox minimal and full VPC with fits
+  - Note: AirBnB example still needed, currently using FreshBox
+- [x] What is BMC/VPC: Visual block representation
+  - Done: Canvas section with 9 blocks, VPC section with Customer Profile and Value Map sides
+- [x] Examples gallery: Links to example files
+  - Done: Links to GitHub examples and progressive detail examples
+- [x] Installation: CLI commands, VS Code extension link
+  - Done: Two-card layout for CLI (npm install -g bmml, validate command) and VS Code extension
+- [x] Roadmap/WIP status: Clear progress indicator
+  - Done: Yellow "Work in Progress" badge in hero section
+- [x] FAQ accordion with all required questions
+  - Done: 6 FAQ items with expand/collapse animation
+- [x] Footer: GitHub, spec link, license, Made by Hiasinho
+  - Done: Three links plus credit line
 
-### Required FAQ Content
+### Required FAQ Content (All Implemented)
 
-- What is BMML?
-- Who made this? (Hiasinho, https://hia.sh)
-- Is this official/approved by Osterwalder? (No - independent project)
-- What's the goal?
-- How can I contribute?
-- Is this a commercial project? (No - open source)
+- [x] What is BMML?
+- [x] Who made this? (Hiasinho, https://hia.sh)
+- [x] Is this official/approved by Osterwalder? (No - independent project)
+- [x] What's the goal?
+- [x] How can I contribute?
+- [x] Is this a commercial project? (No - open source)
 
 ---
 
