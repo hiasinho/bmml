@@ -147,13 +147,17 @@ Final polish items for public release.
 
 Demonstrate format's power with more real-world examples.
 
-- [ ] Create `examples/saas-platform.bmml`
-  - Multi-tier SaaS with free/pro/enterprise segments
-  - Demonstrates different VPs per tier
+- [x] Create `examples/saas-platform.bmml`
+  - TaskFlow SaaS project management platform
+  - Two segments: SMB teams and enterprise organizations
+  - Different VPs per segment (Team Productivity vs Enterprise Work Management)
+  - Full VPC detail with fits and mappings
   - AC: Valid example showing SaaS patterns
-- [ ] Create `examples/subscription-box.bmml`
-  - Subscription business model
-  - Shows recurring revenue patterns
+- [x] Create `examples/subscription-box.bmml`
+  - BeautyBox subscription business model example
+  - Shows recurring revenue patterns (monthly, annual, gift subscriptions)
+  - Two segments: beauty enthusiasts and gift givers
+  - Full VPC detail with fits and mappings
   - AC: Valid example showing subscription model
 - [ ] Create `examples/freemium.bmml`
   - Freemium conversion model
