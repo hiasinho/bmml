@@ -1,0 +1,362 @@
+version: "2.0"
+
+meta:
+  name: BeautyBox
+  tagline: Discover your next favorite products with curated beauty boxes
+  created: "2021-03-10"
+  updated: "2024-08-15"
+  portfolio: exploit
+  stage: grow
+
+# === CUSTOMER SEGMENTS ===
+# Subscription box targeting beauty enthusiasts who love discovery
+
+customer_segments:
+  - id: cs-beauty-enthusiasts
+    name: Beauty Enthusiasts
+    description: People who love discovering new beauty products and enjoy the surprise element
+    jobs:
+      - id: job-discover-products
+        description: Discover new beauty products without the effort of research
+      - id: job-try-before-commit
+        description: Try products before committing to full-size purchases
+      - id: job-stay-current
+        description: Stay current with new trends and product innovations
+      - id: job-treat-self
+        description: Enjoy a monthly treat and self-care ritual
+    pains:
+      - id: pain-overwhelming-choice
+        description: Overwhelmed by endless product options at stores and online
+      - id: pain-expensive-mistakes
+        description: Wasting money on full-size products that don't work for them
+      - id: pain-fomo
+        description: Fear of missing out on new products everyone is talking about
+      - id: pain-boring-routine
+        description: Stuck in a boring routine with the same old products
+    gains:
+      - id: gain-excitement
+        description: Monthly excitement and anticipation of unboxing
+      - id: gain-informed-purchases
+        description: Make informed full-size purchases based on tried samples
+      - id: gain-expert-curation
+        description: Benefit from expert curation without personal effort
+      - id: gain-value
+        description: Get more product value than the subscription cost
+
+  - id: cs-gift-givers
+    name: Gift Givers
+    description: People looking for thoughtful, recurring gifts for friends and family
+    jobs:
+      - id: job-find-perfect-gift
+        description: Find a gift that shows thoughtfulness month after month
+      - id: job-simplify-gifting
+        description: Remove the stress of remembering to buy gifts
+      - id: job-give-experiences
+        description: Give experiences rather than single items
+    pains:
+      - id: pain-generic-gifts
+        description: Frustrated by giving generic, forgettable gifts
+      - id: pain-gift-fatigue
+        description: Running out of gift ideas for the same people
+      - id: pain-last-minute
+        description: Scrambling for last-minute gift purchases
+    gains:
+      - id: gain-recurring-joy
+        description: Bring recurring joy to loved ones
+      - id: gain-effortless-gifting
+        description: Effortless gifting that keeps giving
+      - id: gain-grateful-recipients
+        description: See recipients genuinely excited about each delivery
+
+# === VALUE PROPOSITIONS ===
+
+value_propositions:
+  - id: vp-discovery
+    name: Curated Discovery Experience
+    description: Monthly surprise box of hand-picked beauty products tailored to preferences
+    products_services:
+      - id: ps-monthly-box
+        name: Monthly curated beauty box with 5-7 products
+      - id: ps-personalization
+        name: Beauty profile quiz for personalized product matching
+      - id: ps-product-cards
+        name: Product information cards with usage tips and brand stories
+      - id: ps-exclusive-samples
+        name: Exclusive samples and early access to new launches
+      - id: ps-member-store
+        name: Member-only store with discounts on full-size products
+    pain_relievers:
+      - id: pr-curated-selection
+        name: Expert curation eliminates decision paralysis
+      - id: pr-sample-sizes
+        name: Sample sizes minimize waste from unsuitable products
+      - id: pr-discover-new
+        name: Regular exposure to new products prevents FOMO
+      - id: pr-monthly-variety
+        name: New products every month break routine monotony
+    gain_creators:
+      - id: gc-unboxing-joy
+        name: Beautifully packaged monthly unboxing ritual
+      - id: gc-try-then-buy
+        name: Try samples before buying full-size with member discounts
+      - id: gc-expert-picks
+        name: Professional beauty editors select products
+      - id: gc-value-guarantee
+        name: Box value always exceeds subscription cost
+
+  - id: vp-gifting
+    name: Effortless Gift Subscription
+    description: Give the gift of monthly beauty discoveries with flexible subscription options
+    products_services:
+      - id: ps-gift-subscriptions
+        name: 3, 6, or 12-month gift subscription options
+      - id: ps-gift-card
+        name: Printable gift announcement card
+      - id: ps-flexible-delivery
+        name: Recipient chooses delivery address and start date
+      - id: ps-gift-message
+        name: Personalized gift message included in first box
+    pain_relievers:
+      - id: pr-thoughtful-recurring
+        name: Subscription demonstrates ongoing thoughtfulness
+      - id: pr-one-time-purchase
+        name: One purchase provides months of gifts
+      - id: pr-no-size-guessing
+        name: No need to guess sizes or preferences
+    gain_creators:
+      - id: gc-multiple-celebrations
+        name: Turn one purchase into multiple celebrations
+      - id: gc-shared-excitement
+        name: Recipient shares unboxing excitement with giver
+      - id: gc-memorable-gift
+        name: Stand out with a unique, experiential gift
+
+# === FITS ===
+
+fits:
+  - id: fit-discovery-enthusiasts
+    for:
+      value_propositions: [vp-discovery]
+      customer_segments: [cs-beauty-enthusiasts]
+    mappings:
+      - [pr-curated-selection, pain-overwhelming-choice]
+      - [pr-sample-sizes, pain-expensive-mistakes]
+      - [pr-discover-new, pain-fomo]
+      - [pr-monthly-variety, pain-boring-routine]
+      - [gc-unboxing-joy, gain-excitement]
+      - [gc-try-then-buy, gain-informed-purchases]
+      - [gc-expert-picks, gain-expert-curation]
+      - [gc-value-guarantee, gain-value]
+
+  - id: fit-gifting-givers
+    for:
+      value_propositions: [vp-gifting]
+      customer_segments: [cs-gift-givers]
+    mappings:
+      - [pr-thoughtful-recurring, pain-generic-gifts]
+      - [pr-one-time-purchase, pain-gift-fatigue]
+      - [pr-no-size-guessing, pain-last-minute]
+      - [gc-multiple-celebrations, gain-recurring-joy]
+      - [gc-shared-excitement, gain-effortless-gifting]
+      - [gc-memorable-gift, gain-grateful-recipients]
+
+# === CHANNELS ===
+
+channels:
+  - id: ch-website
+    name: Website & Mobile App
+    for:
+      value_propositions: [vp-discovery, vp-gifting]
+      customer_segments: [cs-beauty-enthusiasts, cs-gift-givers]
+
+  - id: ch-social-media
+    name: Social Media (Instagram, TikTok, YouTube)
+    for:
+      value_propositions: [vp-discovery]
+      customer_segments: [cs-beauty-enthusiasts]
+
+  - id: ch-influencers
+    name: Beauty Influencer Partnerships
+    for:
+      value_propositions: [vp-discovery]
+      customer_segments: [cs-beauty-enthusiasts]
+
+  - id: ch-unboxing-videos
+    name: Unboxing Content & Reviews
+    for:
+      value_propositions: [vp-discovery]
+      customer_segments: [cs-beauty-enthusiasts]
+
+  - id: ch-gift-guides
+    name: Holiday Gift Guides
+    for:
+      value_propositions: [vp-gifting]
+      customer_segments: [cs-gift-givers]
+
+# === CUSTOMER RELATIONSHIPS ===
+
+customer_relationships:
+  - id: cr-personalized
+    name: Personalized recommendations based on beauty profile and feedback
+    for:
+      customer_segments: [cs-beauty-enthusiasts]
+
+  - id: cr-community
+    name: Member community for reviews, tips, and product discussions
+    for:
+      customer_segments: [cs-beauty-enthusiasts]
+
+  - id: cr-automated-gifting
+    name: Automated gift delivery with notifications to giver
+    for:
+      customer_segments: [cs-gift-givers]
+
+# === REVENUE STREAMS ===
+# Demonstrates recurring subscription revenue patterns
+
+revenue_streams:
+  - id: rs-monthly-subscription
+    name: Monthly Recurring Subscription
+    from:
+      customer_segments: [cs-beauty-enthusiasts]
+    for:
+      value_propositions: [vp-discovery]
+
+  - id: rs-annual-subscription
+    name: Annual Subscription (Discounted)
+    from:
+      customer_segments: [cs-beauty-enthusiasts]
+    for:
+      value_propositions: [vp-discovery]
+
+  - id: rs-gift-subscriptions
+    name: Pre-paid Gift Subscriptions
+    from:
+      customer_segments: [cs-gift-givers]
+    for:
+      value_propositions: [vp-gifting]
+
+  - id: rs-member-store
+    name: Full-Size Product Sales via Member Store
+    from:
+      customer_segments: [cs-beauty-enthusiasts]
+    for:
+      value_propositions: [vp-discovery]
+
+# === KEY RESOURCES ===
+
+key_resources:
+  - id: kr-curation-team
+    name: Beauty Curation Team
+    for:
+      value_propositions: [vp-discovery]
+
+  - id: kr-brand-relationships
+    name: Brand Partner Relationships
+    for:
+      value_propositions: [vp-discovery, vp-gifting]
+
+  - id: kr-subscriber-data
+    name: Subscriber Preference Data
+    for:
+      value_propositions: [vp-discovery]
+
+  - id: kr-fulfillment-center
+    name: Fulfillment & Packaging Center
+    for:
+      value_propositions: [vp-discovery, vp-gifting]
+
+  - id: kr-ecommerce-platform
+    name: E-commerce Platform
+    for:
+      value_propositions: [vp-discovery, vp-gifting]
+
+# === KEY ACTIVITIES ===
+
+key_activities:
+  - id: ka-product-curation
+    name: Monthly Product Curation & Sourcing
+    for:
+      value_propositions: [vp-discovery, vp-gifting]
+
+  - id: ka-brand-partnerships
+    name: Brand Partnership Development
+    for:
+      value_propositions: [vp-discovery]
+
+  - id: ka-box-assembly
+    name: Box Assembly & Fulfillment
+    for:
+      value_propositions: [vp-discovery, vp-gifting]
+
+  - id: ka-personalization
+    name: Personalization Algorithm Development
+    for:
+      value_propositions: [vp-discovery]
+
+  - id: ka-content-creation
+    name: Content & Community Management
+    for:
+      value_propositions: [vp-discovery]
+
+  - id: ka-customer-retention
+    name: Subscriber Retention & Engagement
+    for:
+      value_propositions: [vp-discovery]
+
+# === KEY PARTNERSHIPS ===
+
+key_partnerships:
+  - id: kp-beauty-brands
+    name: Beauty & Skincare Brands
+    for:
+      key_resources: [kr-brand-relationships]
+      key_activities: [ka-brand-partnerships]
+
+  - id: kp-fulfillment-partner
+    name: Third-Party Logistics Provider
+    for:
+      key_resources: [kr-fulfillment-center]
+      key_activities: [ka-box-assembly]
+
+  - id: kp-packaging-supplier
+    name: Sustainable Packaging Supplier
+    for:
+      key_activities: [ka-box-assembly]
+
+  - id: kp-influencers
+    name: Beauty Influencer Network
+    for:
+      key_activities: [ka-content-creation]
+
+# === COSTS ===
+
+costs:
+  - id: cost-cogs
+    name: Product Sourcing & Packaging
+    for:
+      key_resources: [kr-brand-relationships]
+      key_activities: [ka-product-curation, ka-box-assembly]
+
+  - id: cost-fulfillment
+    name: Fulfillment & Shipping
+    for:
+      key_resources: [kr-fulfillment-center]
+      key_activities: [ka-box-assembly]
+
+  - id: cost-curation-team
+    name: Curation Team Salaries
+    for:
+      key_resources: [kr-curation-team]
+      key_activities: [ka-product-curation]
+
+  - id: cost-marketing
+    name: Customer Acquisition & Marketing
+    for:
+      key_activities: [ka-content-creation, ka-customer-retention]
+
+  - id: cost-technology
+    name: Platform & Personalization Technology
+    for:
+      key_resources: [kr-ecommerce-platform, kr-subscriber-data]
+      key_activities: [ka-personalization]
