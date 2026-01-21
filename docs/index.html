@@ -369,10 +369,93 @@
             border-left: 3px solid #64b5f6;
         }
 
+        /* Visualize Section */
+        .visualize-section {
+            padding: 100px 0;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .visualize-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ffffff, #90caf9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .visualize-section .section-desc {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 50px;
+            font-size: 1.1rem;
+        }
+
+        .canvas-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .canvas-tab {
+            padding: 10px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(100, 181, 246, 0.3);
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .canvas-tab:hover, .canvas-tab.active {
+            background: #64b5f6;
+            color: #1a1a1a;
+        }
+
+        .canvas-display {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .canvas-display svg {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .canvas-legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+
         /* Examples Section */
         .examples-section {
             padding: 100px 0;
-            background: rgba(0, 0, 0, 0.2);
         }
 
         .examples-section h2 {
@@ -783,6 +866,7 @@
             <ul class="nav-links">
                 <li><a href="#canvas">Canvas</a></li>
                 <li><a href="#vpc">VPC</a></li>
+                <li><a href="#visualize">Visualize</a></li>
                 <li><a href="#examples">Examples</a></li>
                 <li><a href="#install">Install</a></li>
                 <li><a href="#faq">FAQ</a></li>
@@ -791,6 +875,7 @@
             <div class="mobile-menu" id="mobile-menu">
                 <a href="#canvas" onclick="closeMobileMenu()">Canvas</a>
                 <a href="#vpc" onclick="closeMobileMenu()">VPC</a>
+                <a href="#visualize" onclick="closeMobileMenu()">Visualize</a>
                 <a href="#examples" onclick="closeMobileMenu()">Examples</a>
                 <a href="#install" onclick="closeMobileMenu()">Install</a>
                 <a href="#faq" onclick="closeMobileMenu()">FAQ</a>
@@ -955,6 +1040,56 @@
                         <div class="vpc-item"><strong>Pain Relievers</strong> - How you alleviate pains</div>
                         <div class="vpc-item"><strong>Gain Creators</strong> - How you create gains</div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visualize Section -->
+    <section class="visualize-section" id="visualize">
+        <div class="container">
+            <h2>Visualize Your Business Model</h2>
+            <p class="section-desc">
+                Render BMML files as color-coded Business Model Canvas diagrams.
+                Colors indicate customer segment connections.
+            </p>
+
+            <div class="canvas-tabs">
+                <button class="canvas-tab active" onclick="showCanvas('airbnb')">Airbnb (Two-Sided)</button>
+                <button class="canvas-tab" onclick="showCanvas('mealkit')">FreshBox (Multi-Segment)</button>
+            </div>
+
+            <div class="canvas-display" id="canvas-airbnb">
+                <object type="image/svg+xml" data="airbnb-canvas.svg" style="width: 100%; height: auto;">
+                    Airbnb Business Model Canvas
+                </object>
+            </div>
+
+            <div class="canvas-display" id="canvas-mealkit" style="display: none;">
+                <object type="image/svg+xml" data="meal-kit-canvas.svg" style="width: 100%; height: auto;">
+                    FreshBox Business Model Canvas
+                </object>
+            </div>
+
+            <div class="canvas-legend" id="legend-airbnb">
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #FFE066;"></span>
+                    <span>Travelers & Guests</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #7EC8E3;"></span>
+                    <span>Property Hosts</span>
+                </div>
+            </div>
+
+            <div class="canvas-legend" id="legend-mealkit" style="display: none;">
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #FFE066;"></span>
+                    <span>Busy Professionals</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #7EC8E3;"></span>
+                    <span>Aspiring Home Cooks</span>
                 </div>
             </div>
         </div>
@@ -1192,6 +1327,31 @@
             });
 
             currentItem.classList.toggle('active');
+        }
+
+        // Canvas tabs (Visualize section)
+        function showCanvas(type) {
+            const tabs = document.querySelectorAll('.canvas-tab');
+            const airbnbCanvas = document.getElementById('canvas-airbnb');
+            const mealkitCanvas = document.getElementById('canvas-mealkit');
+            const airbnbLegend = document.getElementById('legend-airbnb');
+            const mealkitLegend = document.getElementById('legend-mealkit');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            if (type === 'airbnb') {
+                airbnbCanvas.style.display = 'block';
+                mealkitCanvas.style.display = 'none';
+                airbnbLegend.style.display = 'flex';
+                mealkitLegend.style.display = 'none';
+                tabs[0].classList.add('active');
+            } else {
+                airbnbCanvas.style.display = 'none';
+                mealkitCanvas.style.display = 'block';
+                airbnbLegend.style.display = 'none';
+                mealkitLegend.style.display = 'flex';
+                tabs[1].classList.add('active');
+            }
         }
 
         // Example tabs

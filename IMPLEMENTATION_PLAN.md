@@ -110,14 +110,17 @@ New feature per `specs/bmc-renderer.md`. Renders BMML files as SVG Business Mode
 - [x] Export `render` function from `src/index.ts`
   - AC: Programmatic API available
 
-### Phase 5: Website Integration
+### Phase 5: Website Integration (Complete)
 
-- [ ] Render example SVGs for website
-  - Airbnb (two-sided marketplace)
-  - Meal kit (multiple segments)
+- [x] Render example SVGs for website
+  - Airbnb (two-sided marketplace): `docs/airbnb-canvas.svg`
+  - Meal kit (multiple segments): `docs/meal-kit-canvas.svg`
   - AC: Pre-rendered SVGs created
-- [ ] Add SVG examples to `docs/index.html`
+- [x] Add SVG examples to `docs/index.html`
   - New "Visualize" section with rendered canvases
+  - Tab switching between Airbnb and FreshBox examples
+  - Color-coded legends for each canvas
+  - Navigation updated to include Visualize link
   - AC: Website shows rendered BMC examples
 
 ---
