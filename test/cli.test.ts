@@ -4,7 +4,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { main } from '../src/cli';
-import { readFileSync, writeFileSync, unlinkSync, copyFileSync } from 'fs';
+import { readFileSync, writeFileSync, unlinkSync, copyFileSync, existsSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
 
@@ -283,6 +283,144 @@ describe('CLI', () => {
         const parsed = JSON.parse(output);
         expect(parsed.success).toBe(true);
         expect(parsed.file).toBe(tempFile);
+      } finally {
+        try {
+          unlinkSync(tempFile);
+        } catch {
+          // Ignore cleanup errors
+        }
+      }
+    });
+  });
+
+  describe('render command', () => {
+    it('renders a valid file to stdout', () => {
+      const exitCode = main(['render', `${FIXTURES_DIR}/valid-v2-minimal.bmml`]);
+      expect(exitCode).toBe(0);
+      expect(consoleLogSpy).toHaveBeenCalled();
+      const output = consoleLogSpy.mock.calls[0][0];
+      expect(output).toContain('<svg');
+      expect(output).toContain('</svg>');
+    });
+
+    it('renders a complete file to stdout', () => {
+      const exitCode = main(['render', `${FIXTURES_DIR}/valid-v2-complete.bmml`]);
+      expect(exitCode).toBe(0);
+      expect(consoleLogSpy).toHaveBeenCalled();
+      const output = consoleLogSpy.mock.calls[0][0];
+      expect(output).toContain('<svg');
+      expect(output).toContain('Business Model Canvas');
+    });
+
+    it('fails for invalid file', () => {
+      const exitCode = main(['render', `${FIXTURES_DIR}/invalid-missing-meta.bmml`]);
+      expect(exitCode).toBe(1);
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      const errorOutput = consoleErrorSpy.mock.calls.flat().join('\n');
+      expect(errorOutput).toContain('Validation errors');
+    });
+
+    it('fails for non-existent file', () => {
+      const exitCode = main(['render', 'non-existent-file.bmml']);
+      expect(exitCode).toBe(1);
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      const errorOutput = consoleErrorSpy.mock.calls.flat().join('\n');
+      expect(errorOutput).toContain('File not found');
+    });
+
+    it('requires a file argument', () => {
+      const exitCode = main(['render']);
+      expect(exitCode).toBe(1);
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      const errorOutput = consoleErrorSpy.mock.calls.flat().join('\n');
+      expect(errorOutput).toContain('requires a file argument');
+    });
+
+    it('outputs JSON with --json flag', () => {
+      const exitCode = main(['render', '--json', `${FIXTURES_DIR}/valid-v2-minimal.bmml`]);
+      expect(exitCode).toBe(0);
+      expect(consoleLogSpy).toHaveBeenCalled();
+      const output = consoleLogSpy.mock.calls[0][0];
+      const parsed = JSON.parse(output);
+      expect(parsed.success).toBe(true);
+      expect(parsed.output).toContain('<svg');
+    });
+
+    it('outputs JSON errors with --json flag', () => {
+      const exitCode = main(['render', '--json', `${FIXTURES_DIR}/invalid-missing-meta.bmml`]);
+      expect(exitCode).toBe(1);
+      expect(consoleLogSpy).toHaveBeenCalled();
+      const output = consoleLogSpy.mock.calls[0][0];
+      const parsed = JSON.parse(output);
+      expect(parsed.success).toBe(false);
+      expect(parsed.errors.length).toBeGreaterThan(0);
+    });
+
+    it('writes to file with -o flag', () => {
+      const tempFile = join(tmpdir(), `test-render-${Date.now()}.svg`);
+
+      try {
+        const exitCode = main(['render', '-o', tempFile, `${FIXTURES_DIR}/valid-v2-minimal.bmml`]);
+        expect(exitCode).toBe(0);
+        expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Rendered to'));
+
+        // Verify the file was created
+        expect(existsSync(tempFile)).toBe(true);
+        const content = readFileSync(tempFile, 'utf-8');
+        expect(content).toContain('<svg');
+        expect(content).toContain('</svg>');
+      } finally {
+        try {
+          unlinkSync(tempFile);
+        } catch {
+          // Ignore cleanup errors
+        }
+      }
+    });
+
+    it('writes to file with --output flag', () => {
+      const tempFile = join(tmpdir(), `test-render-output-${Date.now()}.svg`);
+
+      try {
+        const exitCode = main(['render', '--output', tempFile, `${FIXTURES_DIR}/valid-v2-minimal.bmml`]);
+        expect(exitCode).toBe(0);
+        expect(existsSync(tempFile)).toBe(true);
+      } finally {
+        try {
+          unlinkSync(tempFile);
+        } catch {
+          // Ignore cleanup errors
+        }
+      }
+    });
+
+    it('outputs JSON with -o and --json flags', () => {
+      const tempFile = join(tmpdir(), `test-render-json-${Date.now()}.svg`);
+
+      try {
+        const exitCode = main(['render', '-o', tempFile, '--json', `${FIXTURES_DIR}/valid-v2-minimal.bmml`]);
+        expect(exitCode).toBe(0);
+        const output = consoleLogSpy.mock.calls[0][0];
+        const parsed = JSON.parse(output);
+        expect(parsed.success).toBe(true);
+        expect(parsed.file).toBe(tempFile);
+        expect(parsed.output).toBeUndefined();
+      } finally {
+        try {
+          unlinkSync(tempFile);
+        } catch {
+          // Ignore cleanup errors
+        }
+      }
+    });
+
+    it('handles -o before file argument', () => {
+      const tempFile = join(tmpdir(), `test-render-order-${Date.now()}.svg`);
+
+      try {
+        const exitCode = main(['render', `${FIXTURES_DIR}/valid-v2-minimal.bmml`, '-o', tempFile]);
+        expect(exitCode).toBe(0);
+        expect(existsSync(tempFile)).toBe(true);
       } finally {
         try {
           unlinkSync(tempFile);

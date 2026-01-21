@@ -7,6 +7,7 @@
 import { validateFileAuto, parseYaml, validateDocument } from './validator.js';
 import { lint } from './linter.js';
 import { migrateV1toV2 } from './migrate.js';
+import { render } from './render.js';
 import type { BMCDocumentV2 } from './types.js';
 import { readFileSync, writeFileSync } from 'fs';
 
@@ -15,6 +16,7 @@ interface CliOptions {
   help: boolean;
   dryRun: boolean;
   inPlace: boolean;
+  output: string | null;
 }
 
 interface CliResult {
@@ -33,6 +35,7 @@ COMMANDS:
   validate <file>    Validate a .bmml file against the schema
   lint <file>        Run linter checks (includes validation)
   migrate <file>     Migrate a v1 file to v2 format
+  render <file>      Render a .bmml file as an SVG Business Model Canvas
   help               Show this help message
 
 OPTIONS:
@@ -40,6 +43,7 @@ OPTIONS:
   --help, -h         Show help for a command
   --dry-run          (migrate) Output to stdout without modifying file (default)
   --in-place         (migrate) Modify the file in place
+  -o, --output PATH  (render) Write SVG to file instead of stdout
 
 EXAMPLES:
   bmml validate model.bmml
@@ -47,13 +51,16 @@ EXAMPLES:
   bmml validate --json model.bmml
   bmml migrate model.bmml
   bmml migrate --in-place model.bmml
+  bmml render model.bmml
+  bmml render model.bmml -o canvas.svg
 `.trim();
 
 function parseArgs(args: string[]): { command: string; file: string | null; options: CliOptions } {
-  const options: CliOptions = { json: false, help: false, dryRun: false, inPlace: false };
+  const options: CliOptions = { json: false, help: false, dryRun: false, inPlace: false, output: null };
   const positional: string[] = [];
 
-  for (const arg of args) {
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
     if (arg === '--json') {
       options.json = true;
     } else if (arg === '--help' || arg === '-h') {
@@ -62,6 +69,14 @@ function parseArgs(args: string[]): { command: string; file: string | null; opti
       options.dryRun = true;
     } else if (arg === '--in-place') {
       options.inPlace = true;
+    } else if (arg === '-o' || arg === '--output') {
+      const nextArg = args[i + 1];
+      if (!nextArg || nextArg.startsWith('-')) {
+        console.error('Error: --output requires a path argument');
+        process.exit(1);
+      }
+      options.output = nextArg;
+      i++; // Skip the next argument since we consumed it
     } else if (!arg.startsWith('-')) {
       positional.push(arg);
     } else {
@@ -270,6 +285,76 @@ function runMigrate(file: string, options: CliOptions): number {
   return 0;
 }
 
+interface RenderResult {
+  success: boolean;
+  output?: string;
+  file?: string;
+  errors: string[];
+  validationErrors?: Array<{ path: string; message: string }>;
+}
+
+function runRender(file: string, options: CliOptions): number {
+  // First validate the file
+  const validationResult = validateFileAuto(file);
+
+  if (!validationResult.valid) {
+    const result: RenderResult = {
+      success: false,
+      errors: ['File failed validation'],
+      validationErrors: validationResult.errors,
+    };
+    if (options.json) {
+      console.log(JSON.stringify(result, null, 2));
+    } else {
+      console.error('Validation errors:');
+      for (const error of validationResult.errors) {
+        const path = error.path === '/' ? '(root)' : error.path;
+        console.error(`  ${path}: ${error.message}`);
+      }
+    }
+    return 1;
+  }
+
+  // Parse the file to get the document for rendering
+  const content = readFileSync(file, 'utf-8');
+  const parseResult = parseYaml(content);
+  if ('error' in parseResult) {
+    const result: RenderResult = {
+      success: false,
+      errors: ['Failed to parse file'],
+      validationErrors: [parseResult.error],
+    };
+    if (options.json) {
+      console.log(JSON.stringify(result, null, 2));
+    } else {
+      console.error(`Error: ${parseResult.error.message}`);
+    }
+    return 1;
+  }
+
+  // Render the document
+  const svg = render(parseResult.data as BMCDocumentV2);
+
+  // Handle output
+  if (options.output) {
+    writeFileSync(options.output, svg, 'utf-8');
+    if (options.json) {
+      console.log(JSON.stringify({ success: true, errors: [], file: options.output }, null, 2));
+    } else {
+      console.log(`Rendered to ${options.output}`);
+    }
+  } else {
+    // Output to stdout
+    if (options.json) {
+      console.log(JSON.stringify({ success: true, errors: [], output: svg }, null, 2));
+    } else {
+      console.log(svg);
+    }
+  }
+
+  return 0;
+}
+
 function showHelp(): void {
   console.log(USAGE);
 }
@@ -307,6 +392,15 @@ export function main(args: string[] = process.argv.slice(2)): number {
       return 1;
     }
     return runMigrate(file, options);
+  }
+
+  if (command === 'render') {
+    if (!file) {
+      console.error('Error: render command requires a file argument');
+      console.error('Usage: bmml render <file>');
+      return 1;
+    }
+    return runRender(file, options);
   }
 
   console.error(`Unknown command: ${command}`);
