@@ -132,12 +132,13 @@ Final polish items for public release.
 - [ ] Update GitHub repo description (manual step)
   - Change to: "BMML - Business Model Markup Language"
   - AC: Repo description updated on GitHub
-- [ ] Add LICENSE file if missing
-  - Choose appropriate license (MIT recommended)
+- [x] Add LICENSE file if missing
+  - MIT License with Strategyzer attribution in `LICENSE.md`
   - AC: LICENSE file present
-- [ ] Review and update README.md
-  - Ensure all sections current
-  - Add badges (npm, tests, license)
+- [x] Review and update README.md
+  - Added badges (tests, license, node version)
+  - Added installation, CLI commands, programmatic API sections
+  - Added examples table and links to other docs
   - AC: README reflects current state
 
 ---
