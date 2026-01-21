@@ -14,7 +14,7 @@ BMML (Business Model Markup Language) is a YAML-based markup format for describi
 | Schema | Complete | `schemas/bmclang-v2.schema.json` |
 | CLI | Complete | `src/cli.ts` (validate/lint/migrate commands) |
 | Migration | Complete | `src/migrate.ts` (v1→v2 conversion) |
-| Test coverage | Complete | 393 tests, all passing |
+| Test coverage | Complete | 413 tests, all passing |
 | Website | Complete | `docs/index.html` |
 | Examples | Complete | `examples/` with progressive detail |
 | Documentation | Complete | README, MIGRATION.md, CONTRIBUTING.md, EDITOR_SETUP.md |
@@ -83,15 +83,16 @@ New feature per `specs/bmc-renderer.md`. Renders BMML files as SVG Business Mode
   - "Copyright Strategyzer AG | The Business Model Canvas | strategyzer.com | CC BY-SA 3.0"
   - AC: Attribution present for CC compliance
 
-### Phase 3: Main Renderer
+### Phase 3: Main Renderer (Complete)
 
-- [ ] Create `src/render.ts` with main `render()` function
+- [x] Create `src/render.ts` with main `render()` function
   - Input: `BMCDocumentV2`, Output: SVG string
   - Coordinates graph building and SVG generation
+  - Re-exports useful types/functions for advanced usage
   - AC: End-to-end rendering works
-- [ ] Add tests for renderer (`test/render.test.ts`)
-  - Test with examples: minimal, full, marketplace (multi-segment)
-  - Verify SVG structure, colors, layout
+- [x] Add tests for renderer (`test/render.test.ts`)
+  - 20 tests covering: minimal, full, marketplace (multi-segment)
+  - Tests basic rendering, options, colors, edge cases
   - AC: Renderer produces valid, correct SVGs
 
 ### Phase 4: CLI Integration
