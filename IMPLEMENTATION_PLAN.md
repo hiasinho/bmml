@@ -176,6 +176,7 @@ Nice-to-have improvements.
   - Submitted PR #5301 to SchemaStore/schemastore: https://github.com/SchemaStore/schemastore/pull/5301
   - Schema copied to `docs/bmclang-v2.schema.json` for GitHub Pages hosting
   - FileMatch patterns: `*.bmml`, `*.bmml.yaml`, `*.bmml.yml`
+  - Fixed prettier formatting (single quotes) - CI now passing
   - AC: BMML schema available in common editors automatically (pending PR merge)
 - [ ] Publish npm package
   - `npm publish` to make CLI globally installable
