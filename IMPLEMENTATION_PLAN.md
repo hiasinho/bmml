@@ -159,9 +159,11 @@ Demonstrate format's power with more real-world examples.
   - Two segments: beauty enthusiasts and gift givers
   - Full VPC detail with fits and mappings
   - AC: Valid example showing subscription model
-- [ ] Create `examples/freemium.bmml`
-  - Freemium conversion model
-  - Free users vs paying customers
+- [x] Create `examples/freemium.bmml`
+  - CloudVault cloud storage freemium model
+  - Two segments: free users (5GB) and premium subscribers (2TB)
+  - Different VPs per tier with conversion-focused elements
+  - Full VPC detail with fits and mappings
   - AC: Valid example showing freemium pattern
 
 ---
