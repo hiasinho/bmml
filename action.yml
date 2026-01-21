@@ -1,0 +1,187 @@
+name: 'BMML Validate'
+description: 'Validate BMML (Business Model Markup Language) files'
+author: 'BMML'
+branding:
+  icon: 'check-circle'
+  color: 'green'
+
+inputs:
+  files:
+    description: 'Glob pattern(s) for BMML files to validate (comma-separated)'
+    required: false
+    default: '**/*.bmml'
+  mode:
+    description: 'Validation mode: "validate" (schema only) or "lint" (schema + lint rules)'
+    required: false
+    default: 'lint'
+  fail-on-warning:
+    description: 'Fail the action if lint warnings are found (only applies when mode is "lint")'
+    required: false
+    default: 'false'
+  working-directory:
+    description: 'Working directory for file matching'
+    required: false
+    default: '.'
+
+outputs:
+  valid:
+    description: 'Whether all files passed validation (true/false)'
+    value: ${{ steps.validate.outputs.valid }}
+  files-checked:
+    description: 'Number of files checked'
+    value: ${{ steps.validate.outputs.files_checked }}
+  errors:
+    description: 'Number of validation errors found'
+    value: ${{ steps.validate.outputs.errors }}
+  warnings:
+    description: 'Number of lint warnings found'
+    value: ${{ steps.validate.outputs.warnings }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10
+
+    - name: Install BMML
+      shell: bash
+      run: |
+        cd ${{ github.action_path }}
+        pnpm install --frozen-lockfile
+        pnpm build
+
+    - name: Validate BMML files
+      id: validate
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        BMML_ACTION_PATH: ${{ github.action_path }}
+        BMML_MODE: ${{ inputs.mode }}
+        BMML_FILES: ${{ inputs.files }}
+        BMML_FAIL_ON_WARNING: ${{ inputs.fail-on-warning }}
+      run: |
+        set +e  # Don't exit on error, we handle it ourselves
+
+        # Initialize counters
+        files_checked=0
+        total_errors=0
+        total_warnings=0
+        failed_files=""
+
+        # Expand glob patterns (comma-separated)
+        IFS=',' read -ra patterns <<< "$BMML_FILES"
+        files=()
+        for pattern in "${patterns[@]}"; do
+          pattern=$(echo "$pattern" | xargs)  # trim whitespace
+          while IFS= read -r -d '' file; do
+            files+=("$file")
+          done < <(find . -type f -name "$(basename "$pattern")" -path "./$pattern" -print0 2>/dev/null || true)
+        done
+
+        # If no files found with path matching, try simpler glob
+        if [ ${#files[@]} -eq 0 ]; then
+          for pattern in "${patterns[@]}"; do
+            pattern=$(echo "$pattern" | xargs)
+            shopt -s globstar nullglob
+            for file in $pattern; do
+              if [ -f "$file" ]; then
+                files+=("$file")
+              fi
+            done
+          done
+        fi
+
+        # Remove duplicates
+        IFS=$'\n' files=($(printf '%s\n' "${files[@]}" | sort -u))
+        unset IFS
+
+        if [ ${#files[@]} -eq 0 ]; then
+          echo "::notice::No BMML files found matching pattern: $BMML_FILES"
+          echo "valid=true" >> "$GITHUB_OUTPUT"
+          echo "files_checked=0" >> "$GITHUB_OUTPUT"
+          echo "errors=0" >> "$GITHUB_OUTPUT"
+          echo "warnings=0" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
+        echo "Found ${#files[@]} BMML file(s) to check"
+        echo ""
+
+        for file in "${files[@]}"; do
+          files_checked=$((files_checked + 1))
+          echo "Checking: $file"
+
+          # Run validation/lint
+          if [ "$BMML_MODE" = "lint" ]; then
+            result=$(node "$BMML_ACTION_PATH/dist/cli.js" lint "$file" --json 2>&1)
+          else
+            result=$(node "$BMML_ACTION_PATH/dist/cli.js" validate "$file" --json 2>&1)
+          fi
+
+          exit_code=$?
+
+          # Parse JSON result
+          success=$(echo "$result" | jq -r '.success // false')
+          errors=$(echo "$result" | jq -r '.validationErrors | length // 0')
+          warnings=$(echo "$result" | jq -r '[.lintIssues[]? | select(.severity == "warning")] | length // 0')
+          lint_errors=$(echo "$result" | jq -r '[.lintIssues[]? | select(.severity == "error")] | length // 0')
+
+          total_errors=$((total_errors + errors + lint_errors))
+          total_warnings=$((total_warnings + warnings))
+
+          # Report validation errors
+          if [ "$errors" -gt 0 ]; then
+            echo "::error file=$file::Validation failed with $errors error(s)"
+            echo "$result" | jq -r '.validationErrors[]? | "  - \(.path): \(.message)"'
+            failed_files="$failed_files $file"
+          fi
+
+          # Report lint errors
+          if [ "$lint_errors" -gt 0 ]; then
+            echo "::error file=$file::Lint check failed with $lint_errors error(s)"
+            echo "$result" | jq -r '.lintIssues[]? | select(.severity == "error") | "  - [\(.rule)] \(.path): \(.message)"'
+            failed_files="$failed_files $file"
+          fi
+
+          # Report lint warnings
+          if [ "$warnings" -gt 0 ]; then
+            echo "::warning file=$file::Lint check found $warnings warning(s)"
+            echo "$result" | jq -r '.lintIssues[]? | select(.severity == "warning") | "  - [\(.rule)] \(.path): \(.message)"'
+            if [ "$BMML_FAIL_ON_WARNING" = "true" ]; then
+              failed_files="$failed_files $file"
+            fi
+          fi
+
+          echo ""
+        done
+
+        # Summary
+        echo "----------------------------------------"
+        echo "Summary: $files_checked file(s) checked"
+        echo "  Errors: $total_errors"
+        echo "  Warnings: $total_warnings"
+
+        # Set outputs
+        echo "files_checked=$files_checked" >> "$GITHUB_OUTPUT"
+        echo "errors=$total_errors" >> "$GITHUB_OUTPUT"
+        echo "warnings=$total_warnings" >> "$GITHUB_OUTPUT"
+
+        # Determine final status
+        if [ -n "$failed_files" ]; then
+          echo "valid=false" >> "$GITHUB_OUTPUT"
+          echo ""
+          echo "::error::BMML validation failed"
+          exit 1
+        else
+          echo "valid=true" >> "$GITHUB_OUTPUT"
+          echo ""
+          echo "All files passed validation!"
+          exit 0
+        fi

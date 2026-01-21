@@ -149,6 +149,45 @@ See `specs/bmclang-mvp.md` for the complete BMML specification, including:
 
 See [EDITOR_SETUP.md](EDITOR_SETUP.md) for JSON Schema configuration in VS Code, JetBrains IDEs, and other editors.
 
+## GitHub Action
+
+Use the BMML GitHub Action to validate `.bmml` files in your CI pipeline:
+
+```yaml
+name: Validate BMML
+on: [push, pull_request]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate BMML files
+        uses: hiasinho/bmml@main
+        with:
+          files: '**/*.bmml'
+          mode: lint
+```
+
+### Action Inputs
+
+| Input | Description | Default |
+|-------|-------------|---------|
+| `files` | Glob pattern(s) for BMML files (comma-separated) | `**/*.bmml` |
+| `mode` | `validate` (schema only) or `lint` (schema + rules) | `lint` |
+| `fail-on-warning` | Fail if lint warnings found | `false` |
+| `working-directory` | Working directory for file matching | `.` |
+
+### Action Outputs
+
+| Output | Description |
+|--------|-------------|
+| `valid` | Whether all files passed (`true`/`false`) |
+| `files-checked` | Number of files checked |
+| `errors` | Number of validation errors |
+| `warnings` | Number of lint warnings |
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and contribution guidelines.

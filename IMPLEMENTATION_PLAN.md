@@ -178,9 +178,13 @@ Nice-to-have improvements.
 - [ ] Publish npm package
   - `npm publish` to make CLI globally installable
   - AC: `npm install -g bmml` works from npm registry
-- [ ] Create GitHub Action for BMML validation
-  - Action to validate .bmml files in CI
-  - AC: Reusable action in marketplace
+- [x] Create GitHub Action for BMML validation
+  - Created `action.yml` as composite action using Node.js 22 + pnpm
+  - Supports glob patterns, validate/lint modes, fail-on-warning option
+  - Outputs: valid, files-checked, errors, warnings
+  - Added CI workflow (`.github/workflows/ci.yml`) for this repo
+  - Documented usage in README.md
+  - AC: Reusable action available via `uses: hiasinho/bmml@main`
 
 ---
 
