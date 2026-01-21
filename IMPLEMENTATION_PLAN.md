@@ -14,7 +14,7 @@ BMML (Business Model Markup Language) is a YAML-based markup format for describi
 | Schema | Complete | `schemas/bmclang-v2.schema.json` |
 | CLI | Complete | `src/cli.ts` (validate/lint/migrate commands) |
 | Migration | Complete | `src/migrate.ts` (v1→v2 conversion) |
-| Test coverage | Complete | 413 tests, all passing |
+| Test coverage | Complete | 424 tests, all passing |
 | Website | Complete | `docs/index.html` |
 | Examples | Complete | `examples/` with progressive detail |
 | Documentation | Complete | README, MIGRATION.md, CONTRIBUTING.md, EDITOR_SETUP.md |
@@ -95,18 +95,19 @@ New feature per `specs/bmc-renderer.md`. Renders BMML files as SVG Business Mode
   - Tests basic rendering, options, colors, edge cases
   - AC: Renderer produces valid, correct SVGs
 
-### Phase 4: CLI Integration
+### Phase 4: CLI Integration (Complete)
 
-- [ ] Add `bmml render <file>` command to CLI
+- [x] Add `bmml render <file>` command to CLI
   - Output SVG to stdout by default
   - AC: `bmml render model.bmml` outputs SVG
-- [ ] Add `--output <path>` / `-o <path>` flag
+- [x] Add `--output <path>` / `-o <path>` flag
   - Write SVG to specified file
   - AC: `bmml render model.bmml -o canvas.svg` creates file
-- [ ] Add CLI tests for render command
+- [x] Add CLI tests for render command
   - Test stdout output, file output, error handling
+  - 11 tests covering all render scenarios
   - AC: CLI render command fully tested
-- [ ] Export `render` function from `src/index.ts`
+- [x] Export `render` function from `src/index.ts`
   - AC: Programmatic API available
 
 ### Phase 5: Website Integration
