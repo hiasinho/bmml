@@ -1,0 +1,409 @@
+version: "2.0"
+
+meta:
+  name: CloudVault
+  tagline: Secure cloud storage that grows with you
+  created: "2020-02-14"
+  updated: "2024-12-10"
+  portfolio: exploit
+  stage: grow
+
+# === CUSTOMER SEGMENTS ===
+# Freemium model: free users who may convert, paying customers who unlock full value
+
+customer_segments:
+  - id: cs-free-users
+    name: Free Users
+    description: Individuals using the free tier for personal file storage and sharing
+    jobs:
+      - id: job-store-files
+        description: Store important files somewhere accessible from any device
+      - id: job-share-easily
+        description: Share files with friends and family without complicated setups
+      - id: job-backup-photos
+        description: Automatically backup phone photos to prevent loss
+      - id: job-access-anywhere
+        description: Access files from phone, tablet, and computer
+    pains:
+      - id: pain-device-storage
+        description: Running out of storage on phone or laptop
+      - id: pain-fear-of-loss
+        description: Worried about losing files if device breaks or is stolen
+      - id: pain-email-limits
+        description: Can't email large files due to attachment limits
+      - id: pain-version-chaos
+        description: Confusion about which version of a file is current
+    gains:
+      - id: gain-peace-of-mind
+        description: Know files are safe even if device is lost
+      - id: gain-always-available
+        description: Access files from anywhere, on any device
+      - id: gain-easy-sharing
+        description: Share files with a simple link
+
+  - id: cs-premium-users
+    name: Premium Subscribers
+    description: Power users and professionals who need more storage, features, and support
+    jobs:
+      - id: job-store-everything
+        description: Store entire digital life including work files, media, archives
+      - id: job-collaborate-team
+        description: Collaborate on files with colleagues and clients
+      - id: job-protect-sensitive
+        description: Keep sensitive documents secure with advanced protection
+      - id: job-recover-mistakes
+        description: Recover from accidental deletions or changes
+      - id: job-automate-workflow
+        description: Integrate storage into productivity workflow
+    pains:
+      - id: pain-storage-limits
+        description: Free tier storage fills up quickly with work files
+      - id: pain-sharing-restrictions
+        description: Can't control who can view, edit, or download shared files
+      - id: pain-no-recovery
+        description: Accidentally deleted file with no way to recover
+      - id: pain-security-concerns
+        description: Worried about unauthorized access to sensitive files
+      - id: pain-tool-switching
+        description: Constantly switching between storage and other work tools
+    gains:
+      - id: gain-unlimited-space
+        description: Never worry about running out of storage
+      - id: gain-full-control
+        description: Complete control over file sharing and permissions
+      - id: gain-version-history
+        description: Access any previous version of any file
+      - id: gain-team-productivity
+        description: Seamless collaboration with team members
+      - id: gain-enterprise-security
+        description: Security features that meet compliance requirements
+
+# === VALUE PROPOSITIONS ===
+# Different offerings for free vs premium, with clear upgrade path
+
+value_propositions:
+  - id: vp-free-storage
+    name: Free Cloud Storage
+    description: Essential cloud storage to get started, with enough space for basics
+    products_services:
+      - id: ps-5gb-storage
+        name: 5 GB free storage
+      - id: ps-file-sync
+        name: Automatic file sync across devices
+      - id: ps-photo-backup
+        name: Automatic photo backup from mobile
+      - id: ps-basic-sharing
+        name: Basic file sharing via links
+      - id: ps-web-mobile-apps
+        name: Web, iOS, and Android apps
+    pain_relievers:
+      - id: pr-device-storage
+        name: Offload files from device to free up local space
+      - id: pr-fear-of-loss
+        name: Automatic cloud backup protects against device loss
+      - id: pr-email-limits
+        name: Share large files via link instead of email attachment
+      - id: pr-version-basic
+        name: Always synced - same file on every device
+    gain_creators:
+      - id: gc-peace-of-mind
+        name: Files automatically backed up to secure cloud
+      - id: gc-always-available
+        name: Access files from any connected device
+      - id: gc-easy-sharing
+        name: One-click sharing generates instant link
+
+  - id: vp-premium-storage
+    name: Premium Cloud Storage
+    description: Full-featured storage for power users with advanced security and collaboration
+    products_services:
+      - id: ps-2tb-storage
+        name: 2 TB storage (expandable to 10 TB)
+      - id: ps-advanced-sharing
+        name: Advanced sharing with permissions and expiring links
+      - id: ps-version-history
+        name: 180-day version history for all files
+      - id: ps-offline-access
+        name: Offline access to selected folders
+      - id: ps-priority-support
+        name: Priority email and chat support
+      - id: ps-integrations
+        name: Integrations with 50+ productivity apps
+      - id: ps-encryption
+        name: End-to-end encryption option
+      - id: ps-admin-console
+        name: Team admin console with user management
+    pain_relievers:
+      - id: pr-storage-limits
+        name: 2 TB base storage with option to add more
+      - id: pr-sharing-restrictions
+        name: Granular permissions - view only, edit, download controls
+      - id: pr-no-recovery
+        name: 180-day version history to restore any previous version
+      - id: pr-security-concerns
+        name: End-to-end encryption and two-factor authentication
+      - id: pr-tool-switching
+        name: Direct integrations with productivity apps
+    gain_creators:
+      - id: gc-unlimited-space
+        name: Enough space for entire digital archive
+      - id: gc-full-control
+        name: Fine-grained sharing controls and expiring links
+      - id: gc-version-history
+        name: Never lose work - restore any version from past 180 days
+      - id: gc-team-productivity
+        name: Real-time collaboration and team folders
+      - id: gc-enterprise-security
+        name: SOC2 compliant with audit logs
+
+# === FITS ===
+
+fits:
+  - id: fit-free-basic
+    for:
+      value_propositions: [vp-free-storage]
+      customer_segments: [cs-free-users]
+    mappings:
+      - [pr-device-storage, pain-device-storage]
+      - [pr-fear-of-loss, pain-fear-of-loss]
+      - [pr-email-limits, pain-email-limits]
+      - [pr-version-basic, pain-version-chaos]
+      - [gc-peace-of-mind, gain-peace-of-mind]
+      - [gc-always-available, gain-always-available]
+      - [gc-easy-sharing, gain-easy-sharing]
+
+  - id: fit-premium-power
+    for:
+      value_propositions: [vp-premium-storage]
+      customer_segments: [cs-premium-users]
+    mappings:
+      - [pr-storage-limits, pain-storage-limits]
+      - [pr-sharing-restrictions, pain-sharing-restrictions]
+      - [pr-no-recovery, pain-no-recovery]
+      - [pr-security-concerns, pain-security-concerns]
+      - [pr-tool-switching, pain-tool-switching]
+      - [gc-unlimited-space, gain-unlimited-space]
+      - [gc-full-control, gain-full-control]
+      - [gc-version-history, gain-version-history]
+      - [gc-team-productivity, gain-team-productivity]
+      - [gc-enterprise-security, gain-enterprise-security]
+
+# === CHANNELS ===
+
+channels:
+  - id: ch-website
+    name: Website & Web App
+    for:
+      value_propositions: [vp-free-storage, vp-premium-storage]
+      customer_segments: [cs-free-users, cs-premium-users]
+
+  - id: ch-mobile-apps
+    name: Mobile Apps (iOS, Android)
+    for:
+      value_propositions: [vp-free-storage, vp-premium-storage]
+      customer_segments: [cs-free-users, cs-premium-users]
+
+  - id: ch-desktop-app
+    name: Desktop App (Windows, Mac, Linux)
+    for:
+      value_propositions: [vp-free-storage, vp-premium-storage]
+      customer_segments: [cs-free-users, cs-premium-users]
+
+  - id: ch-organic-search
+    name: Organic Search & Content Marketing
+    for:
+      value_propositions: [vp-free-storage]
+      customer_segments: [cs-free-users]
+
+  - id: ch-word-of-mouth
+    name: Referral Program & Word of Mouth
+    for:
+      value_propositions: [vp-free-storage]
+      customer_segments: [cs-free-users]
+
+  - id: ch-in-product-upgrade
+    name: In-Product Upgrade Prompts
+    for:
+      value_propositions: [vp-premium-storage]
+      customer_segments: [cs-free-users]
+
+  - id: ch-tech-reviews
+    name: Tech Review Sites & Comparisons
+    for:
+      value_propositions: [vp-premium-storage]
+      customer_segments: [cs-premium-users]
+
+# === CUSTOMER RELATIONSHIPS ===
+
+customer_relationships:
+  - id: cr-self-service
+    name: Self-service with help center, tutorials, and community forums
+    for:
+      customer_segments: [cs-free-users]
+
+  - id: cr-conversion-nurture
+    name: Conversion-focused emails showcasing premium features
+    for:
+      customer_segments: [cs-free-users]
+
+  - id: cr-premium-support
+    name: Priority support via email and chat with faster response times
+    for:
+      customer_segments: [cs-premium-users]
+
+  - id: cr-retention
+    name: Proactive retention with usage insights and feature announcements
+    for:
+      customer_segments: [cs-premium-users]
+
+# === REVENUE STREAMS ===
+# Revenue only from premium - free users are the acquisition engine
+
+revenue_streams:
+  - id: rs-monthly-premium
+    name: Monthly Premium Subscription
+    from:
+      customer_segments: [cs-premium-users]
+    for:
+      value_propositions: [vp-premium-storage]
+
+  - id: rs-annual-premium
+    name: Annual Premium Subscription (20% discount)
+    from:
+      customer_segments: [cs-premium-users]
+    for:
+      value_propositions: [vp-premium-storage]
+
+  - id: rs-family-plan
+    name: Family Plan (up to 6 members)
+    from:
+      customer_segments: [cs-premium-users]
+    for:
+      value_propositions: [vp-premium-storage]
+
+  - id: rs-storage-addon
+    name: Additional Storage Add-ons
+    from:
+      customer_segments: [cs-premium-users]
+    for:
+      value_propositions: [vp-premium-storage]
+
+# === KEY RESOURCES ===
+
+key_resources:
+  - id: kr-cloud-infrastructure
+    name: Cloud Infrastructure (Storage & Compute)
+    for:
+      value_propositions: [vp-free-storage, vp-premium-storage]
+
+  - id: kr-engineering-team
+    name: Engineering Team
+    for:
+      value_propositions: [vp-free-storage, vp-premium-storage]
+
+  - id: kr-platform-ip
+    name: Sync Engine & Platform IP
+    for:
+      value_propositions: [vp-free-storage, vp-premium-storage]
+
+  - id: kr-user-data
+    name: User Behavior & Conversion Data
+    for:
+      value_propositions: [vp-premium-storage]
+
+  - id: kr-brand
+    name: Brand & Trust Reputation
+    for:
+      value_propositions: [vp-free-storage, vp-premium-storage]
+
+# === KEY ACTIVITIES ===
+
+key_activities:
+  - id: ka-platform-development
+    name: Platform Development & Maintenance
+    for:
+      value_propositions: [vp-free-storage, vp-premium-storage]
+
+  - id: ka-infrastructure-ops
+    name: Infrastructure Operations & Scaling
+    for:
+      value_propositions: [vp-free-storage, vp-premium-storage]
+
+  - id: ka-security
+    name: Security & Compliance Management
+    for:
+      value_propositions: [vp-premium-storage]
+
+  - id: ka-user-acquisition
+    name: Free User Acquisition
+    for:
+      value_propositions: [vp-free-storage]
+
+  - id: ka-conversion-optimization
+    name: Conversion Optimization & A/B Testing
+    for:
+      value_propositions: [vp-premium-storage]
+
+  - id: ka-customer-support
+    name: Customer Support Operations
+    for:
+      value_propositions: [vp-free-storage, vp-premium-storage]
+
+# === KEY PARTNERSHIPS ===
+
+key_partnerships:
+  - id: kp-cloud-providers
+    name: Cloud Infrastructure Providers (AWS, GCP)
+    for:
+      key_resources: [kr-cloud-infrastructure]
+      key_activities: [ka-infrastructure-ops]
+
+  - id: kp-integration-partners
+    name: Productivity App Partners (Office, Slack, etc.)
+    for:
+      key_activities: [ka-platform-development]
+
+  - id: kp-security-auditors
+    name: Security Audit & Compliance Partners
+    for:
+      key_activities: [ka-security]
+
+  - id: kp-payment-processors
+    name: Payment Processors (Stripe, PayPal)
+    for:
+      key_activities: [ka-conversion-optimization]
+
+  - id: kp-device-manufacturers
+    name: Device Manufacturers (Pre-install deals)
+    for:
+      key_activities: [ka-user-acquisition]
+
+# === COSTS ===
+
+costs:
+  - id: cost-infrastructure
+    name: Cloud Infrastructure & Storage
+    for:
+      key_resources: [kr-cloud-infrastructure]
+      key_activities: [ka-infrastructure-ops]
+
+  - id: cost-engineering
+    name: Engineering & Product Development
+    for:
+      key_resources: [kr-engineering-team]
+      key_activities: [ka-platform-development]
+
+  - id: cost-acquisition
+    name: User Acquisition & Marketing
+    for:
+      key_activities: [ka-user-acquisition, ka-conversion-optimization]
+
+  - id: cost-support
+    name: Customer Support
+    for:
+      key_activities: [ka-customer-support]
+
+  - id: cost-security
+    name: Security & Compliance
+    for:
+      key_activities: [ka-security]
