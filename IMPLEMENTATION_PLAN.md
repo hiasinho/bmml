@@ -172,9 +172,11 @@ Demonstrate format's power with more real-world examples.
 
 Nice-to-have improvements.
 
-- [ ] Add JSON Schema to schemastore.org
-  - Submit PR to schemastore/schemastore
-  - AC: BMML schema available in common editors automatically
+- [x] Add JSON Schema to schemastore.org
+  - Submitted PR #5301 to SchemaStore/schemastore: https://github.com/SchemaStore/schemastore/pull/5301
+  - Schema copied to `docs/bmclang-v2.schema.json` for GitHub Pages hosting
+  - FileMatch patterns: `*.bmml`, `*.bmml.yaml`, `*.bmml.yml`
+  - AC: BMML schema available in common editors automatically (pending PR merge)
 - [ ] Publish npm package
   - `npm publish` to make CLI globally installable
   - **BLOCKED**: Requires npm account login and publish command
