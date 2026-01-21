@@ -14,7 +14,7 @@ BMML (Business Model Markup Language) is a YAML-based markup format for describi
 | Schema | Complete | `schemas/bmclang-v2.schema.json` |
 | CLI | Complete | `src/cli.ts` (validate/lint/migrate commands) |
 | Migration | Complete | `src/migrate.ts` (v1→v2 conversion) |
-| Test coverage | Complete | 335 tests, all passing |
+| Test coverage | Complete | 393 tests, all passing |
 | Website | Complete | `docs/index.html` |
 | Examples | Complete | `examples/` with progressive detail |
 | Documentation | Complete | README, MIGRATION.md, CONTRIBUTING.md, EDITOR_SETUP.md |
@@ -50,36 +50,37 @@ New feature per `specs/bmc-renderer.md`. Renders BMML files as SVG Business Mode
   - 31 tests covering all entity types including Airbnb two-sided marketplace pattern
   - AC: All connection scenarios covered
 
-### Phase 2: SVG Generation
+### Phase 2: SVG Generation (Complete)
 
-- [ ] Create `src/render-svg.ts` with SVG string generation
-  - Define viewBox dimensions (~1600x1000 for BMC aspect ratio)
-  - Create color palette (8 segment colors + gray for orphaned)
+- [x] Create `src/render-svg.ts` with SVG string generation
+  - ViewBox: 1600x1000 with header (60px), footer (30px), main content area
+  - 8 segment colors + gray for orphaned elements
+  - 58 tests covering all SVG generation functions
   - AC: Generates valid SVG string
-- [ ] Implement BMC grid layout
+- [x] Implement BMC grid layout
   - 5 columns: KP | KA/KR | VP | CR/CH | CS
   - 2 rows: main blocks (75%) + Cost/Revenue (25%)
   - Block proportions per spec
   - AC: Grid matches official Strategyzer layout
-- [ ] Implement block labels and icons
+- [x] Implement block labels and icons
   - Labels: "Key Partnerships", "Key Activities", etc.
-  - Simple SVG icons (chain, lightning, gift, heart, truck, face, tag, dollar)
-  - AC: All 9 blocks labeled with icons
-- [ ] Implement sticky note rendering
-  - Rectangle with rounded corners, shadow
+  - Note: Icons deferred - keeping minimal for now
+  - AC: All 9 blocks labeled
+- [x] Implement sticky note rendering
+  - Rectangle with rounded corners (3px), shadow filter
   - Color from connection graph (segment color or gray)
-  - Text wrapping (2-3 lines max)
+  - Text wrapping (2-3 lines max, 14 chars per line)
   - AC: Sticky notes display entity names with correct colors
-- [ ] Implement multi-segment stacking
+- [x] Implement multi-segment stacking
   - Offset stacked stickies (4px right, 4px down per layer)
   - First segment on top, subsequent below
   - AC: Multi-segment elements show stacked notes
-- [ ] Add canvas header
+- [x] Add canvas header
   - Title: "The Business Model Canvas"
-  - Meta fields: name, date, version
+  - Meta fields: name, date
   - AC: Header displays BMML meta info
-- [ ] Add Strategyzer attribution footer
-  - "Copyright Strategyzer AG | strategyzer.com | CC BY-SA 3.0"
+- [x] Add Strategyzer attribution footer
+  - "Copyright Strategyzer AG | The Business Model Canvas | strategyzer.com | CC BY-SA 3.0"
   - AC: Attribution present for CC compliance
 
 ### Phase 3: Main Renderer
