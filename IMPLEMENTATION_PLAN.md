@@ -177,6 +177,8 @@ Nice-to-have improvements.
   - AC: BMML schema available in common editors automatically
 - [ ] Publish npm package
   - `npm publish` to make CLI globally installable
+  - **BLOCKED**: Requires npm account login and publish command
+  - **Prep done**: package.json updated with proper dependencies, repository info, and files field
   - AC: `npm install -g bmml` works from npm registry
 - [x] Create GitHub Action for BMML validation
   - Created `action.yml` as composite action using Node.js 22 + pnpm
@@ -294,6 +296,8 @@ Current State (Complete)
 4. **Progressive Examples**: `examples/progressive/` demonstrates the optional VPC detail concept well.
 
 5. **v1 Types Retained**: v1 types kept in `src/types.ts` because migration tool needs them to parse v1 input.
+
+6. **npm Package Prep Complete**: package.json now ready for publish - runtime deps (ajv, ajv-formats, js-yaml) moved from devDependencies to dependencies, added repository/homepage/bugs URLs, files field, and author.
 
 ### Open Questions
 
